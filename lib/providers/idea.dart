@@ -1,0 +1,111 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:gingersystem/providers/comment.dart';
+import 'package:gingersystem/providers/participant.dart';
+import 'package:http/http.dart' as http;
+
+class Idea with ChangeNotifier {
+  ///idea.dart
+  /// Unique identifier given by firebase
+  ///
+  String id;
+
+  ///idea.dart
+  /// The title of the idea
+  ///
+  String title;
+
+  ///idea.dart
+  /// The description of the idea
+  ///
+  String content;
+
+  ///TODO: Define data. Class? Links?
+  /// The data uploaded to support an idea
+  ///
+  List<String> supportData = [];
+
+  ///idea.dart
+  /// Who published the idea
+  ///
+  Participant owner;
+
+  ///idea.dart
+  /// The number of support votes the idea has
+  ///
+  int supportVotes = 0;
+
+  ///idea.dart
+  /// The number of discard votes the idea has
+  ///
+  int discardVotes = 0;
+
+  ///idea.dart
+  /// Comments made for the given idea
+  ///
+  List<Comment> _commentsMade = [];
+
+  ///idea.dart
+  /// Date it was published
+  ///
+  DateTime published;
+
+  ///idea.dart
+  /// Class constructor for the idea that begins with a quest
+  ///
+  Idea.createInitialIdea({
+    @required this.id,
+    @required this.title,
+    @required this.content,
+    @required this.published,
+  }){
+    this.published = DateTime.now();
+  }
+
+  ///idea.dart
+  /// Class constructor for an idea
+  ///
+  Idea.addIdea({
+    @required this.id,
+    @required this.title,
+    @required this.content,
+    @required this.owner,
+    @required this.supportData,
+  }){
+    this.published = DateTime.now();
+  }
+
+  ///idea.dart
+  /// Returns the list of comments sorted by the number of votes
+  ///
+  List<Comment> get commentsSortedByVotes {
+    this._commentsMade.sort((a, b) => b.votes.compareTo(a.votes));
+    return [...this._commentsMade];
+  }
+
+  ///idea.dart
+  ///
+  ///
+  void addComment(Comment comment) {
+    this._commentsMade.add(comment);
+    notifyListeners();
+  }
+
+  ///idea.dart
+  ///
+  ///
+  void toggleSupportVote(bool isToAdd) {
+    int value = isToAdd ? 1 : -1;
+    this.supportVotes += value;
+    notifyListeners();
+  }
+
+  ///idea.dart
+  ///
+  ///
+  void toggleDiscardVote(bool isToAdd) {
+    int value = isToAdd ? 1 : -1;
+    this.discardVotes += value;
+    notifyListeners();
+  }
+}

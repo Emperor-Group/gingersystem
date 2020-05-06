@@ -13,7 +13,6 @@ class Rhizome extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.orange,
         accentColor: Colors.amberAccent[400],
-
         primaryTextTheme: TextTheme(
           title: TextStyle(
             color: Colors.black,
@@ -37,9 +36,14 @@ class Rhizome extends StatelessWidget {
   }
 }
 
-class TheRhizomeApp extends StatelessWidget {
+class TheRhizomeApp extends StatefulWidget {
   const TheRhizomeApp({Key key}) : super(key: key);
 
+  @override
+  _TheRhizomeAppState createState() => _TheRhizomeAppState();
+}
+
+class _TheRhizomeAppState extends State<TheRhizomeApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
