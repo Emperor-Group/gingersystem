@@ -8,7 +8,6 @@ import 'package:http/http.dart' as http;
 import 'package:graph_collection/graph.dart';
 
 class Quest with ChangeNotifier {
-  
   ///quest.dart
   ///
   ///
@@ -146,6 +145,11 @@ class Quest with ChangeNotifier {
             Connector.CONVERGENT,
           ),
     );
+    notifyListeners();
+  }
+
+  void registerParticipant(Participant participant) {
+    this._participants.add(participant);
     notifyListeners();
   }
 }

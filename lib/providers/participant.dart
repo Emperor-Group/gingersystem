@@ -21,5 +21,9 @@ class Participant with ChangeNotifier {
   ///participant.dart
   ///
   ///
-  Participant(this.pseudonym, this.participating);
+  Participant(
+    this.pseudonym,
+    this.participating,
+    this.owner,
+  );
 }
