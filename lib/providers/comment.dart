@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gingersystem/models/participant.dart';
+import 'package:gingersystem/providers/participant.dart';
 
 class Comment with ChangeNotifier {
   ///comment.dart
