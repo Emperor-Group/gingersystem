@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gingersystem/providers/quest.dart';
 import 'package:gingersystem/providers/user.dart';
 
-class Participant with ChangeNotifier {
+class Participant {
   ///participant.dart
   ///
   ///
@@ -21,9 +21,9 @@ class Participant with ChangeNotifier {
   ///participant.dart
   ///
   ///
-  Participant(
-    this.pseudonym,
-    this.participating,
-    this.owner,
-  );
+  Participant({
+    @required this.pseudonym,
+    @required this.participating,
+    @required this.owner,
+  });
 }

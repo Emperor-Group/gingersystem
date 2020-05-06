@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class User with ChangeNotifier {
+class User{
   ///user.dart
   ///
   ///
