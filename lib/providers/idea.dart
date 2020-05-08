@@ -8,17 +8,17 @@ class Idea with ChangeNotifier {
   ///idea.dart
   /// Unique identifier given by firebase
   ///
-  String id;
+  final int id;
 
   ///idea.dart
   /// The title of the idea
   ///
-  String title;
+  final String title;
 
   ///idea.dart
   /// The description of the idea
   ///
-  String content;
+  final String content;
 
   ///TODO: Define data. Class? Links?
   /// The data uploaded to support an idea
@@ -48,7 +48,7 @@ class Idea with ChangeNotifier {
   ///idea.dart
   /// Date it was published
   ///
-  DateTime published;
+  final DateTime published;
 
   ///idea.dart
   /// Class constructor for the idea that begins with a quest
@@ -58,9 +58,7 @@ class Idea with ChangeNotifier {
     @required this.title,
     @required this.content,
     @required this.published,
-  }){
-    this.published = DateTime.now();
-  }
+  });
 
   ///idea.dart
   /// Class constructor for an idea
@@ -71,9 +69,8 @@ class Idea with ChangeNotifier {
     @required this.content,
     @required this.owner,
     @required this.supportData,
-  }){
-    this.published = DateTime.now();
-  }
+    @required this.published,
+  });
 
   ///idea.dart
   /// Returns the list of comments sorted by the number of votes

@@ -16,22 +16,22 @@ class Quest with ChangeNotifier {
   ///quest.dart
   ///
   ///
-  String id;
+  final String id;
 
   ///quest.dart
   ///
   ///
-  String name;
+  final String title;
 
   ///quest.dart
   ///
   ///
-  DateTime launchedDate;
+  final DateTime launchedDate;
 
   ///quest.dart
   ///
   ///
-  DateTime deadline;
+  final DateTime deadline;
 
   ///quest.dart
   ///
@@ -46,18 +46,18 @@ class Quest with ChangeNotifier {
   ///quest.dart
   /// Parent of all ideas for this quest
   ///
-  Idea initialIdea;
+  final Idea initialIdea;
 
   ///quest.dart
   ///
   ///
   Quest.initializeQuest({
     @required this.id,
-    @required this.name,
+    @required this.title,
+    @required this.launchedDate,
     @required this.deadline,
     @required this.initialIdea,
   }) {
-    launchedDate = DateTime.now();
     _dynamicIdeasForum = new DirectedValueGraph();
     _dynamicIdeasForum.add(initialIdea);
   }
@@ -65,7 +65,7 @@ class Quest with ChangeNotifier {
   ///quest.dart
   /// Returns an idea based on the given id
   ///
-  Idea getByID(String id) {
+  Idea getByID(int id) {
     return _dynamicIdeasForum.firstWhere(
       (dynamic idea) => (idea as Idea).id == id,
     );
@@ -74,7 +74,7 @@ class Quest with ChangeNotifier {
   ///quest.dart
   /// Gets all the children for a given idea
   ///
-  List<Idea> getAllChildren(String parentID) {
+  List<Idea> getAllChildren(int parentID) {
     Idea theParent = this.getByID(parentID);
     return this
         ._dynamicIdeasForum
@@ -94,7 +94,7 @@ class Quest with ChangeNotifier {
   ///quest.dart
   ///
   ///
-  List<Idea> getChildrenIdeasFilteredByType(String parentID, Connector type) {
+  List<Idea> getChildrenIdeasFilteredByType(int parentID, Connector type) {
     Idea parent = this.getByID(parentID);
     return this.getAllChildren(parentID).where(
           (element) =>
@@ -107,7 +107,7 @@ class Quest with ChangeNotifier {
   ///quest.dart
   ///
   ///
-  List<Idea> getParents(String childID) {
+  List<Idea> getParents(int childID) {
     Idea child = this.getByID(childID);
     return this
         ._dynamicIdeasForum
@@ -124,7 +124,7 @@ class Quest with ChangeNotifier {
   ///
   ///
   void addIdeaLinkedToParentByConnector(
-      String parentID, Idea child, Connector type) {
+      int parentID, Idea child, Connector type) {
     this._dynamicIdeasForum.add(child);
     Idea parent = this.getByID(parentID);
     this._dynamicIdeasForum.setToBy<Connector>(parent, child, type);
@@ -134,10 +134,10 @@ class Quest with ChangeNotifier {
   ///quest.dart
   ///
   ///
-  void combineIdeas(List<String> parentsIDs, Idea mixedChild) {
+  void combineIdeas(List<int> parentsIDs, Idea mixedChild) {
     this._dynamicIdeasForum.add(mixedChild);
     List<Idea> parents = new List();
-    parentsIDs.forEach((String id) => parents.add(this.getByID(id)));
+    parentsIDs.forEach((int id) => parents.add(this.getByID(id)));
     parents.forEach(
       (element) => this._dynamicIdeasForum.setToBy<Connector>(
             element,

@@ -1,58 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:gingersystem/providers/quests_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:gingersystem/screens/quest_overview_screen.dart';
 
 void main() => runApp(Rhizome());
 
 class Rhizome extends StatelessWidget {
-  const Rhizome({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: TheRhizomeApp(),
-      theme: ThemeData(
-        primarySwatch: Colors.orange,
-        accentColor: Colors.amberAccent[400],
-        primaryTextTheme: TextTheme(
-          title: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'OpenSans',
-          ),
-        ),
-        fontFamily: 'Quicksand',
-        appBarTheme: AppBarTheme(
-          textTheme: TextTheme(
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(
+          value: QuestsProvider(),
+        )
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.orange,
+          accentColor: Colors.amberAccent[400],
+          primaryTextTheme: TextTheme(
             title: TextStyle(
-              color: Colors.white,
+              color: Colors.black,
               fontWeight: FontWeight.bold,
               fontFamily: 'OpenSans',
-              fontSize: 20,
+            ),
+          ),
+          fontFamily: 'Quicksand',
+          appBarTheme: AppBarTheme(
+            textTheme: TextTheme(
+              title: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'OpenSans',
+                fontSize: 20,
+              ),
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class TheRhizomeApp extends StatefulWidget {
-  const TheRhizomeApp({Key key}) : super(key: key);
-
-  @override
-  _TheRhizomeAppState createState() => _TheRhizomeAppState();
-}
-
-class _TheRhizomeAppState extends State<TheRhizomeApp> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('The Rhizome'),
-      ),
-      body: Text(
-        "Display your app here",
-        style: Theme.of(context).primaryTextTheme.title,
+        initialRoute: '/',
+        routes: {
+          '/': (ctx) => QuestOverviewScreen(),
+        },
+        onUnknownRoute: (settings) {
+          return MaterialPageRoute(builder: (ctx) => QuestOverviewScreen());
+        },
       ),
     );
   }
