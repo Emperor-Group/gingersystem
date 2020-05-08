@@ -11,7 +11,13 @@ class QuestOverviewItem extends StatelessWidget {
     return Card(
       elevation: 10,
       child: ListTile(
-        leading: CircleAvatar(),
+        leading: CircleAvatar(
+          backgroundColor: Colors.deepOrange,
+          child: Icon(
+            Icons.search,
+            color: Colors.white,
+          ),
+        ),
         title: Text(quest.title),
         subtitle: Text(quest.initialIdea.title),
       ),

@@ -92,7 +92,7 @@ class _QuestOverviewScreenState extends State<QuestOverviewScreen> {
                       fit: BoxFit.contain,
                     ),
                   ),
-                ), 
+                ),
                 Expanded(
                   child: RefreshIndicator(
                     child: QuestOverviewList(
@@ -104,6 +104,15 @@ class _QuestOverviewScreenState extends State<QuestOverviewScreen> {
                 ),
               ],
             ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+        backgroundColor: Colors.orange[500],
+        onPressed: () {},
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }

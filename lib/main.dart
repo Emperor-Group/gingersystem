@@ -17,7 +17,7 @@ class Rhizome extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          primarySwatch: Colors.orange,
+          primarySwatch: Colors.deepOrange,
           accentColor: Colors.amberAccent,
           primaryTextTheme: TextTheme(
             title: TextStyle(
