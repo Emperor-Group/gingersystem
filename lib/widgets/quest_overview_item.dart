@@ -11,10 +11,9 @@ class QuestOverviewItem extends StatelessWidget {
     return Card(
       elevation: 10,
       child: ListTile(
+        leading: CircleAvatar(),
         title: Text(quest.title),
-        leading: Card(
-          child: Text(quest.initialIdea.title),
-        ),
+        subtitle: Text(quest.initialIdea.title),
       ),
     );
   }
