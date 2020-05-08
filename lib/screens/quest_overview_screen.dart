@@ -92,14 +92,16 @@ class _QuestOverviewScreenState extends State<QuestOverviewScreen> {
                       fit: BoxFit.contain,
                     ),
                   ),
-                ), /*
-                RefreshIndicator(
-                  child:
-                      QuestOverviewList(_showFilteredByUpcomingDeadlinesSorted),
-                  onRefresh: () =>
-                      Provider.of<QuestsProvider>(context, listen: false)
-                          .fetchAndSetLaunchedQuests(),
-                ),*/
+                ), 
+                Expanded(
+                  child: RefreshIndicator(
+                    child: QuestOverviewList(
+                        _showFilteredByUpcomingDeadlinesSorted),
+                    onRefresh: () =>
+                        Provider.of<QuestsProvider>(context, listen: false)
+                            .fetchAndSetLaunchedQuests(),
+                  ),
+                ),
               ],
             ),
     );

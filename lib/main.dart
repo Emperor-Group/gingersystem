@@ -6,7 +6,6 @@ import 'package:gingersystem/screens/quest_overview_screen.dart';
 void main() => runApp(Rhizome());
 
 class Rhizome extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -50,3 +49,5 @@ class Rhizome extends StatelessWidget {
     );
   }
 }
+
+
