@@ -13,7 +13,7 @@ class Rhizome extends StatelessWidget {
         ChangeNotifierProvider.value(
           value: QuestsProvider(),
         )
-      ],
+      ], 
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(

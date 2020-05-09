@@ -146,7 +146,7 @@ class Quest with ChangeNotifier {
           ),
     );
     notifyListeners();
-  }
+    }
 
   void registerParticipant(Participant participant) {
     this._participants.add(participant);

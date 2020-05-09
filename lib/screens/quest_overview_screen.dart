@@ -30,7 +30,7 @@ class _QuestOverviewScreenState extends State<QuestOverviewScreen> {
           .fetchAndSetLaunchedQuests()
           .then((_) {
         setState(() {
-          _isLoading = false;
+          _isLoading = false; 
         });
       });
     }
