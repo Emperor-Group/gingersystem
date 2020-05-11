@@ -46,7 +46,12 @@ class Quest with ChangeNotifier {
   ///quest.dart
   /// Parent of all ideas for this quest
   ///
-  final Idea initialIdea;
+  Idea initialIdea;
+
+  ///
+  ///
+  ///
+  final String initIdeaID;
 
   ///quest.dart
   ///
@@ -56,100 +61,28 @@ class Quest with ChangeNotifier {
     @required this.title,
     @required this.launchedDate,
     @required this.deadline,
-    @required this.initialIdea,
-  }) {
-    _dynamicIdeasForum = new DirectedValueGraph();
-    _dynamicIdeasForum.add(initialIdea);
-  }
+    @required this.initIdeaID,
+  });
 
-  ///quest.dart
-  /// Returns an idea based on the given id
-  ///
-  Idea getByID(int id) {
-    return _dynamicIdeasForum.firstWhere(
-      (dynamic idea) => (idea as Idea).id == id,
-    );
-  }
-
-  ///quest.dart
-  /// Gets all the children for a given idea
-  ///
-  List<Idea> getAllChildren(int parentID) {
-    Idea theParent = this.getByID(parentID);
-    return this
-        ._dynamicIdeasForum
-        .where((dynamic idea) =>
-            this._dynamicIdeasForum.hasEdgeToBy<Connector>(theParent, idea))
-        .toList();
-  }
-
-  ///quest.dart
-  /// Gets the last ideas that have no children
-  ///
-  List<Idea> getLeafs() {
-    return this._dynamicIdeasForum.where((dynamic idea) =>
-        this._dynamicIdeasForum.valueTosBy<Connector>(idea).isEmpty);
-  }
-
-  ///quest.dart
-  ///
-  ///
-  List<Idea> getChildrenIdeasFilteredByType(int parentID, Connector type) {
-    Idea parent = this.getByID(parentID);
-    return this.getAllChildren(parentID).where(
-          (element) =>
-              (this._dynamicIdeasForum.getBy<Connector>(parent, element)
-                  as Connector) ==
-              type,
-        );
-  }
-
-  ///quest.dart
-  ///
-  ///
-  List<Idea> getParents(int childID) {
-    Idea child = this.getByID(childID);
-    return this
-        ._dynamicIdeasForum
-        .where(
-          (element) => this._dynamicIdeasForum.hasEdgeToBy<Connector>(
-                element,
-                child,
-              ),
-        )
-        .toList();
-  }
-
-  ///quest.dart
-  ///
-  ///
-  void addIdeaLinkedToParentByConnector(
-      int parentID, Idea child, Connector type) {
-    this._dynamicIdeasForum.add(child);
-    Idea parent = this.getByID(parentID);
-    this._dynamicIdeasForum.setToBy<Connector>(parent, child, type);
-    notifyListeners();
-  }
-
-  ///quest.dart
-  ///
-  ///
-  void combineIdeas(List<int> parentsIDs, Idea mixedChild) {
-    this._dynamicIdeasForum.add(mixedChild);
-    List<Idea> parents = new List();
-    parentsIDs.forEach((int id) => parents.add(this.getByID(id)));
-    parents.forEach(
-      (element) => this._dynamicIdeasForum.setToBy<Connector>(
-            element,
-            mixedChild,
-            Connector.CONVERGENT,
-          ),
-    );
-    notifyListeners();
+  void setInitialIdea() async {
+    final url = 'https://the-rhizome.firebaseio.com/ideas/$id/$initIdeaID.json';
+    try {
+      final response = await http.get(url);
+      final Map<String, dynamic> extractedIdea = json.decode(response.body);
+      if (extractedIdea == null) {
+        return;
+      }
+      initialIdea = Idea.createInitialIdea(
+        id: initIdeaID,
+        title: extractedIdea['title'],
+        content: extractedIdea['content'],
+        published: DateTime.parse(extractedIdea['published']),
+      );
+      print('Oh we got it: ${initialIdea.title}');
+      notifyListeners();
+    } catch (error) {
+      print(error);
+      throw (error);
     }
-
-  void registerParticipant(Participant participant) {
-    this._participants.add(participant);
-    notifyListeners();
   }
 }

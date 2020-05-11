@@ -63,7 +63,7 @@ class QuestsProvider with ChangeNotifier {
           title: quest.title,
           launchedDate: quest.launchedDate,
           deadline: quest.deadline,
-          initialIdea: quest.initialIdea,
+          initIdeaID: '0',
         ),
       );
       notifyListeners();
@@ -90,19 +90,13 @@ class QuestsProvider with ChangeNotifier {
               title: value['title'],
               launchedDate: DateTime.parse(value['launched']),
               deadline: DateTime.parse(value['deadline']),
-              initialIdea: Idea.createInitialIdea(
-                id: 0,
-                title: value['ideas'][0]['title'],
-                content: value['ideas'][0]['content'],
-                published: DateTime.parse(
-                  value['ideas'][0]['published'],
-                ),
-              ),
+              initIdeaID: (value['initialIdea'] as Map).keys.toList()[0],
             ),
           );
         },
       );
       _launchedQuests = loadedQuests;
+      notifyListeners();
     } catch (error) {
       print(error);
       throw error;
