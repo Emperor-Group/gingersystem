@@ -8,7 +8,7 @@ class Idea with ChangeNotifier {
   ///idea.dart
   /// Unique identifier given by firebase
   ///
-  final int id;
+  final String id;
 
   ///idea.dart
   /// The title of the idea
