@@ -1,18 +1,12 @@
+import 'dart:async';
 import 'dart:convert';
+import 'package:async/async.dart';
 import 'package:flutter/material.dart';
-import 'package:gingersystem/providers/connector.dart';
 import 'package:gingersystem/providers/idea.dart';
-import 'package:gingersystem/providers/participant.dart';
-import 'package:gingersystem/providers/user.dart';
+import 'package:gingersystem/providers/stage.dart';
 import 'package:http/http.dart' as http;
-import 'package:graph_collection/graph.dart';
 
 class Quest with ChangeNotifier {
-  ///quest.dart
-  ///
-  ///
-  DirectedValueGraph _dynamicIdeasForum;
-
   ///quest.dart
   ///
   ///
@@ -36,12 +30,7 @@ class Quest with ChangeNotifier {
   ///quest.dart
   ///
   ///
-  User publisher;
-
-  ///quest.dart
-  /// TODO: Participants? How?
-  ///
-  List<Participant> _participants;
+  String publisherID;
 
   ///quest.dart
   /// Parent of all ideas for this quest
@@ -52,6 +41,11 @@ class Quest with ChangeNotifier {
   ///
   ///
   final String initIdeaID;
+
+  ///
+  ///
+  ///
+  Stage currentStage;
 
   ///quest.dart
   ///
@@ -78,11 +72,20 @@ class Quest with ChangeNotifier {
         content: extractedIdea['content'],
         published: DateTime.parse(extractedIdea['published']),
       );
-      print('Oh we got it: ${initialIdea.title}');
       notifyListeners();
     } catch (error) {
       print(error);
       throw (error);
     }
+  }
+
+  Stage get stage {
+    int diff = deadline.difference(DateTime.now()).inDays;
+    if (diff == 0) {
+      return Stage.Closed;
+    } else if ((diff % 2) == 1) {
+      return Stage.Exploit;
+    }
+    return Stage.Explore;
   }
 }
