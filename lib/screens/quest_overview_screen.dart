@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gingersystem/providers/quests_provider.dart';
+import 'package:gingersystem/widgets/main_drawer.dart';
 import 'package:gingersystem/widgets/quest_overview_list.dart';
 import 'package:provider/provider.dart';
 
@@ -26,7 +27,7 @@ class _QuestOverviewScreenState extends State<QuestOverviewScreen> {
           _isLoading = true;
         },
       );
-      Provider.of<QuestsProvider>(context)
+      Provider.of<QuestsProvider>(context, listen: false)
           .fetchAndSetLaunchedQuests()
           .then((_) {
         setState(() {
@@ -41,8 +42,12 @@ class _QuestOverviewScreenState extends State<QuestOverviewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: MainDrawer(),
       appBar: AppBar(
-        title: Text('The Rhizome'),
+        title: Text(
+          'The Rhizome',
+          style: Theme.of(context).textTheme.headline5,
+        ),
         actions: <Widget>[
           PopupMenuButton(
             icon: Icon(Icons.more_vert),
@@ -63,11 +68,17 @@ class _QuestOverviewScreenState extends State<QuestOverviewScreen> {
             },
             itemBuilder: (_) => [
               PopupMenuItem(
-                child: Text('All'),
+                child: Text(
+                  'All',
+                  style: Theme.of(context).textTheme.headline6,
+                ),
                 value: FilteredOptions.ALL,
               ),
               PopupMenuItem(
-                child: Text('Upcoming'),
+                child: Text(
+                  'Upcoming',
+                  style: Theme.of(context).textTheme.headline6,
+                ),
                 value: FilteredOptions.UPCOMING,
               ),
             ],

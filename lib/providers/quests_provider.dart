@@ -11,6 +11,11 @@ class QuestsProvider with ChangeNotifier {
   ///
   List<Quest> _launchedQuests = [];
 
+  String authToken;
+  String userID;
+
+  QuestsProvider(this.authToken, this.userID, this._launchedQuests);
+
   ///quests_provider.dart
   ///
   ///
@@ -37,7 +42,8 @@ class QuestsProvider with ChangeNotifier {
   ///
   ///
   Future<void> addQuest(Quest quest, Idea initialIdea) async {
-    const url = 'https://the-rhizome.firebaseio.com/quests.json';
+    final url =
+        'https://the-rhizome.firebaseio.com/quests.json?auth=$authToken';
     try {
       http.Response response = await http.post(
         url,
@@ -67,6 +73,8 @@ class QuestsProvider with ChangeNotifier {
       _launchedQuests.insert(
         0,
         Quest.initializeQuest(
+          this.authToken,
+          this.userID,
           id: questID,
           title: quest.title,
           launchedDate: quest.launchedDate,
@@ -82,7 +90,8 @@ class QuestsProvider with ChangeNotifier {
   ///
   ///
   Future<void> fetchAndSetLaunchedQuests() async {
-    const url = 'https://the-rhizome.firebaseio.com/quests.json';
+    final url =
+        'https://the-rhizome.firebaseio.com/quests.json?auth=$authToken';
     try {
       final response = await http.get(url);
       final Map<String, dynamic> extractedQuests = json.decode(response.body);
@@ -94,6 +103,8 @@ class QuestsProvider with ChangeNotifier {
         (key, value) {
           loadedQuests.add(
             Quest.initializeQuest(
+              this.authToken,
+              this.userID,
               id: key,
               title: value['title'],
               launchedDate: DateTime.parse(value['launched']),
