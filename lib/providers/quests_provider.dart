@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:gingersystem/providers/idea.dart';
 import 'package:gingersystem/providers/quest.dart';
+import 'package:gingersystem/providers/stage.dart';
 import 'package:http/http.dart' as http;
 
 class QuestsProvider with ChangeNotifier {
@@ -35,7 +36,7 @@ class QuestsProvider with ChangeNotifier {
   ///quests_provider.dart
   ///
   ///
-  Future<void> addQuest(Quest quest) async {
+  Future<void> addQuest(Quest quest, Idea initialIdea) async {
     const url = 'https://the-rhizome.firebaseio.com/quests.json';
     try {
       http.Response response = await http.post(
@@ -43,15 +44,22 @@ class QuestsProvider with ChangeNotifier {
         body: json.encode(
           {
             'title': quest.title,
-            'launched': quest.publisher,
-            'deadline': quest.deadline,
-            'ideas': [
-              {
-                'title': quest.initialIdea.title,
-                'content': quest.initialIdea.content,
-                'published': quest.initialIdea.published,
-              },
-            ],
+            'launched': quest.launchedDate.toIso8601String(),
+            'deadline': quest.deadline.toIso8601String(),
+          },
+        ),
+      );
+
+      final questID = json.decode(response.body)['name'];
+
+      final ideaURL = 'https://the-rhizome.firebaseio.com/ideas/$questID.json';
+      http.Response ideaResponse = await http.post(
+        ideaURL,
+        body: json.encode(
+          {
+            "title": initialIdea.title,
+            "content": initialIdea.content,
+            "published": initialIdea.published,
           },
         ),
       );
@@ -59,11 +67,11 @@ class QuestsProvider with ChangeNotifier {
       _launchedQuests.insert(
         0,
         Quest.initializeQuest(
-          id: json.decode(response.body)['name'],
+          id: questID,
           title: quest.title,
           launchedDate: quest.launchedDate,
           deadline: quest.deadline,
-          initIdeaID: '0',
+          initIdeaID: json.decode(ideaResponse.body)['name'],
         ),
       );
       notifyListeners();
