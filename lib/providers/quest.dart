@@ -81,7 +81,7 @@ class Quest with ChangeNotifier {
 
   Stage get stage {
     int diff = deadline.difference(DateTime.now()).inDays;
-    if (diff == 0) {
+    if (diff == 0 || deadline.isBefore(DateTime.now())) {
       return Stage.Closed;
     } else if ((diff % 2) == 1) {
       return Stage.Exploit;

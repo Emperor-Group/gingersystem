@@ -25,7 +25,7 @@ class Rhizome extends StatelessWidget {
             headline1: TextStyle(
               fontFamily: 'Quicksand',
               fontWeight: FontWeight.bold,
-              fontSize: 20,
+              fontSize: 18,
               color: Colors.grey[700],
             ),
             headline2: TextStyle(),
@@ -34,7 +34,9 @@ class Rhizome extends StatelessWidget {
             headline5: TextStyle(),
             headline6: TextStyle(),
             subtitle1: TextStyle(
-              fontFamily: 'Raleway',
+              fontFamily: 'Quicksand',
+              fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.bold,
               fontSize: 13,
               color: Colors.orange[500],
             ),

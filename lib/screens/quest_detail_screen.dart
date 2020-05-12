@@ -58,10 +58,11 @@ class _QuestDetailState extends State<QuestDetail> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.all(10),
+            padding: EdgeInsets.all(20),
             child: Text(
               selected.title.toUpperCase(),
               style: Theme.of(context).textTheme.bodyText1,
+              textAlign: TextAlign.center,
             ),
           ),
         ],
