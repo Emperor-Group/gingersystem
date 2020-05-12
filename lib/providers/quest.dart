@@ -47,10 +47,17 @@ class Quest with ChangeNotifier {
   ///
   Stage currentStage;
 
+  ///
+  String _token;
+
+  String userId;
+
   ///quest.dart
   ///
   ///
-  Quest.initializeQuest({
+  Quest.initializeQuest(
+    this._token,
+    this.userId, {
     @required this.id,
     @required this.title,
     @required this.launchedDate,
@@ -59,7 +66,8 @@ class Quest with ChangeNotifier {
   });
 
   void setInitialIdea() async {
-    final url = 'https://the-rhizome.firebaseio.com/ideas/$id/$initIdeaID.json';
+    final url =
+        'https://the-rhizome.firebaseio.com/ideas/$id/$initIdeaID.json?auth=${this._token}';
     try {
       final response = await http.get(url);
       final Map<String, dynamic> extractedIdea = json.decode(response.body);

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:gingersystem/providers/auth.dart';
 import 'package:gingersystem/providers/quests_provider.dart';
+import 'package:gingersystem/screens/auth_screen.dart';
 import 'package:gingersystem/screens/quest_detail_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:gingersystem/screens/quest_overview_screen.dart';
@@ -12,53 +14,99 @@ class Rhizome extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(
-          value: QuestsProvider(),
+          value: Auth(),
         ),
-      ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primarySwatch: Colors.deepOrange,
-          accentColor: Colors.amberAccent,
-          fontFamily: 'Quicksand',
-          textTheme: TextTheme(
-            headline1: TextStyle(
-              fontFamily: 'Quicksand',
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-              color: Colors.grey[700],
-            ),
-            headline2: TextStyle(),
-            headline3: TextStyle(),
-            headline4: TextStyle(),
-            headline5: TextStyle(),
-            headline6: TextStyle(),
-            subtitle1: TextStyle(
-              fontFamily: 'Quicksand',
-              fontStyle: FontStyle.italic,
-              fontWeight: FontWeight.bold,
-              fontSize: 13,
-              color: Colors.orange[500],
-            ),
-            subtitle2: TextStyle(),
-            caption: TextStyle(),
-            bodyText1: TextStyle(
-              fontFamily: 'Lato',
-              fontWeight: FontWeight.bold,
-              fontSize: 30,
-              color: Colors.black,
-            ),
-            bodyText2: TextStyle(),
+        ChangeNotifierProxyProvider<Auth, QuestsProvider>(
+          create: (ctx) => QuestsProvider('', '', []),
+          update: (ctx, auth, previousQuest) => QuestsProvider(
+            auth.token,
+            auth.userId,
+            previousQuest.launchedQuests,
           ),
+        )
+      ],
+      child: Consumer<Auth>(
+        builder: (ctx, auth, _) => MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            primarySwatch: Colors.deepOrange,
+            accentColor: Colors.orange[500],
+            fontFamily: 'Quicksand',
+            textTheme: TextTheme(
+              headline1: TextStyle(
+                fontFamily: 'Quicksand',
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: Colors.grey[700],
+              ),
+              headline2: TextStyle(
+                fontFamily: 'RobotoCondensed',
+                fontStyle: FontStyle.italic,
+                color: Colors.grey[700],
+              ),
+              headline3: TextStyle(
+                fontFamily: 'Quicksand',
+                fontWeight: FontWeight.bold,
+                fontSize: 25,
+                color: Colors.white,
+              ),
+              headline4: TextStyle(
+                fontFamily: 'Raleway',
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                color: Colors.black,
+              ),
+              headline5: TextStyle(
+                fontFamily: 'Quicksand',
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                color: Colors.white,
+              ),
+              headline6: TextStyle(
+                fontFamily: 'OpenSans',
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+              subtitle1: TextStyle(
+                fontFamily: 'Quicksand',
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+                color: Colors.orange[500],
+              ),
+              subtitle2: TextStyle(),
+              caption: TextStyle(
+                fontFamily: 'Raleway',
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+                color: Colors.orange,
+              ),
+              bodyText1: TextStyle(
+                fontFamily: 'Lato',
+                fontWeight: FontWeight.bold,
+                fontSize: 30,
+                color: Colors.black,
+              ),
+              bodyText2: TextStyle(),
+            ),
+          ),
+          home: auth.isAuth
+              ? QuestOverviewScreen()
+              : FutureBuilder(
+                  future: auth.tryAutoLogIn(),
+                  builder: (ctx, snapshot) =>
+                      snapshot.connectionState == ConnectionState.waiting
+                          ? Center()
+                          : AuthScreen(),
+                ),
+          routes: {
+            QuestDetailScreen.routeName: (ctx) => QuestDetailScreen(),
+          },
+          onUnknownRoute: (settings) {
+            return MaterialPageRoute(builder: (ctx) => QuestOverviewScreen());
+          },
         ),
-        initialRoute: '/',
-        routes: {
-          '/': (ctx) => QuestOverviewScreen(),
-          QuestDetailScreen.routeName: (ctx) => QuestDetailScreen(),
-        },
-        onUnknownRoute: (settings) {
-          return MaterialPageRoute(builder: (ctx) => QuestOverviewScreen());
-        },
       ),
     );
   }
