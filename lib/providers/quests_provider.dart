@@ -58,14 +58,26 @@ class QuestsProvider with ChangeNotifier {
 
       final questID = json.decode(response.body)['name'];
 
-      final ideaURL = 'https://the-rhizome.firebaseio.com/ideas/$questID.json';
+      final ideaURL =
+          'https://the-rhizome.firebaseio.com/ideas/$questID.json?auth=$authToken';
       http.Response ideaResponse = await http.post(
         ideaURL,
         body: json.encode(
           {
             "title": initialIdea.title,
             "content": initialIdea.content,
-            "published": initialIdea.published,
+            "published": initialIdea.published.toIso8601String(),
+          },
+        ),
+      );
+
+      final questURL =
+          'https://the-rhizome.firebaseio.com/quests/$questID.json?auth=$authToken';
+      await http.patch(
+        questURL,
+        body: json.encode(
+          {
+            'initialIdea': {'${json.decode(ideaResponse.body)['name']}': true},
           },
         ),
       );
@@ -83,7 +95,10 @@ class QuestsProvider with ChangeNotifier {
         ),
       );
       notifyListeners();
-    } catch (error) {}
+    } catch (error) {
+      print(error);
+      throw (error);
+    }
   }
 
   ///quest.dart

@@ -86,7 +86,7 @@ class AuthCard extends StatefulWidget {
 class _AuthCardState extends State<AuthCard> {
   final GlobalKey<FormState> _formKey = GlobalKey();
 
-  AuthMode _authMode = AuthMode.SignUp;
+  AuthMode _authMode = AuthMode.LogIn;
 
   Map<String, String> _authData = {
     'email': '',

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gingersystem/providers/auth.dart';
 import 'package:gingersystem/providers/quests_provider.dart';
+import 'package:gingersystem/screens/add_quest.dart';
 import 'package:gingersystem/screens/auth_screen.dart';
 import 'package:gingersystem/screens/quest_detail_screen.dart';
 import 'package:provider/provider.dart';
@@ -36,7 +37,7 @@ class Rhizome extends StatelessWidget {
               headline1: TextStyle(
                 fontFamily: 'Quicksand',
                 fontWeight: FontWeight.bold,
-                fontSize: 18,
+                fontSize: 16,
                 color: Colors.grey[700],
               ),
               headline2: TextStyle(
@@ -64,7 +65,7 @@ class Rhizome extends StatelessWidget {
               ),
               headline6: TextStyle(
                 fontFamily: 'OpenSans',
-                fontSize: 15,
+                fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
               ),
@@ -72,14 +73,14 @@ class Rhizome extends StatelessWidget {
                 fontFamily: 'Quicksand',
                 fontStyle: FontStyle.italic,
                 fontWeight: FontWeight.bold,
-                fontSize: 13,
+                fontSize: 10,
                 color: Colors.orange[500],
               ),
               subtitle2: TextStyle(),
               caption: TextStyle(
                 fontFamily: 'Raleway',
                 fontWeight: FontWeight.bold,
-                fontSize: 15,
+                fontSize: 12,
                 color: Colors.orange,
               ),
               bodyText1: TextStyle(
@@ -88,7 +89,18 @@ class Rhizome extends StatelessWidget {
                 fontSize: 30,
                 color: Colors.black,
               ),
-              bodyText2: TextStyle(),
+              bodyText2: TextStyle(
+                fontFamily: 'Quicksand',
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+                color: Colors.deepOrange,
+              ),
+              button: TextStyle(
+                fontFamily: 'Quicksand',
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+                color: Colors.white,
+              ),
             ),
           ),
           home: auth.isAuth
@@ -102,9 +114,7 @@ class Rhizome extends StatelessWidget {
                 ),
           routes: {
             QuestDetailScreen.routeName: (ctx) => QuestDetailScreen(),
-          },
-          onUnknownRoute: (settings) {
-            return MaterialPageRoute(builder: (ctx) => QuestOverviewScreen());
+            AddQuestScreen.routeName: (ctx) => AddQuestScreen(),
           },
         ),
       ),
