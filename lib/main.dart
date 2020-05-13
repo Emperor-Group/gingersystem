@@ -37,7 +37,7 @@ class Rhizome extends StatelessWidget {
               headline1: TextStyle(
                 fontFamily: 'Quicksand',
                 fontWeight: FontWeight.bold,
-                fontSize: 18,
+                fontSize: 16,
                 color: Colors.grey[700],
               ),
               headline2: TextStyle(
@@ -65,7 +65,7 @@ class Rhizome extends StatelessWidget {
               ),
               headline6: TextStyle(
                 fontFamily: 'OpenSans',
-                fontSize: 15,
+                fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
               ),
@@ -73,14 +73,14 @@ class Rhizome extends StatelessWidget {
                 fontFamily: 'Quicksand',
                 fontStyle: FontStyle.italic,
                 fontWeight: FontWeight.bold,
-                fontSize: 13,
+                fontSize: 10,
                 color: Colors.orange[500],
               ),
               subtitle2: TextStyle(),
               caption: TextStyle(
                 fontFamily: 'Raleway',
                 fontWeight: FontWeight.bold,
-                fontSize: 15,
+                fontSize: 12,
                 color: Colors.orange,
               ),
               bodyText1: TextStyle(
@@ -89,7 +89,18 @@ class Rhizome extends StatelessWidget {
                 fontSize: 30,
                 color: Colors.black,
               ),
-              bodyText2: TextStyle(),
+              bodyText2: TextStyle(
+                fontFamily: 'Quicksand',
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+                color: Colors.deepOrange,
+              ),
+              button: TextStyle(
+                fontFamily: 'Quicksand',
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+                color: Colors.white,
+              ),
             ),
           ),
           home: auth.isAuth

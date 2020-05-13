@@ -86,7 +86,7 @@ class _QuestOverviewScreenState extends State<QuestOverviewScreen> {
           ),
           IconButton(
             icon: Icon(Icons.add),
-            onPressed: () => () {
+            onPressed: () {
               Navigator.of(context).pushNamed(AddQuestScreen.routeName);
             },
           )

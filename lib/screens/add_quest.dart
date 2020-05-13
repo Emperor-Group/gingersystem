@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gingersystem/providers/idea.dart';
 import 'package:gingersystem/providers/quest.dart';
 import 'package:gingersystem/providers/quests_provider.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class AddQuestScreen extends StatefulWidget {
@@ -36,7 +37,7 @@ class _AddQuestScreenState extends State<AddQuestScreen> {
     published: DateTime.now(),
   );
 
-  void dispose(){
+  void dispose() {
     _questTitleFocusNode.dispose();
     _ideaTitleFocusNode.dispose();
     _ideaDescriptionNode.dispose();
@@ -75,7 +76,7 @@ class _AddQuestScreenState extends State<AddQuestScreen> {
 
   void _saveForm() async {
     final bool isValid = _form.currentState.validate();
-    if (!isValid) {
+    if (!isValid || _dateTime == null) {
       return;
     }
     _form.currentState.save();
@@ -91,8 +92,12 @@ class _AddQuestScreenState extends State<AddQuestScreen> {
       await showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: Text('Error'),
-          content: Text('Something went wrong'),
+          title: Text(
+            'Error',
+          ),
+          content: Text(
+            'Something went wrong',
+          ),
           actions: <Widget>[
             FlatButton(
               child: Text('OK'),
@@ -139,6 +144,7 @@ class _AddQuestScreenState extends State<AddQuestScreen> {
                       decoration: InputDecoration(
                         labelText: 'Quest Title',
                       ),
+                      style: Theme.of(context).textTheme.headline6,
                       focusNode: _questTitleFocusNode,
                       validator: (value) {
                         if (value.isEmpty) {
@@ -164,14 +170,21 @@ class _AddQuestScreenState extends State<AddQuestScreen> {
                     Row(
                       children: <Widget>[
                         Expanded(
-                          child: Text(
-                            (_dateTime == null
-                                ? 'No deadline choosen yet!'
-                                : 'Deadline: $_dateTime'),
-                          ),
+                          child: _dateTime == null
+                              ? Text(
+                                  ('No deadline choosen yet!'),
+                                  style: Theme.of(context).textTheme.headline1,
+                                )
+                              : Text(
+                                  'Deadline: ${DateFormat('dd/MM/yyyy').format(_dateTime)}',
+                                  style: Theme.of(context).textTheme.headline1,
+                                ),
                         ),
                         FlatButton(
-                          child: Text('Choose Date'),
+                          child: Text(
+                            'Choose Date',
+                            style: Theme.of(context).textTheme.bodyText2,
+                          ),
                           onPressed: () => _presentDatePicker(context),
                         ),
                       ],
@@ -189,6 +202,7 @@ class _AddQuestScreenState extends State<AddQuestScreen> {
                               decoration: InputDecoration(
                                 labelText: 'Idea',
                               ),
+                              style: Theme.of(context).textTheme.headline6,
                               focusNode: _ideaTitleFocusNode,
                               textInputAction: TextInputAction.next,
                               validator: (value) {
@@ -214,6 +228,7 @@ class _AddQuestScreenState extends State<AddQuestScreen> {
                               decoration: InputDecoration(
                                 labelText: 'Description',
                               ),
+                              style: Theme.of(context).textTheme.headline6,
                               focusNode: _ideaDescriptionNode,
                               textInputAction: TextInputAction.done,
                               validator: (value) {
@@ -236,6 +251,20 @@ class _AddQuestScreenState extends State<AddQuestScreen> {
                         ),
                       ),
                     ),
+                    SizedBox(
+                      height: 50,
+                    ),
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: RaisedButton(
+                        child: Text(
+                          'Add New Quest!',
+                          style: Theme.of(context).textTheme.button,
+                        ),
+                        color: Theme.of(context).primaryColor,
+                        onPressed: () => _saveForm(),
+                      ),
+                    )
                   ],
                 ),
               ),
