@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gingersystem/providers/quests_provider.dart';
+import 'package:gingersystem/screens/add_quest.dart';
 import 'package:gingersystem/widgets/main_drawer.dart';
 import 'package:gingersystem/widgets/quest_overview_list.dart';
 import 'package:provider/provider.dart';
@@ -85,7 +86,9 @@ class _QuestOverviewScreenState extends State<QuestOverviewScreen> {
           ),
           IconButton(
             icon: Icon(Icons.add),
-            onPressed: () => () {},
+            onPressed: () => () {
+              Navigator.of(context).pushNamed(AddQuestScreen.routeName);
+            },
           )
         ],
       ),
@@ -121,7 +124,9 @@ class _QuestOverviewScreenState extends State<QuestOverviewScreen> {
           color: Colors.white,
         ),
         backgroundColor: Colors.orange[500],
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context).pushNamed(AddQuestScreen.routeName);
+        },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );

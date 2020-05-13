@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gingersystem/providers/auth.dart';
 import 'package:gingersystem/providers/quests_provider.dart';
+import 'package:gingersystem/screens/add_quest.dart';
 import 'package:gingersystem/screens/auth_screen.dart';
 import 'package:gingersystem/screens/quest_detail_screen.dart';
 import 'package:provider/provider.dart';
@@ -102,9 +103,7 @@ class Rhizome extends StatelessWidget {
                 ),
           routes: {
             QuestDetailScreen.routeName: (ctx) => QuestDetailScreen(),
-          },
-          onUnknownRoute: (settings) {
-            return MaterialPageRoute(builder: (ctx) => QuestOverviewScreen());
+            AddQuestScreen.routeName: (ctx) => AddQuestScreen(),
           },
         ),
       ),
