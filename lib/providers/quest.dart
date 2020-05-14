@@ -65,7 +65,7 @@ class Quest with ChangeNotifier {
     @required this.initIdeaID,
   });
 
-  void setInitialIdea() async {
+  Future<void> setInitialIdea() async {
     final url =
         'https://the-rhizome.firebaseio.com/ideas/$id/$initIdeaID.json?auth=${this._token}';
     try {
