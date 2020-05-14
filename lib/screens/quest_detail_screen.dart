@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gingersystem/providers/quest.dart';
 import 'package:gingersystem/providers/quests_provider.dart';
+import 'package:gingersystem/providers/stage.dart';
 import 'package:provider/provider.dart';
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 
@@ -52,6 +53,12 @@ class _QuestDetailState extends State<QuestDetail> {
   bool _isInit = false;
   bool _isLoading = false;
 
+  final Map<Stage, Color> colorPerStage = {
+    Stage.Explore: Colors.blue,
+    Stage.Exploit: Colors.deepPurple,
+    Stage.Closed: Colors.red,
+  };
+
   @override
   void didChangeDependencies() {
     if (!_isInit) {
@@ -74,6 +81,8 @@ class _QuestDetailState extends State<QuestDetail> {
   Widget build(BuildContext context) {
     Quest selected = Provider.of<Quest>(context);
     final Size deviceSize = MediaQuery.of(context).size;
+    double ratio = DateTime.now().difference(selected.launchedDate).inDays /
+        selected.deadline.difference(selected.launchedDate).inDays;
     return _isLoading
         ? Center(
             child: CircularProgressIndicator(),
@@ -106,9 +115,47 @@ class _QuestDetailState extends State<QuestDetail> {
                       padding: EdgeInsets.all(10),
                       child: Row(
                         children: <Widget>[
-                          Text(
-                            'Progress: ',
-                          ),
+                          Expanded(
+                            child: LiquidLinearProgressIndicator(
+                              value: ratio,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  colorPerStage[selected.stage]),
+                              backgroundColor: Colors.white,
+                              center: selected.deadline.isBefore(DateTime.now())
+                                  ? Text(
+                                      'Quest Closed',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  : Text(
+                                      selected.stage.toString().substring(
+                                              selected.stage
+                                                      .toString()
+                                                      .indexOf('.') +
+                                                  1) +
+                                          ' Stage, ' +
+                                          selected.deadline
+                                              .difference(DateTime.now())
+                                              .inDays
+                                              .toString() +
+                                          ' days to go.',
+                                      style: ratio >= 0.8
+                                          ? TextStyle(color: Colors.white)
+                                          : ratio >= 0.6
+                                              ? TextStyle(
+                                                  color: Colors.grey[300],
+                                                )
+                                              : ratio >= 0.4
+                                                  ? TextStyle(
+                                                      color: Colors.grey[200],
+                                                    )
+                                                  : TextStyle(
+                                                      color: Colors.grey[400],
+                                                    ),
+                                    ),
+                            ),
+                          )
                         ],
                       ),
                     ),
@@ -123,10 +170,6 @@ class _QuestDetailState extends State<QuestDetail> {
                   child: Card(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
-                      side: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                        width: 0.75,
-                      ),
                     ),
                     elevation: 5,
                     child: Column(
