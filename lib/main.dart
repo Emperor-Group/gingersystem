@@ -41,9 +41,10 @@ class Rhizome extends StatelessWidget {
                 color: Colors.grey[700],
               ),
               headline2: TextStyle(
-                fontFamily: 'RobotoCondensed',
-                fontStyle: FontStyle.italic,
-                color: Colors.grey[700],
+                fontFamily: 'Raleway',
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+                color: Colors.black,
               ),
               headline3: TextStyle(
                 fontFamily: 'Quicksand',
@@ -84,9 +85,9 @@ class Rhizome extends StatelessWidget {
                 color: Colors.orange,
               ),
               bodyText1: TextStyle(
-                fontFamily: 'Lato',
+                fontFamily: 'Raleway',
                 fontWeight: FontWeight.bold,
-                fontSize: 30,
+                fontSize: 25,
                 color: Colors.black,
               ),
               bodyText2: TextStyle(

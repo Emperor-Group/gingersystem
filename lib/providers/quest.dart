@@ -65,7 +65,7 @@ class Quest with ChangeNotifier {
     @required this.initIdeaID,
   });
 
-  void setInitialIdea() async {
+  Future<void> setInitialIdea() async {
     final url =
         'https://the-rhizome.firebaseio.com/ideas/$id/$initIdeaID.json?auth=${this._token}';
     try {
@@ -89,9 +89,10 @@ class Quest with ChangeNotifier {
 
   Stage get stage {
     int diff = deadline.difference(DateTime.now()).inDays;
+    bool quantityOdd = (deadline.difference(launchedDate).inDays % 2) == 1;
     if (diff == 0 || deadline.isBefore(DateTime.now())) {
       return Stage.Closed;
-    } else if ((diff % 2) == 1) {
+    } else if ((diff % 2) == 1 && (!quantityOdd || DateTime.now().difference(launchedDate).inDays >= 2)) {
       return Stage.Exploit;
     }
     return Stage.Explore;
