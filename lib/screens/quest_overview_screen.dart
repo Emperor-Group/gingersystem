@@ -15,13 +15,47 @@ class QuestOverviewScreen extends StatefulWidget {
   _QuestOverviewScreenState createState() => _QuestOverviewScreenState();
 }
 
-class _QuestOverviewScreenState extends State<QuestOverviewScreen> {
+class _QuestOverviewScreenState extends State<QuestOverviewScreen>
+    with SingleTickerProviderStateMixin {
   bool _showFilteredByUpcomingDeadlinesSorted = false;
   bool _isInit = false;
   bool _isLoading = false;
 
+  AnimationController _controller;
+  Animation<Offset> _slideAnimation;
+  Animation<double> _opacityAnimation;
+
   @override
   void didChangeDependencies() {
+    _controller = AnimationController(
+        vsync: this,
+        duration: Duration(
+          seconds: 1,
+          milliseconds: 300,
+        ),
+        animationBehavior: AnimationBehavior.preserve);
+    _slideAnimation = Tween(
+        begin: Offset(
+          0,
+          100,
+        ),
+        end: Offset(
+          0,
+          0,
+        )).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.fastLinearToSlowEaseIn,
+      ),
+    );
+    _opacityAnimation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Interval(
+        0.2,
+        0.4,
+        curve: Curves.easeOut,
+      ),
+    ));
     if (!_isInit) {
       setState(
         () {
@@ -34,10 +68,17 @@ class _QuestOverviewScreenState extends State<QuestOverviewScreen> {
         setState(() {
           _isLoading = false;
         });
+        _controller.forward();
       });
     }
     _isInit = true;
     super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -101,16 +142,22 @@ class _QuestOverviewScreenState extends State<QuestOverviewScreen> {
                 Padding(
                   padding: EdgeInsets.all(50),
                   child: Center(
-                    child: Image.asset(
-                      'assets/images/rhizome.png',
-                      fit: BoxFit.contain,
+                    child: FadeTransition(
+                      opacity: _opacityAnimation,
+                      child: Image.asset(
+                        'assets/images/rhizome.png',
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                 ),
                 Expanded(
                   child: RefreshIndicator(
-                    child: QuestOverviewList(
-                        _showFilteredByUpcomingDeadlinesSorted),
+                    child: SlideTransition(
+                      position: _slideAnimation,
+                      child: QuestOverviewList(
+                          _showFilteredByUpcomingDeadlinesSorted),
+                    ),
                     onRefresh: () =>
                         Provider.of<QuestsProvider>(context, listen: false)
                             .fetchAndSetLaunchedQuests(),
