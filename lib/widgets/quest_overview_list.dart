@@ -17,14 +17,14 @@ class QuestOverviewList extends StatelessWidget {
         ? questManager.upComingQuests
         : questManager.launchedQuests;
 
-    return Container(
-      child: ListView.builder(
-        itemCount: questToList.length,
-        itemBuilder: (ctx, index) => ChangeNotifierProvider.value(
+    return ListView.builder(
+      itemCount: questToList.length,
+      itemBuilder: (ctx, index) {
+        return ChangeNotifierProvider.value(
           value: questToList[index],
           child: QuestOverviewItem(),
-        ),
-      ),
+        );
+      },
     );
   }
 }

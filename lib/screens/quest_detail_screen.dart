@@ -81,8 +81,8 @@ class _QuestDetailState extends State<QuestDetail> {
   Widget build(BuildContext context) {
     Quest selected = Provider.of<Quest>(context);
     final Size deviceSize = MediaQuery.of(context).size;
-    double ratio = DateTime.now().difference(selected.launchedDate).inDays /
-        selected.deadline.difference(selected.launchedDate).inDays;
+    double ratio = DateTime.now().difference(selected.launchedDate).inHours /
+        selected.deadline.difference(selected.launchedDate).inHours;
     return _isLoading
         ? Center(
             child: CircularProgressIndicator(),
