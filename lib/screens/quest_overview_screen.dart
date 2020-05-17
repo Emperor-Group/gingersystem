@@ -26,7 +26,7 @@ class _QuestOverviewScreenState extends State<QuestOverviewScreen>
   Animation<double> _opacityAnimation;
 
   @override
-  void didChangeDependencies() {
+  void initState() {
     _controller = AnimationController(
         vsync: this,
         duration: Duration(
@@ -48,14 +48,21 @@ class _QuestOverviewScreenState extends State<QuestOverviewScreen>
         curve: Curves.fastLinearToSlowEaseIn,
       ),
     );
-    _opacityAnimation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Interval(
-        0.2,
-        0.4,
-        curve: Curves.easeOut,
+    _opacityAnimation = Tween(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Interval(
+          0.2,
+          0.4,
+          curve: Curves.easeOut,
+        ),
       ),
-    ));
+    );
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
     if (!_isInit) {
       setState(
         () {
