@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:gingersystem/providers/quest.dart';
 import 'package:gingersystem/providers/quests_provider.dart';
+import 'package:gingersystem/providers/stage.dart';
 import 'package:gingersystem/screens/add_quest.dart';
+import 'package:gingersystem/screens/quest_detail_screen.dart';
 import 'package:gingersystem/widgets/main_drawer.dart';
 import 'package:gingersystem/widgets/quest_overview_list.dart';
 import 'package:provider/provider.dart';
@@ -35,14 +38,15 @@ class _QuestOverviewScreenState extends State<QuestOverviewScreen>
         ),
         animationBehavior: AnimationBehavior.preserve);
     _slideAnimation = Tween(
-        begin: Offset(
-          0,
-          100,
-        ),
-        end: Offset(
-          0,
-          0,
-        )).animate(
+      begin: Offset(
+        0,
+        100,
+      ),
+      end: Offset(
+        0,
+        0,
+      ),
+    ).animate(
       CurvedAnimation(
         parent: _controller,
         curve: Curves.fastLinearToSlowEaseIn,
@@ -133,9 +137,9 @@ class _QuestOverviewScreenState extends State<QuestOverviewScreen>
             ],
           ),
           IconButton(
-            icon: Icon(Icons.add),
+            icon: Icon(Icons.search),
             onPressed: () {
-              Navigator.of(context).pushNamed(AddQuestScreen.routeName);
+              showSearch(context: context, delegate: DataSearch());
             },
           )
         ],
@@ -183,6 +187,119 @@ class _QuestOverviewScreenState extends State<QuestOverviewScreen>
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
+  }
+}
+
+class DataSearch extends SearchDelegate<String> {
+  final Map<Stage, IconData> iconPerStage = {
+    Stage.Explore: Icons.search,
+    Stage.Exploit: Icons.all_out,
+    Stage.Closed: Icons.lock,
+  };
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: Icon(Icons.clear),
+        onPressed: () {
+          query = '';
+        },
+      )
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: AnimatedIcon(
+        icon: AnimatedIcons.menu_arrow,
+        progress: transitionAnimation,
+      ),
+      onPressed: () {
+        close(
+          context,
+          null,
+        );
+      },
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return Container();
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    List<Quest> recieved = query.isEmpty
+        ? Provider.of<QuestsProvider>(context).upComingQuests
+        : Provider.of<QuestsProvider>(context).launchedQuests.where(
+            (element) {
+              return element.title.toLowerCase().contains(
+                    query.toLowerCase(),
+                  );
+            },
+          ).toList();
+    return ListView.builder(
+      itemCount: recieved.length,
+      itemBuilder: (context, index) => ListTile(
+        leading: Icon(iconPerStage[recieved[index].stage]),
+        onTap: () {
+          Navigator.of(context).popAndPushNamed(
+            QuestDetailScreen.routeName,
+            arguments: recieved[index].id,
+          );
+        },
+        title: query.isEmpty
+            ? Text(
+                recieved[index].title,
+                style: Theme.of(context).textTheme.subtitle2,
+              )
+            : RichText(
+                text: TextSpan(
+                  text: recieved[index].title.substring(
+                        0,
+                        recieved[index]
+                                    .title
+                                    .toLowerCase()
+                                    .indexOf(query.toLowerCase()) <=
+                                0
+                            ? 0
+                            : recieved[index]
+                                .title
+                                .toLowerCase()
+                                .indexOf(query.toLowerCase()),
+                      ),
+                  style: Theme.of(context).textTheme.subtitle2,
+                  children: [
+                    TextSpan(
+                      text: recieved[index].title.substring(
+                            recieved[index].title.toLowerCase().indexOf(
+                                  query.toLowerCase(),
+                                ),
+                            recieved[index].title.toLowerCase().indexOf(
+                                      query.toLowerCase(),
+                                    ) +
+                                query.length,
+                          ),
+                      style: Theme.of(context).textTheme.bodyText2,
+                    ),
+                    TextSpan(
+                      text: recieved[index].title.substring(
+                            recieved[index]
+                                    .title
+                                    .toLowerCase()
+                                    .indexOf(query.toLowerCase()) +
+                                query.length,
+                          ),
+                      style: Theme.of(context).textTheme.subtitle2,
+                    ),
+                  ],
+                ),
+              ),
+      ),
     );
   }
 }

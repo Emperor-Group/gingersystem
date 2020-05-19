@@ -77,7 +77,12 @@ class Rhizome extends StatelessWidget {
                 fontSize: 10,
                 color: Colors.orange[500],
               ),
-              subtitle2: TextStyle(),
+              subtitle2: TextStyle(
+                fontFamily: 'Quicksand',
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+                color: Colors.grey[500],
+              ),
               caption: TextStyle(
                 fontFamily: 'Raleway',
                 fontWeight: FontWeight.bold,
