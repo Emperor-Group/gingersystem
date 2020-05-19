@@ -24,6 +24,7 @@ class _QuestDetailScreenState extends State<QuestDetailScreen> {
     if (!_isInit) {
       String questID = ModalRoute.of(context).settings.arguments;
       selectedQuest = Provider.of<QuestsProvider>(context).getByID(questID);
+      selectedQuest.setInitialIdea();
     }
     _isInit = true;
   }
@@ -139,19 +140,27 @@ class _QuestDetailState extends State<QuestDetail> {
                                               .difference(DateTime.now())
                                               .inDays
                                               .toString() +
-                                          ' days to go.',
+                                          ' day' +
+                                          (selected.deadline
+                                                      .difference(
+                                                          DateTime.now())
+                                                      .inDays >
+                                                  1
+                                              ? 's'
+                                              : '') +
+                                          ' to go.',
                                       style: ratio >= 0.8
                                           ? TextStyle(color: Colors.white)
                                           : ratio >= 0.6
                                               ? TextStyle(
-                                                  color: Colors.grey[300],
+                                                  color: Colors.grey[100],
                                                 )
                                               : ratio >= 0.4
                                                   ? TextStyle(
                                                       color: Colors.grey[200],
                                                     )
                                                   : TextStyle(
-                                                      color: Colors.grey[400],
+                                                      color: Colors.grey[300],
                                                     ),
                                     ),
                             ),
