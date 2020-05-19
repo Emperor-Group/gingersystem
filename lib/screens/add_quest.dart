@@ -92,15 +92,15 @@ class _AddQuestScreenState extends State<AddQuestScreen> {
       await showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: Text(
+          title: const Text(
             'Error',
           ),
-          content: Text(
+          content: const Text(
             'Something went wrong',
           ),
           actions: <Widget>[
             FlatButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -122,7 +122,7 @@ class _AddQuestScreenState extends State<AddQuestScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add a new Quest'),
+        title: const Text('Add a new Quest'),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.save_alt),
@@ -141,7 +141,7 @@ class _AddQuestScreenState extends State<AddQuestScreen> {
                 child: ListView(
                   children: <Widget>[
                     TextFormField(
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Quest Title',
                       ),
                       style: Theme.of(context).textTheme.headline6,
@@ -199,7 +199,7 @@ class _AddQuestScreenState extends State<AddQuestScreen> {
                         child: Column(
                           children: <Widget>[
                             TextFormField(
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: 'Idea',
                               ),
                               style: Theme.of(context).textTheme.headline6,
@@ -225,7 +225,7 @@ class _AddQuestScreenState extends State<AddQuestScreen> {
                               },
                             ),
                             TextFormField(
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: 'Description',
                               ),
                               style: Theme.of(context).textTheme.headline6,
