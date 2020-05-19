@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:gingersystem/providers/idea.dart';
 import 'package:gingersystem/providers/quest.dart';
+import 'package:gingersystem/providers/stage.dart';
 import 'package:http/http.dart' as http;
 
 class QuestsProvider with ChangeNotifier {
@@ -9,6 +10,11 @@ class QuestsProvider with ChangeNotifier {
   ///
   ///
   List<Quest> _launchedQuests = [];
+
+  String authToken;
+  String userID;
+
+  QuestsProvider(this.authToken, this.userID, this._launchedQuests);
 
   ///quests_provider.dart
   ///
@@ -35,23 +41,43 @@ class QuestsProvider with ChangeNotifier {
   ///quests_provider.dart
   ///
   ///
-  Future<void> addQuest(Quest quest) async {
-    const url = 'https://the-rhizome.firebaseio.com/quests.json';
+  Future<void> addQuest(Quest quest, Idea initialIdea) async {
+    final url =
+        'https://the-rhizome.firebaseio.com/quests.json?auth=$authToken';
     try {
       http.Response response = await http.post(
         url,
         body: json.encode(
           {
             'title': quest.title,
-            'launched': quest.publisher,
-            'deadline': quest.deadline,
-            'ideas': [
-              {
-                'title': quest.initialIdea.title,
-                'content': quest.initialIdea.content,
-                'published': quest.initialIdea.published,
-              },
-            ],
+            'launched': quest.launchedDate.toIso8601String(),
+            'deadline': quest.deadline.toIso8601String(),
+          },
+        ),
+      );
+
+      final questID = json.decode(response.body)['name'];
+
+      final ideaURL =
+          'https://the-rhizome.firebaseio.com/ideas/$questID.json?auth=$authToken';
+      http.Response ideaResponse = await http.post(
+        ideaURL,
+        body: json.encode(
+          {
+            "title": initialIdea.title,
+            "content": initialIdea.content,
+            "published": initialIdea.published.toIso8601String(),
+          },
+        ),
+      );
+
+      final questURL =
+          'https://the-rhizome.firebaseio.com/quests/$questID.json?auth=$authToken';
+      await http.patch(
+        questURL,
+        body: json.encode(
+          {
+            'initialIdea': {'${json.decode(ideaResponse.body)['name']}': true},
           },
         ),
       );
@@ -59,22 +85,28 @@ class QuestsProvider with ChangeNotifier {
       _launchedQuests.insert(
         0,
         Quest.initializeQuest(
-          id: json.decode(response.body)['name'],
+          this.authToken,
+          this.userID,
+          id: questID,
           title: quest.title,
           launchedDate: quest.launchedDate,
           deadline: quest.deadline,
-          initialIdea: quest.initialIdea,
+          initIdeaID: json.decode(ideaResponse.body)['name'],
         ),
       );
       notifyListeners();
-    } catch (error) {}
+    } catch (error) {
+      print(error);
+      throw (error);
+    }
   }
 
   ///quest.dart
   ///
   ///
   Future<void> fetchAndSetLaunchedQuests() async {
-    const url = 'https://the-rhizome.firebaseio.com/quests.json';
+    final url =
+        'https://the-rhizome.firebaseio.com/quests.json?auth=$authToken';
     try {
       final response = await http.get(url);
       final Map<String, dynamic> extractedQuests = json.decode(response.body);
@@ -86,23 +118,19 @@ class QuestsProvider with ChangeNotifier {
         (key, value) {
           loadedQuests.add(
             Quest.initializeQuest(
+              this.authToken,
+              this.userID,
               id: key,
               title: value['title'],
               launchedDate: DateTime.parse(value['launched']),
               deadline: DateTime.parse(value['deadline']),
-              initialIdea: Idea.createInitialIdea(
-                id: 0,
-                title: value['ideas'][0]['title'],
-                content: value['ideas'][0]['content'],
-                published: DateTime.parse(
-                  value['ideas'][0]['published'],
-                ),
-              ),
+              initIdeaID: (value['initialIdea'] as Map).keys.toList()[0],
             ),
           );
         },
       );
       _launchedQuests = loadedQuests;
+      notifyListeners();
     } catch (error) {
       print(error);
       throw error;

@@ -1,18 +1,12 @@
+import 'dart:async';
 import 'dart:convert';
+import 'package:async/async.dart';
 import 'package:flutter/material.dart';
-import 'package:gingersystem/providers/connector.dart';
 import 'package:gingersystem/providers/idea.dart';
-import 'package:gingersystem/providers/participant.dart';
-import 'package:gingersystem/providers/user.dart';
+import 'package:gingersystem/providers/stage.dart';
 import 'package:http/http.dart' as http;
-import 'package:graph_collection/graph.dart';
 
 class Quest with ChangeNotifier {
-  ///quest.dart
-  ///
-  ///
-  DirectedValueGraph _dynamicIdeasForum;
-
   ///quest.dart
   ///
   ///
@@ -36,120 +30,71 @@ class Quest with ChangeNotifier {
   ///quest.dart
   ///
   ///
-  User publisher;
-
-  ///quest.dart
-  /// TODO: Participants? How?
-  ///
-  List<Participant> _participants;
+  String publisherID;
 
   ///quest.dart
   /// Parent of all ideas for this quest
   ///
-  final Idea initialIdea;
+  Idea initialIdea;
+
+  ///
+  ///
+  ///
+  final String initIdeaID;
+
+  ///
+  ///
+  ///
+  Stage currentStage;
+
+  ///
+  String _token;
+
+  String userId;
 
   ///quest.dart
   ///
   ///
-  Quest.initializeQuest({
+  Quest.initializeQuest(
+    this._token,
+    this.userId, {
     @required this.id,
     @required this.title,
     @required this.launchedDate,
     @required this.deadline,
-    @required this.initialIdea,
-  }) {
-    _dynamicIdeasForum = new DirectedValueGraph();
-    _dynamicIdeasForum.add(initialIdea);
-  }
+    @required this.initIdeaID,
+  });
 
-  ///quest.dart
-  /// Returns an idea based on the given id
-  ///
-  Idea getByID(int id) {
-    return _dynamicIdeasForum.firstWhere(
-      (dynamic idea) => (idea as Idea).id == id,
-    );
-  }
-
-  ///quest.dart
-  /// Gets all the children for a given idea
-  ///
-  List<Idea> getAllChildren(int parentID) {
-    Idea theParent = this.getByID(parentID);
-    return this
-        ._dynamicIdeasForum
-        .where((dynamic idea) =>
-            this._dynamicIdeasForum.hasEdgeToBy<Connector>(theParent, idea))
-        .toList();
-  }
-
-  ///quest.dart
-  /// Gets the last ideas that have no children
-  ///
-  List<Idea> getLeafs() {
-    return this._dynamicIdeasForum.where((dynamic idea) =>
-        this._dynamicIdeasForum.valueTosBy<Connector>(idea).isEmpty);
-  }
-
-  ///quest.dart
-  ///
-  ///
-  List<Idea> getChildrenIdeasFilteredByType(int parentID, Connector type) {
-    Idea parent = this.getByID(parentID);
-    return this.getAllChildren(parentID).where(
-          (element) =>
-              (this._dynamicIdeasForum.getBy<Connector>(parent, element)
-                  as Connector) ==
-              type,
-        );
-  }
-
-  ///quest.dart
-  ///
-  ///
-  List<Idea> getParents(int childID) {
-    Idea child = this.getByID(childID);
-    return this
-        ._dynamicIdeasForum
-        .where(
-          (element) => this._dynamicIdeasForum.hasEdgeToBy<Connector>(
-                element,
-                child,
-              ),
-        )
-        .toList();
-  }
-
-  ///quest.dart
-  ///
-  ///
-  void addIdeaLinkedToParentByConnector(
-      int parentID, Idea child, Connector type) {
-    this._dynamicIdeasForum.add(child);
-    Idea parent = this.getByID(parentID);
-    this._dynamicIdeasForum.setToBy<Connector>(parent, child, type);
-    notifyListeners();
-  }
-
-  ///quest.dart
-  ///
-  ///
-  void combineIdeas(List<int> parentsIDs, Idea mixedChild) {
-    this._dynamicIdeasForum.add(mixedChild);
-    List<Idea> parents = new List();
-    parentsIDs.forEach((int id) => parents.add(this.getByID(id)));
-    parents.forEach(
-      (element) => this._dynamicIdeasForum.setToBy<Connector>(
-            element,
-            mixedChild,
-            Connector.CONVERGENT,
-          ),
-    );
-    notifyListeners();
+  Future<void> setInitialIdea() async {
+    final url =
+        'https://the-rhizome.firebaseio.com/ideas/$id/$initIdeaID.json?auth=${this._token}';
+    try {
+      final response = await http.get(url);
+      final Map<String, dynamic> extractedIdea = json.decode(response.body);
+      if (extractedIdea == null) {
+        return;
+      }
+      initialIdea = Idea.createInitialIdea(
+        id: initIdeaID,
+        title: extractedIdea['title'],
+        content: extractedIdea['content'],
+        published: DateTime.parse(extractedIdea['published']),
+      );
+      notifyListeners();
+    } catch (error) {
+      print(error);
+      throw (error);
     }
+  }
 
-  void registerParticipant(Participant participant) {
-    this._participants.add(participant);
-    notifyListeners();
+  Stage get stage {
+    int diff = deadline.difference(DateTime.now()).inDays;
+    bool quantityOdd = (deadline.difference(launchedDate).inDays % 2) == 1;
+    if (diff == 0 || deadline.isBefore(DateTime.now())) {
+      return Stage.Closed;
+    } else if ((diff % 2) == 1 && (!quantityOdd || DateTime.now().difference(launchedDate).inDays >= 2)) {
+      return Stage.Exploit;
+    }
+    return Stage.Explore;
   }
 }
