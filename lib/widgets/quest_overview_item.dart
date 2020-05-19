@@ -5,7 +5,12 @@ import 'package:gingersystem/screens/quest_detail_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class QuestOverviewItem extends StatelessWidget {
+class QuestOverviewItem extends StatefulWidget {
+  @override
+  _QuestOverviewItemState createState() => _QuestOverviewItemState();
+}
+
+class _QuestOverviewItemState extends State<QuestOverviewItem> {
   final Map<Stage, Color> colorPerStage = {
     Stage.Explore: Colors.blue,
     Stage.Exploit: Colors.deepPurple,
@@ -17,10 +22,12 @@ class QuestOverviewItem extends StatelessWidget {
     Stage.Exploit: Icons.all_out,
     Stage.Closed: Icons.lock,
   };
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
     final Quest quest = Provider.of<Quest>(context);
+    final deviceSize = MediaQuery.of(context).size;
     return GestureDetector(
       child: Card(
         elevation: 10,
@@ -57,6 +64,43 @@ class QuestOverviewItem extends StatelessWidget {
           subtitle: Text(
             'deadline: ${DateFormat('dd/MM/yyyy').format(quest.deadline)}',
             style: Theme.of(context).textTheme.subtitle1,
+          ),
+          trailing: IconButton(
+            icon: _isLoading
+                ? Container(
+                    height: deviceSize.height * 0.02,
+                    width: deviceSize.width * 0.05,
+                    child: FittedBox(
+                      child: CircularProgressIndicator(
+                        valueColor:
+                            AlwaysStoppedAnimation(colorPerStage[quest.stage]),
+                      ),
+                      fit: BoxFit.scaleDown,
+                    ),
+                  )
+                : quest.isFavourite
+                    ? Icon(
+                        Icons.star,
+                        color: Colors.orange[500],
+                        size: 20,
+                      )
+                    : Icon(
+                        Icons.star_border,
+                        size: 20,
+                      ),
+            onPressed: () async {
+              setState(
+                () {
+                  _isLoading = true;
+                },
+              );
+              await quest.toggleFavouriteStatus();
+              setState(
+                () {
+                  _isLoading = false;
+                },
+              );
+            },
           ),
         ),
       ),

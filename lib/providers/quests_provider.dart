@@ -31,6 +31,14 @@ class QuestsProvider with ChangeNotifier {
     return copy;
   }
 
+  List<Quest> get favouritedQuests {
+    List<Quest> copy =
+        _launchedQuests.where((quest) => quest.isFavourite == true).toList();
+    copy.sort(
+        (questA, questB) => questB.launchedDate.compareTo(questA.launchedDate));
+    return copy;
+  }
+
   ///quests_provider.dart
   ///
   ///
@@ -114,6 +122,12 @@ class QuestsProvider with ChangeNotifier {
       if (extractedQuests == null) {
         return;
       }
+
+      final favouritesUrl =
+          'https://the-rhizome.firebaseio.com/userFavourites/$userID.json?auth=$authToken';
+      final favResponse = await http.get(favouritesUrl);
+      final extractedFavourites = json.decode(favResponse.body);
+
       extractedQuests.forEach(
         (key, value) {
           loadedQuests.add(
@@ -125,6 +139,9 @@ class QuestsProvider with ChangeNotifier {
               launchedDate: DateTime.parse(value['launched']),
               deadline: DateTime.parse(value['deadline']),
               initIdeaID: (value['initialIdea'] as Map).keys.toList()[0],
+              isFavourite: extractedFavourites == null
+                  ? false
+                  : extractedFavourites[key] ?? false,
             ),
           );
         },
