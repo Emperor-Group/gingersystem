@@ -67,7 +67,7 @@ class Idea with ChangeNotifier {
     @required this.id,
     @required this.title,
     @required this.content,
-    @required this.owner,
+    //@required this.owner,
     @required this.supportData,
     @required this.published,
   });
