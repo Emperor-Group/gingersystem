@@ -255,3 +255,19 @@ Stack(
           );
         });
   }*/
+/*Align(
+                alignment: Alignment.bottomLeft,
+                child: FloatingActionButton(
+                  child: Icon(Icons.navigate_before),
+                  mini: true,
+                  onPressed: () {},
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: FloatingActionButton(
+                  child: Icon(Icons.navigate_next),
+                  mini: true,
+                  onPressed: () {},
+                ),
+              ),*/
