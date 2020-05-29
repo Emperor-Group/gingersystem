@@ -204,19 +204,18 @@ class _QuestOverviewScreenState extends State<QuestOverviewScreen>
             )
           : Column(
               children: <Widget>[
-                IdeaOveviewItem(),
-//                Padding(
-//                  padding: EdgeInsets.all(50),
-//                  child: Center(
-//                    child: FadeTransition(
-//                      opacity: _opacityAnimation,
-//                      child: Image.asset(
-//                        'assets/images/rhizome.png',
-//                        fit: BoxFit.contain,
-//                      ),
-//                    ),
-//                  ),
-//                ),
+                Padding(
+                  padding: EdgeInsets.all(50),
+                  child: Center(
+                    child: FadeTransition(
+                      opacity: _opacityAnimation,
+                      child: Image.asset(
+                        'assets/images/rhizome.png',
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                ),
                 Expanded(
                   child: RefreshIndicator(
                     child: SlideTransition(

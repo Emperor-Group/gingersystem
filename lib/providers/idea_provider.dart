@@ -16,7 +16,7 @@ class IdeasProvider with ChangeNotifier {
   }
 
   Idea getByID(String idIdea) {
-    print(_launchedIdeas[0]);
+    //print('_launchedIdeas[0].id: '+_launchedIdeas.toString());
     return _launchedIdeas.firstWhere((Idea idea) => idea.id == idIdea);
   }
 
@@ -88,13 +88,13 @@ class IdeasProvider with ChangeNotifier {
     try {
       final response = await http.get(url);
       final Map<String, dynamic> extractedIdeas = json.decode(response.body);
-print(extractedIdeas);
+
       final List<Idea> loadedIdeas = [];
       if (extractedIdeas == null) {
         print('no hay ideas');
         return ;
       }else{
-        print(extractedIdeas);
+        print('extractedIdeas: '+extractedIdeas.toString());
       }
       var value2=extractedIdeas;
               loadedIdeas.add(Idea.addIdea(
