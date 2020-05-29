@@ -4,6 +4,7 @@ import 'package:gingersystem/providers/quests_provider.dart';
 import 'package:gingersystem/providers/stage.dart';
 import 'package:gingersystem/screens/add_quest.dart';
 import 'package:gingersystem/screens/quest_detail_screen.dart';
+import 'package:gingersystem/widgets/idea_overview_item.dart';
 import 'package:gingersystem/widgets/main_drawer.dart';
 import 'package:gingersystem/widgets/quest_overview_list.dart';
 import 'package:provider/provider.dart';
@@ -150,18 +151,19 @@ class _QuestOverviewScreenState extends State<QuestOverviewScreen>
             )
           : Column(
               children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.all(50),
-                  child: Center(
-                    child: FadeTransition(
-                      opacity: _opacityAnimation,
-                      child: Image.asset(
-                        'assets/images/rhizome.png',
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ),
-                ),
+                IdeaOveviewItem(),
+//                Padding(
+//                  padding: EdgeInsets.all(50),
+//                  child: Center(
+//                    child: FadeTransition(
+//                      opacity: _opacityAnimation,
+//                      child: Image.asset(
+//                        'assets/images/rhizome.png',
+//                        fit: BoxFit.contain,
+//                      ),
+//                    ),
+//                  ),
+//                ),
                 Expanded(
                   child: RefreshIndicator(
                     child: SlideTransition(
