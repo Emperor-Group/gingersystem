@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:gingersystem/providers/idea.dart';
 import 'package:gingersystem/providers/quest.dart';
-import 'package:gingersystem/providers/stage.dart';
 import 'package:http/http.dart' as http;
 
 class QuestsProvider with ChangeNotifier {

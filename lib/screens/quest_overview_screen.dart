@@ -4,7 +4,6 @@ import 'package:gingersystem/providers/quests_provider.dart';
 import 'package:gingersystem/providers/stage.dart';
 import 'package:gingersystem/screens/add_quest.dart';
 import 'package:gingersystem/screens/quest_detail_screen.dart';
-import 'package:gingersystem/widgets/idea_overview_item.dart';
 import 'package:gingersystem/widgets/main_drawer.dart';
 import 'package:gingersystem/widgets/quest_overview_list.dart';
 import 'package:provider/provider.dart';
