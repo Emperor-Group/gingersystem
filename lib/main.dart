@@ -7,7 +7,7 @@ import 'package:gingersystem/screens/auth_screen.dart';
 import 'package:gingersystem/screens/idea_detail_screen.dart';
 import 'package:gingersystem/screens/idea_overview_screen.dart';
 import 'package:gingersystem/screens/quest_detail_screen.dart';
-import 'package:gingersystem/widgets/idea_overview_item.dart';
+import 'package:gingersystem/providers/comment.dart';
 import 'package:provider/provider.dart';
 import 'package:gingersystem/screens/quest_overview_screen.dart';
 
@@ -16,7 +16,6 @@ void main() => runApp(Rhizome());
 class Rhizome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(
@@ -33,6 +32,13 @@ class Rhizome extends StatelessWidget {
         ChangeNotifierProxyProvider<Auth, IdeasProvider>(
           create: (ctx) => IdeasProvider('', ''),
           update: (ctx, auth, previousQuest) => IdeasProvider(
+            auth.token,
+            auth.userId,
+          ),
+        ),
+        ChangeNotifierProxyProvider<Auth, Comment>(
+          create: (ctx) => Comment('', ''),
+          update: (ctx, auth, previousQuest) => Comment(
             auth.token,
             auth.userId,
           ),
