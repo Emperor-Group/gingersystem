@@ -93,8 +93,13 @@ class _QuestOverviewScreenState extends State<QuestOverviewScreen>
     super.dispose();
   }
 
+  bool showComments = false;
+
   @override
   Widget build(BuildContext context) {
+    bool checkingFlight = false;
+    bool success = false;
+
     return Scaffold(
       drawer: MainDrawer(),
       appBar: AppBar(

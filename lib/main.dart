@@ -24,7 +24,7 @@ class Rhizome extends StatelessWidget {
             auth.userId,
             previousQuest.launchedQuests,
           ),
-        )
+        ),
       ],
       child: Consumer<Auth>(
         builder: (ctx, auth, _) => MaterialApp(
