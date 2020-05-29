@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gingersystem/providers/quests_provider.dart';
 import 'package:gingersystem/widgets/comment_overview_item.dart';
 import 'package:provider/provider.dart';
 import 'package:gingersystem/providers/comment.dart';
@@ -24,7 +23,7 @@ class _CommentOverviewListState extends State<CommentOverviewList> {
     final Comment commentManager = Provider.of<Comment>(context);
     final List<Comment> comments = commentManager.comments;
     return Container(
-      height: deviceSize.height * 0.8,
+      height: deviceSize.height,
       width: deviceSize.width * 0.9,
       color: Colors.white,
       child: Stack(
