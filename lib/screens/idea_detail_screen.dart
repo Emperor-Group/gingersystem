@@ -92,6 +92,7 @@ class _IdeaDetailState extends State<IdeaDetail> {
     return Column(
       children: <Widget>[
         Expanded(
+          flex: 4,
           child: Card(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
@@ -190,23 +191,60 @@ class _IdeaDetailState extends State<IdeaDetail> {
           ],
         ),
         Expanded(
+          flex: 1,
           child: Card(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
             elevation: 5,
             margin: EdgeInsets.symmetric(vertical: 10, horizontal: 40),
-            child: GestureDetector(
-              onTap: () {
-                showcomments(context);
-              },
-              child: Center(
-                child: Container(
-                  height: deviceSize.height * 0.1,
-                  width: deviceSize.width * 0.8,
-                  color: Colors.white,
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  child: Text(
+                    'Comentarios',
+                    style: Theme.of(context).textTheme.bodyText1,
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-              ),
+                Stack(
+                  children: <Widget>[
+                    GestureDetector(
+                      onVerticalDragStart: (details) => setState(() {
+                        showcomments(context);
+                      }),
+                      onTap: () {
+                        showcomments(context);
+                      },
+                      child: Center(
+                        child: Container(
+                          height: deviceSize.height * 0.06,
+                          width: deviceSize.width * 0.8,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.bottomLeft,
+                      child: FloatingActionButton(
+                        child: Icon(Icons.navigate_before),
+                        mini: true,
+                        onPressed: () {},
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: FloatingActionButton(
+                        child: Icon(Icons.navigate_next),
+                        mini: true,
+                        onPressed: () {},
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ),
