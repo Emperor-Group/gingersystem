@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 enum FilteredOptions {
   UPCOMING,
   ALL,
+  FAVOURITES,
 }
 
 class QuestOverviewScreen extends StatefulWidget {
@@ -21,7 +22,7 @@ class QuestOverviewScreen extends StatefulWidget {
 
 class _QuestOverviewScreenState extends State<QuestOverviewScreen>
     with SingleTickerProviderStateMixin {
-  bool _showFilteredByUpcomingDeadlinesSorted = false;
+  FilteredOptions _showFilteredByUpcomingDeadlinesSorted = FilteredOptions.ALL;
   bool _isInit = false;
   bool _isLoading = false;
 
@@ -109,31 +110,83 @@ class _QuestOverviewScreenState extends State<QuestOverviewScreen>
               if (opt == FilteredOptions.ALL) {
                 setState(
                   () {
-                    _showFilteredByUpcomingDeadlinesSorted = false;
+                    _showFilteredByUpcomingDeadlinesSorted =
+                        FilteredOptions.ALL;
+                  },
+                );
+              } else if (opt == FilteredOptions.UPCOMING) {
+                setState(
+                  () {
+                    _showFilteredByUpcomingDeadlinesSorted =
+                        FilteredOptions.UPCOMING;
                   },
                 );
               } else {
                 setState(
                   () {
-                    _showFilteredByUpcomingDeadlinesSorted = true;
+                    _showFilteredByUpcomingDeadlinesSorted =
+                        FilteredOptions.FAVOURITES;
                   },
                 );
               }
             },
             itemBuilder: (_) => [
               PopupMenuItem(
-                child: Text(
-                  'All',
-                  style: Theme.of(context).textTheme.headline6,
+                child: Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(right: 5),
+                      child: Icon(
+                        Icons.all_inclusive,
+                        color: Colors.black,
+                        size: 15,
+                      ),
+                    ),
+                    Text(
+                      'All',
+                      style: Theme.of(context).textTheme.headline2,
+                    ),
+                  ],
                 ),
                 value: FilteredOptions.ALL,
               ),
               PopupMenuItem(
-                child: Text(
-                  'Upcoming',
-                  style: Theme.of(context).textTheme.headline6,
+                child: Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(right: 5),
+                      child: Icon(
+                        Icons.av_timer,
+                        color: Colors.black,
+                        size: 15,
+                      ),
+                    ),
+                    Text(
+                      'Upcoming',
+                      style: Theme.of(context).textTheme.headline2,
+                    ),
+                  ],
                 ),
                 value: FilteredOptions.UPCOMING,
+              ),
+              PopupMenuItem(
+                child: Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(right: 5),
+                      child: Icon(
+                        Icons.stars,
+                        color: Colors.black54,
+                        size: 15,
+                      ),
+                    ),
+                    Text(
+                      'Starred',
+                      style: Theme.of(context).textTheme.headline2,
+                    ),
+                  ],
+                ),
+                value: FilteredOptions.FAVOURITES,
               ),
             ],
           ),
@@ -142,7 +195,7 @@ class _QuestOverviewScreenState extends State<QuestOverviewScreen>
             onPressed: () {
               showSearch(context: context, delegate: DataSearch());
             },
-          )
+          ),
         ],
       ),
       body: _isLoading
