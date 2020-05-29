@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gingersystem/providers/idea.dart';
 import 'package:gingersystem/providers/idea_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:gingersystem/screens/idea_overview_screen.dart';
 import 'package:gingersystem/widgets/comment_overview_list.dart';
 
 class IdeaDetailScreen extends StatefulWidget {
@@ -37,7 +38,7 @@ class _IdeaDetailScreenState extends State<IdeaDetailScreen> {
           selectedIdea = ideaManager.getByID(list[0]);
         });
       });
-      print('list ' + list.toString());
+      //print('list ' + list.toString());
     }
     _isInit = true;
   }
@@ -54,22 +55,28 @@ class _IdeaDetailScreenState extends State<IdeaDetailScreen> {
             ? Center(
                 child: CircularProgressIndicator(),
               )
-            : IdeaDetail(),
+            : IdeaDetail(list[1]),
       ),
     );
   }
 }
 
 class IdeaDetail extends StatefulWidget {
-  IdeaDetail({Key key}) : super(key: key);
+  final String idQ;
+
+  IdeaDetail(this.idQ);
 
   @override
-  _IdeaDetailState createState() => _IdeaDetailState();
+  _IdeaDetailState createState() => _IdeaDetailState(idQ);
 }
 
 class _IdeaDetailState extends State<IdeaDetail> {
   bool supportBoolean = false;
   bool reportBoolean = false;
+  String idQuest;
+
+  _IdeaDetailState(this.idQuest);
+
   bool showComments = false;
 
   void showcomments(BuildContext context, String idQuest, String idIdea) {
@@ -233,6 +240,7 @@ class _IdeaDetailState extends State<IdeaDetail> {
                       Align(
                         alignment: Alignment.bottomLeft,
                         child: FloatingActionButton(
+                          heroTag: 'ideasPadres',
                           child: Icon(Icons.navigate_before),
                           mini: true,
                           onPressed: () {},
@@ -241,10 +249,17 @@ class _IdeaDetailState extends State<IdeaDetail> {
                       Align(
                         alignment: Alignment.bottomRight,
                         child: FloatingActionButton(
-                          child: Icon(Icons.navigate_next),
-                          mini: true,
-                          onPressed: () {},
-                        ),
+                            heroTag: 'ideasHijas',
+                            child: Icon(Icons.navigate_next),
+                            mini: true,
+                            onPressed: () {
+                              Navigator.of(context).pushNamed(
+                                  IdeaOverviewScreen.routeName,
+                                  arguments: <Idea, String>{
+                                    selected: idQuest,
+                                    null: 'ideasHijas'
+                                  });
+                            }),
                       ),
                     ],
                   ),
