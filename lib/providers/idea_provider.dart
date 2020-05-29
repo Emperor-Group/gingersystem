@@ -94,7 +94,7 @@ class IdeasProvider with ChangeNotifier {
         print('no hay ideas');
         return ;
       }else{
-        print('extractedIdeas: '+extractedIdeas.toString());
+        //print('extractedIdeas: '+extractedIdeas.toString());
       }
       var value2=extractedIdeas;
               loadedIdeas.add(Idea.addIdea(
