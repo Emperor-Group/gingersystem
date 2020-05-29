@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import 'package:gingersystem/screens/idea_overview_screen.dart';
 import 'package:gingersystem/widgets/comment_overview_list.dart';
 
-
 class IdeaDetailScreen extends StatefulWidget {
   static const routeName = '/idea-detail';
 
@@ -64,11 +63,11 @@ class _IdeaDetailScreenState extends State<IdeaDetailScreen> {
 
 class IdeaDetail extends StatefulWidget {
   final String idQ;
-  IdeaDetail(this.idQ) ;
+
+  IdeaDetail(this.idQ);
 
   @override
   _IdeaDetailState createState() => _IdeaDetailState(idQ);
-
 }
 
 class _IdeaDetailState extends State<IdeaDetail> {
@@ -77,17 +76,30 @@ class _IdeaDetailState extends State<IdeaDetail> {
   String idQuest;
 
   _IdeaDetailState(this.idQuest);
+
   bool showComments = false;
 
-  void showcomments(BuildContext context) {
+  void showcomments(BuildContext context, String idQuest, String idIdea) {
     final deviceSize = MediaQuery.of(context).size;
     showModalBottomSheet(
         context: context,
         builder: (_) {
           return Container(
-              margin: const EdgeInsets.only(top: 5, left: 15, right: 15),
-              height: deviceSize.height * 0.9,
-              child: CommentOverviewList());
+            margin: const EdgeInsets.only(top: 5, left: 15, right: 15),
+            height: deviceSize.height,
+            child: Column(
+              children: <Widget>[
+                Text(
+                  'Comentarios',
+                  style: Theme.of(context).textTheme.bodyText1,
+                  textAlign: TextAlign.center,
+                ),
+                CommentOverviewList(idQuest, idIdea),
+              ],
+            ),
+            /*child: CommentOverviewList(
+                '-M7E1BpiBF0AjxfHQuls', '-M7E1BvVdL9pPvmgKaeF'),*/
+          );
         });
   }
 
@@ -95,7 +107,6 @@ class _IdeaDetailState extends State<IdeaDetail> {
   Widget build(BuildContext context) {
     Idea selected = Provider.of<Idea>(context);
     final deviceSize = MediaQuery.of(context).size;
-
     return Column(
       children: <Widget>[
         Expanded(
@@ -156,7 +167,6 @@ class _IdeaDetailState extends State<IdeaDetail> {
                         'Support',
                         textAlign: TextAlign.center,
                       ),
-
                       GestureDetector(
                         child: Icon(
                           supportBoolean
@@ -171,7 +181,6 @@ class _IdeaDetailState extends State<IdeaDetail> {
                           });
                         },
                       ),
-
                     ],
                   ),
                   Column(
@@ -197,72 +206,65 @@ class _IdeaDetailState extends State<IdeaDetail> {
                 ],
               ),
             ),
-
           ],
         ),
         Expanded(
           flex: 1,
-          child: Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            elevation: 5,
-            margin: EdgeInsets.symmetric(vertical: 10, horizontal: 40),
-            child: Column(
-              children: <Widget>[
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  child: Text(
-                    'Comentarios',
-                    style: Theme.of(context).textTheme.bodyText1,
-                    textAlign: TextAlign.center,
+          child: GestureDetector(
+            onVerticalDragStart: (details) => setState(() {
+              showcomments(context, '-M7E1BpiBF0AjxfHQuls', selected.id);
+            }),
+            onTap: () {
+              showcomments(context, '-M7E1BpiBF0AjxfHQuls', selected.id);
+            },
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              elevation: 5,
+              margin: EdgeInsets.symmetric(vertical: 10, horizontal: 40),
+              child: Column(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 20),
+                    child: Text(
+                      'Comentarios',
+                      style: Theme.of(context).textTheme.bodyText1,
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                ),
-                Stack(
-                  children: <Widget>[
-                    GestureDetector(
-                      onVerticalDragStart: (details) => setState(() {
-                        showcomments(context);
-                      }),
-                      onTap: () {
-                        showcomments(context);
-                      },
-                      child: Center(
-                        child: Container(
-                          height: deviceSize.height * 0.06,
-                          width: deviceSize.width * 0.8,
-                          color: Colors.white,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Align(
+                        alignment: Alignment.bottomLeft,
+                        child: FloatingActionButton(
+                          heroTag: 'ideasPadres',
+                          child: Icon(Icons.navigate_before),
+                          mini: true,
+                          onPressed: () {},
                         ),
                       ),
-                    ),
-                    Align(
-                      alignment: Alignment.bottomLeft,
-                      child: FloatingActionButton(
-                        heroTag: 'ideasPadres',
-                        child: Icon(Icons.navigate_before),
-                        mini: true,
-                        onPressed: () {},
+                      Align(
+                        alignment: Alignment.bottomRight,
+                        child: FloatingActionButton(
+                            heroTag: 'ideasHijas',
+                            child: Icon(Icons.navigate_next),
+                            mini: true,
+                            onPressed: () {
+                              Navigator.of(context).pushNamed(
+                                  IdeaOverviewScreen.routeName,
+                                  arguments: <Idea, String>{
+                                    selected: idQuest,
+                                    null: 'ideasHijas'
+                                  });
+                            }),
                       ),
-                    ),
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: FloatingActionButton(
-                        heroTag: 'ideasHijas',
-                        child: Icon(Icons.navigate_next),
-                        mini: true,
-                        onPressed: () {
-                          Navigator.of(context).pushNamed(
-                              IdeaOverviewScreen.routeName,
-                              arguments: <Idea, String>{selected: idQuest,
-                                null :'ideasHijas'}
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

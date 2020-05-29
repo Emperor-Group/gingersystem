@@ -4,18 +4,112 @@ import 'package:provider/provider.dart';
 import 'package:gingersystem/providers/comment.dart';
 
 class CommentOverviewList extends StatefulWidget {
+  String idQuest;
+  String idIdea;
+
+  CommentOverviewList(this.idQuest, this.idIdea);
+
   @override
-  _CommentOverviewListState createState() => _CommentOverviewListState();
+  _CommentOverviewListState createState() =>
+      _CommentOverviewListState(this.idQuest, this.idIdea);
 }
 
 class _CommentOverviewListState extends State<CommentOverviewList> {
+  String idQuest;
+  String idIdea;
+
+  _CommentOverviewListState(this.idQuest, this.idIdea);
+
   @override
   void didChangeDependencies() {
     Provider.of<Comment>(context, listen: false)
-        .fetchAndSetCommentsByQuestAndIdea(
-            '-M7E1BpiBF0AjxfHQuls', '-M7E1BvVdL9pPvmgKaeF');
+        .fetchAndSetCommentsByQuestAndIdea(idQuest, idIdea);
     super.didChangeDependencies();
   }
+
+  void addComment(BuildContext context, bool checkingFlight, bool success) {
+    final deviceSize = MediaQuery.of(context).size;
+    showModalBottomSheet(
+        context: context,
+        builder: (_) {
+          return Container(
+            margin: const EdgeInsets.only(top: 5, left: 15, right: 15),
+            child: Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    height: deviceSize.height * 0.2,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                        boxShadow: [
+                          BoxShadow(
+                              blurRadius: 10,
+                              color: Colors.grey[300],
+                              spreadRadius: 5)
+                        ]),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(
+                            "Comentario",
+                            style: Theme.of(context).textTheme.headline4,
+                          ),
+                        ),
+                        Container(
+                            height: deviceSize.height * 0.06,
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 0),
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(10)),
+                            child: TextField(
+                              decoration: InputDecoration.collapsed(
+                                hintText: 'Ingresa el comentario...',
+                              ),
+                              style: Theme.of(context).textTheme.bodyText2,
+                            )),
+                        !checkingFlight
+                            ? MaterialButton(
+                                color: Colors.grey[800],
+                                onPressed: () async {
+                                  setState(() {
+                                    checkingFlight = true;
+                                  });
+                                  await Future.delayed(Duration(seconds: 1));
+                                  setState(() {
+                                    success = true;
+                                  });
+                                  await Future.delayed(
+                                      Duration(milliseconds: 500));
+                                  Navigator.pop(context);
+                                },
+                                child: Text(
+                                  'Compartir',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              )
+                            : !success
+                                ? CircularProgressIndicator()
+                                : Icon(
+                                    Icons.check,
+                                    color: Colors.green,
+                                  ),
+                      ],
+                    ),
+                  )
+                ]),
+          );
+        });
+  }
+
+  bool checkingFlight = false;
+  bool success = false;
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +147,7 @@ class _CommentOverviewListState extends State<CommentOverviewList> {
                     ),
                     backgroundColor: Colors.deepOrange,
                     onPressed: () {
-                      //Navigator.of(context).pushNamed(AddQuestScreen.routeName);
+                      addComment(context, checkingFlight, success);
                     }),
               ],
             ),
