@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:gingersystem/providers/idea.dart';
 import 'package:gingersystem/providers/idea_provider.dart';
@@ -32,7 +33,7 @@ class _IdeaDetailScreenState extends State<IdeaDetailScreen> {
       );
 
       final IdeasProvider ideaManager = Provider.of<IdeasProvider>(context);
-      ideaManager.fetchAndSetCommentsByIdea(list[0], list[1]).then((_) {
+      ideaManager.fetchAndSetOneIdeaByQuest(list[0], list[1]).then((_) {
         setState(() {
           _isLoading = false;
           selectedIdea = ideaManager.getByID(list[0]);
@@ -168,12 +169,15 @@ class _IdeaDetailState extends State<IdeaDetail> {
                         textAlign: TextAlign.center,
                       ),
                       GestureDetector(
-                        child: Icon(
-                          supportBoolean
-                              ? Icons.wb_incandescent
-                              : Icons.lightbulb_outline,
-                          color: supportBoolean ? Colors.yellow : Colors.grey,
-                          size: 50,
+                        child: Transform.rotate(
+                          angle: 180 * math.pi / 180,
+                          child: Icon(
+                            supportBoolean
+                                ? Icons.wb_incandescent
+                                : Icons.lightbulb_outline,
+                            color: supportBoolean ? Colors.yellow : Colors.grey,
+                            size: 50,
+                          ),
                         ),
                         onTap: () {
                           setState(() {

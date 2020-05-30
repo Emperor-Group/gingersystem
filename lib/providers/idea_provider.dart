@@ -20,61 +20,26 @@ class IdeasProvider with ChangeNotifier {
     return _launchedIdeas.firstWhere((Idea idea) => idea.id == idIdea);
   }
 
-  Future<void> addIdea(Idea idea) async {
+  Future<void> addIdea(String title, String content, List<String> supportData, String idQuest) async {
     final url =
-        'https://the-rhizome.firebaseio.com/ideas.json?auth=$authToken';
+        'https://the-rhizome.firebaseio.com/ideas/$idQuest.json?auth=$authToken';
     try {
       http.Response response = await http.post(
         url,
         body: json.encode(
           {
-            'title': idea.title,
-            'content': idea.content,
-            'supportData':idea.supportData,
+            'title': title,
+            'content': content,
+            'supportData': supportData,
+            'owner': userID,
+            'published':DateTime.now().toIso8601String(),
             'supportVotes':0,
             'discardVotes':0,
           },
         ),
       );
 
-      final questID = json.decode(response.body)['name'];
 
-      final ideaURL =
-          'https://the-rhizome.firebaseio.com/ideas/$questID.json?auth=$authToken';
-      http.Response ideaResponse = await http.post(
-        ideaURL,
-        body: json.encode(
-          {
-            "title": idea.title,
-            "content": idea.content,
-            "published": idea.published.toIso8601String(),
-          },
-        ),
-      );
-
-      final questURL =
-          'https://the-rhizome.firebaseio.com/quests/$questID.json?auth=$authToken';
-      await http.patch(
-        questURL,
-        body: json.encode(
-          {
-            'initialIdea': {'${json.decode(ideaResponse.body)['name']}': true},
-          },
-        ),
-      );
-
-//      _launchedIdeas.insert(
-//        0,
-//        Ideas.initializeIdeas(
-//          this.authToken,
-//          this.userID,
-//          id: questID,
-//          title: quest.title,
-//          launchedDate: quest.launchedDate,
-//          deadline: quest.deadline,
-//          initIdeaID: json.decode(ideaResponse.body)['name'],
-//        ),
-//      );
       notifyListeners();
     } catch (error) {
       print(error);
@@ -82,7 +47,7 @@ class IdeasProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchAndSetCommentsByIdea(String ideaId, String idQuest) async {
+  Future<void> fetchAndSetOneIdeaByQuest(String ideaId, String idQuest) async {
     final url =
         'https://the-rhizome.firebaseio.com/ideas/$idQuest/$ideaId.json?auth=${this.authToken}';
     try {
@@ -102,6 +67,7 @@ class IdeasProvider with ChangeNotifier {
                   title: value2['title'],
                   content: value2['content'],
                   //supportData: value2['supportData'],
+                  //owner:value2['owner'],
                   published: DateTime.parse (value2['published'])));
       _launchedIdeas = loadedIdeas;
       notifyListeners();

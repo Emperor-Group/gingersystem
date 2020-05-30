@@ -78,9 +78,7 @@ class _IdeaOverviewScreenState extends State<IdeaOverviewScreen> with SingleTick
       questActual=obj.values.toList()[0];
       ideaActual=obj.keys.toList()[0];
       padresOHijas=obj.values.toList()[1];
-//      print('deaActual.id.toString() '+ideaActual.id.toString());
-//      print('questActual '+questActual);
-//      print('padresOHijas '+padresOHijas);
+
 //      Provider.of<IdeasProvider>(context, listen: false)
 //          .fetchAndSetLaunchedQuests()
 //          .then((_) {
@@ -159,7 +157,7 @@ class _IdeaOverviewScreenState extends State<IdeaOverviewScreen> with SingleTick
                    Padding(
                      padding: const EdgeInsets.only(right: 5),
                      child: Icon(
-                       Icons.all_inclusive,
+                       Icons.vertical_align_bottom,
                        color: Colors.black,
                        size: 15,
                      ),
@@ -178,7 +176,7 @@ class _IdeaOverviewScreenState extends State<IdeaOverviewScreen> with SingleTick
                    Padding(
                      padding: const EdgeInsets.only(right: 5),
                      child: Icon(
-                       Icons.all_inclusive,
+                       Icons.merge_type,
                        color: Colors.black,
                        size: 15,
                      ),
@@ -197,32 +195,33 @@ class _IdeaOverviewScreenState extends State<IdeaOverviewScreen> with SingleTick
         title: Text('Ideas Control Screen',
           style: Theme.of(context).textTheme.headline5,),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      body: Stack(
         children: <Widget>[
-
-          Center(
-            child: Padding(
-              padding:
-              const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-              child: Text(
-                ideaActual.title.toUpperCase(),
-                style: Theme.of(context).textTheme.bodyText1,
-                textAlign: TextAlign.center,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Center(
+                child: Padding(
+                  padding:
+                  const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  child: Text(
+                    ideaActual.title.toUpperCase(),
+                    style: Theme.of(context).textTheme.bodyText1,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               ),
-            ),
-          ),
-          Center(
-            child: Padding(
-              padding:
-              const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-              child: Text(
-                padresOHijas == 'ideasHijas' ? 'Ideas Hijas':'Ideas Padre',
-                style: Theme.of(context).textTheme.headline4,
-                textAlign: TextAlign.center,
+              Center(
+                child: Padding(
+                  padding:
+                  const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  child: Text(
+                    padresOHijas == 'ideasHijas' ? 'Ideas Hijas':'Ideas Padre',
+                    style: Theme.of(context).textTheme.headline4,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               ),
-            ),
-          ),
 //          Expanded(
 //            child: RefreshIndicator(
 //              child: SlideTransition(
@@ -230,11 +229,34 @@ class _IdeaOverviewScreenState extends State<IdeaOverviewScreen> with SingleTick
 //                child: IdeaOverviewList(
 //                    ideaActual, questActual ),
 //              ),
-//              onRefresh: () =>
-//                  Provider.of<IdeasProvider>(context, listen: false)
-//                      .fetchAndSetLaunchedQuests(),
+////              onRefresh: () =>
+////                  Provider.of<IdeasProvider>(context, listen: false)
+////                      .fetchAndSetLaunchedIdeas(),
 //            ),
 //          ),
+            ],
+          ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: FloatingActionButton(
+                heroTag: 'newIdea',
+                mini: false,
+                child: Icon(Icons.add),
+                onPressed: (){
+                  Provider.of<IdeasProvider>(context, listen: false).addIdea(
+                      'Titulo de una idea',
+                      'Contenido de una idea',
+                      ['https://www.youtube.com/watch?v=pZKuwgcKXwY',
+                        'https://www.youtube.com/watch?v=fbfpnjBCEa4'
+                      ],
+                      questActual
+                  );
+                },
+              ),
+            ),
+          )
         ],
       ),
     );
