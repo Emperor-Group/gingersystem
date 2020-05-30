@@ -5,6 +5,8 @@ import 'package:gingersystem/providers/stage.dart';
 import 'package:provider/provider.dart';
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 
+import 'idea_detail_screen.dart';
+
 class QuestDetailScreen extends StatefulWidget {
   static const routeName = '/quest-detail';
 
@@ -176,57 +178,68 @@ class _QuestDetailState extends State<QuestDetail> {
                 Container(
                   height: deviceSize.height * 0.3,
                   width: deviceSize.width * 0.85,
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    elevation: 5,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            'Idea Pionera',
-                            style: Theme.of(context).textTheme.caption,
-                          ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(5.0),
+                  child: GestureDetector(
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      elevation: 5,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              selected.initialIdea.title,
-                              style: Theme.of(context).textTheme.headline1,
-                              textAlign: TextAlign.center,
+                              'Idea Pionera',
+                              style: Theme.of(context).textTheme.caption,
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(5),
-                          child: Text(
-                            'Descripción',
-                            style: Theme.of(context).textTheme.caption,
-                          ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              right: 15,
-                              left: 15,
-                              bottom: 10,
-                              top: 5,
-                            ),
-                            child: SingleChildScrollView(
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
                               child: Text(
-                                selected.initialIdea.content,
-                                style: Theme.of(context).textTheme.headline2,
+                                selected.initialIdea.title,
+                                style: Theme.of(context).textTheme.headline1,
+                                textAlign: TextAlign.center,
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                          Padding(
+                            padding: const EdgeInsets.all(5),
+                            child: Text(
+                              'Descripción',
+                              style: Theme.of(context).textTheme.caption,
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                right: 15,
+                                left: 15,
+                                bottom: 10,
+                                top: 5,
+                              ),
+                              child: SingleChildScrollView(
+                                child: Text(
+                                  selected.initialIdea.content,
+                                  style: Theme.of(context).textTheme.headline2,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                    onTap: (){
+                      Navigator.of(context).pushNamed(
+                          IdeaDetailScreen.routeName,
+                          arguments: <String, String>{
+                            'city': selected.initialIdea.id,
+                            'country': selected.id,
+                          },
+                      );
+                    },
                   ),
                 ),
               ],

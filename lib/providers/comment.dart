@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gingersystem/providers/participant.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Comment with ChangeNotifier {
   ///comment.dart
@@ -37,6 +39,13 @@ class Comment with ChangeNotifier {
   ///
   Participant publisher;
 
+  String authToken;
+  String userId;
+
+  List<Comment> _comments = [];
+
+  Comment(this.authToken, this.userId);
+
   ///comment.dart
   /// Class constructor for creating a comment
   ///
@@ -50,6 +59,14 @@ class Comment with ChangeNotifier {
     this.published = DateTime.now();
   }
 
+  Comment.createObject(
+    this.id,
+    this.title,
+    this.content,
+    this.published,
+    this.votes,
+  );
+
   ///comment.dart
   ///
   ///
@@ -57,5 +74,67 @@ class Comment with ChangeNotifier {
     int value = isToAdd ? 1 : -1;
     this.votes += value;
     notifyListeners();
+  }
+
+  List<Comment> get comments {
+    return [..._comments];
+  }
+
+  Future<void> fetchAndSetCommentsByQuestAndIdea(idQuest, idIdea) async {
+    final url =
+        'https://the-rhizome.firebaseio.com/comments/$idQuest/$idIdea.json?auth=${this.authToken}';
+    try {
+      final response = await http.get(url);
+      final Map<String, dynamic> extractedComments = json.decode(response.body);
+      final List<Comment> loadedComments = [];
+      print(extractedComments);
+      if (extractedComments == null) {
+        _comments = [];
+        notifyListeners();
+        return;
+      }
+
+      extractedComments.forEach(
+        (key2, value2) {
+          loadedComments.add(Comment.createObject(
+            key2,
+            value2['title'],
+            value2['description'],
+            DateTime.parse(value2['published']),
+            value2['votes'],
+          ));
+        },
+      );
+      _comments = loadedComments;
+      notifyListeners();
+    } catch (error) {
+      print(error);
+      throw error;
+    }
+  }
+
+  Future<void> addComment(idQuest, idIdea, title, description) async {
+    final url =
+        'https://the-rhizome.firebaseio.com/comments/$idQuest/$idIdea.json?auth=$authToken';
+    try {
+      http.Response response = await http.post(
+        url,
+        body: json.encode(
+          {
+            'title': title,
+            'description': description,
+            'published': DateTime.now().toIso8601String(),
+            'votes': 0,
+            'publisher': userId,
+          },
+        ),
+      );
+
+      final commentID = json.decode(response.body)['name'];
+      print(commentID);
+    } catch (error) {
+      print(error);
+      throw (error);
+    }
   }
 }

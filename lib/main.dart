@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:gingersystem/providers/auth.dart';
+import 'package:gingersystem/providers/idea_provider.dart';
 import 'package:gingersystem/providers/quests_provider.dart';
 import 'package:gingersystem/screens/add_quest.dart';
 import 'package:gingersystem/screens/auth_screen.dart';
+import 'package:gingersystem/screens/idea_detail_screen.dart';
+import 'package:gingersystem/screens/idea_overview_screen.dart';
 import 'package:gingersystem/screens/quest_detail_screen.dart';
+import 'package:gingersystem/providers/comment.dart';
 import 'package:provider/provider.dart';
 import 'package:gingersystem/screens/quest_overview_screen.dart';
 
@@ -23,6 +27,20 @@ class Rhizome extends StatelessWidget {
             auth.token,
             auth.userId,
             previousQuest.launchedQuests,
+          ),
+        ),
+        ChangeNotifierProxyProvider<Auth, IdeasProvider>(
+          create: (ctx) => IdeasProvider('', ''),
+          update: (ctx, auth, previousQuest) => IdeasProvider(
+            auth.token,
+            auth.userId,
+          ),
+        ),
+        ChangeNotifierProxyProvider<Auth, Comment>(
+          create: (ctx) => Comment('', ''),
+          update: (ctx, auth, previousQuest) => Comment(
+            auth.token,
+            auth.userId,
           ),
         )
       ],
@@ -121,6 +139,8 @@ class Rhizome extends StatelessWidget {
           routes: {
             QuestDetailScreen.routeName: (ctx) => QuestDetailScreen(),
             AddQuestScreen.routeName: (ctx) => AddQuestScreen(),
+            IdeaDetailScreen.routeName: (ctx) => IdeaDetailScreen(),
+            IdeaOverviewScreen.routeName : (ctx) => IdeaOverviewScreen(),
           },
         ),
       ),
