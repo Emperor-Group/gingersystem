@@ -89,10 +89,13 @@ class _IdeaDetailState extends State<IdeaDetail> {
             height: deviceSize.height,
             child: Column(
               children: <Widget>[
-                Text(
-                  'Comentarios',
-                  style: Theme.of(context).textTheme.bodyText1,
-                  textAlign: TextAlign.center,
+                Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: Text(
+                    'Comentarios',
+                    style: Theme.of(context).textTheme.bodyText1,
+                    textAlign: TextAlign.center,
+                  ),
                 ),
                 CommentOverviewList(idQuest, idIdea),
               ],
@@ -106,7 +109,6 @@ class _IdeaDetailState extends State<IdeaDetail> {
   @override
   Widget build(BuildContext context) {
     Idea selected = Provider.of<Idea>(context);
-    final deviceSize = MediaQuery.of(context).size;
     return Column(
       children: <Widget>[
         Expanded(
@@ -151,60 +153,66 @@ class _IdeaDetailState extends State<IdeaDetail> {
             ),
           ),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+        Column(
           children: <Widget>[
-            Container(
-              margin: EdgeInsets.only(right: 40),
-              decoration: BoxDecoration(
-                  border: Border.all(), borderRadius: BorderRadius.circular(8)),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  Column(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.only(right: 40),
+                  decoration: BoxDecoration(
+                      border: Border.all(),
+                      borderRadius: BorderRadius.circular(8)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
-                      Text(
-                        'Support',
-                        textAlign: TextAlign.center,
+                      Column(
+                        children: <Widget>[
+                          Text(
+                            'Support',
+                            textAlign: TextAlign.center,
+                          ),
+                          GestureDetector(
+                            child: Icon(
+                              supportBoolean
+                                  ? Icons.wb_incandescent
+                                  : Icons.lightbulb_outline,
+                              color:
+                                  supportBoolean ? Colors.yellow : Colors.grey,
+                              size: 50,
+                            ),
+                            onTap: () {
+                              setState(() {
+                                supportBoolean = !supportBoolean;
+                              });
+                            },
+                          ),
+                        ],
                       ),
-                      GestureDetector(
-                        child: Icon(
-                          supportBoolean
-                              ? Icons.wb_incandescent
-                              : Icons.lightbulb_outline,
-                          color: supportBoolean ? Colors.yellow : Colors.grey,
-                          size: 50,
-                        ),
-                        onTap: () {
-                          setState(() {
-                            supportBoolean = !supportBoolean;
-                          });
-                        },
+                      Column(
+                        children: <Widget>[
+                          Text(
+                            'Discard',
+                            textAlign: TextAlign.center,
+                          ),
+                          GestureDetector(
+                            child: Icon(
+                              reportBoolean ? Icons.report : Icons.report_off,
+                              color: reportBoolean ? Colors.grey : Colors.red,
+                              size: 50,
+                            ),
+                            onTap: () {
+                              setState(() {
+                                reportBoolean = !reportBoolean;
+                              });
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                  Column(
-                    children: <Widget>[
-                      Text(
-                        'Discard',
-                        textAlign: TextAlign.center,
-                      ),
-                      GestureDetector(
-                        child: Icon(
-                          reportBoolean ? Icons.report : Icons.report_off,
-                          color: reportBoolean ? Colors.grey : Colors.red,
-                          size: 50,
-                        ),
-                        onTap: () {
-                          setState(() {
-                            reportBoolean = !reportBoolean;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ],
         ),

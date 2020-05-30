@@ -87,7 +87,10 @@ class Comment with ChangeNotifier {
       final response = await http.get(url);
       final Map<String, dynamic> extractedComments = json.decode(response.body);
       final List<Comment> loadedComments = [];
+      print(extractedComments);
       if (extractedComments == null) {
+        _comments = [];
+        notifyListeners();
         return;
       }
 
@@ -110,7 +113,7 @@ class Comment with ChangeNotifier {
     }
   }
 
-  Future<void> addComment(idQuest, idIdea) async {
+  Future<void> addComment(idQuest, idIdea, title, description) async {
     final url =
         'https://the-rhizome.firebaseio.com/comments/$idQuest/$idIdea.json?auth=$authToken';
     try {
@@ -118,11 +121,11 @@ class Comment with ChangeNotifier {
         url,
         body: json.encode(
           {
-            'title': "titulo",
-            'description': "descripción",
+            'title': title,
+            'description': description,
             'published': DateTime.now().toIso8601String(),
-            'votes': 10,
-            'publisher': 'ICK0diz1pWaRfBd4aC3s72DIUAA2',
+            'votes': 0,
+            'publisher': userId,
           },
         ),
       );
