@@ -220,10 +220,10 @@ class _IdeaDetailState extends State<IdeaDetail> {
           flex: 1,
           child: GestureDetector(
             onVerticalDragStart: (details) => setState(() {
-              showcomments(context, '-M7E1BpiBF0AjxfHQuls', selected.id);
+              showcomments(context, idQuest, selected.id);
             }),
             onTap: () {
-              showcomments(context, '-M7E1BpiBF0AjxfHQuls', selected.id);
+              showcomments(context, idQuest, selected.id);
             },
             child: Card(
               shape: RoundedRectangleBorder(
