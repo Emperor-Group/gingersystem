@@ -112,169 +112,198 @@ class _IdeaDetailState extends State<IdeaDetail> {
     return Column(
       children: <Widget>[
         Expanded(
-          flex: 4,
+          flex: 5,
           child: Card(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
             elevation: 5,
             margin: EdgeInsets.symmetric(vertical: 10, horizontal: 40),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+            child: Stack(
               children: <Widget>[
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  child: Text(
-                    selected.title.toUpperCase(),
-                    style: Theme.of(context).textTheme.bodyText1,
-                    textAlign: TextAlign.center,
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 20),
+                      child: Text(
+                        selected.title.toUpperCase(),
+                        style: Theme.of(context).textTheme.bodyText1,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 20),
+                      child: Text(
+                        "Descripción:",
+                        style: Theme.of(context).textTheme.headline4,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 20),
+                      child: Text(
+                        selected.content,
+                        style: Theme.of(context).textTheme.caption,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
                 ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  child: Text(
-                    "Descripcion:",
-                    style: Theme.of(context).textTheme.headline4,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  child: Text(
-                    selected.content,
-                    style: Theme.of(context).textTheme.caption,
-                    textAlign: TextAlign.center,
+                Container(
+                  padding: EdgeInsets.all(10),
+                  alignment: Alignment.bottomRight,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          Container(
+                            alignment: Alignment.bottomRight,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                Column(
+                                  children: <Widget>[
+                                    Text(
+                                      'Support',
+                                      textAlign: TextAlign.center,
+                                      style:
+                                          Theme.of(context).textTheme.headline2,
+                                    ),
+                                    GestureDetector(
+                                      child: Icon(
+                                        supportBoolean
+                                            ? Icons.wb_incandescent
+                                            : Icons.lightbulb_outline,
+                                        color: supportBoolean
+                                            ? Colors.yellow
+                                            : Colors.grey,
+                                        size: 50,
+                                      ),
+                                      onTap: () {
+                                        setState(() {
+                                          supportBoolean = !supportBoolean;
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Column(
+                                  children: <Widget>[
+                                    Text(
+                                      'Discard',
+                                      textAlign: TextAlign.center,
+                                      style:
+                                          Theme.of(context).textTheme.headline2,
+                                    ),
+                                    GestureDetector(
+                                      child: Icon(
+                                        reportBoolean
+                                            ? Icons.report
+                                            : Icons.report_off,
+                                        color: reportBoolean
+                                            ? Colors.grey
+                                            : Colors.red,
+                                        size: 50,
+                                      ),
+                                      onTap: () {
+                                        setState(() {
+                                          reportBoolean = !reportBoolean;
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
         ),
-        Column(
+        Stack(
           children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                Container(
-                  margin: EdgeInsets.only(right: 40),
-                  decoration: BoxDecoration(
-                      border: Border.all(),
-                      borderRadius: BorderRadius.circular(8)),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      Column(
-                        children: <Widget>[
-                          Text(
-                            'Support',
-                            textAlign: TextAlign.center,
-                          ),
-                          GestureDetector(
-                            child: Icon(
-                              supportBoolean
-                                  ? Icons.wb_incandescent
-                                  : Icons.lightbulb_outline,
-                              color:
-                                  supportBoolean ? Colors.yellow : Colors.grey,
-                              size: 50,
+            Container(
+              child: GestureDetector(
+                onVerticalDragStart: (details) => setState(() {
+                  showcomments(context, idQuest, selected.id);
+                }),
+                onTap: () {
+                  showcomments(context, idQuest, selected.id);
+                },
+                child: Stack(
+                  children: <Widget>[
+                    Container(
+                      padding: EdgeInsets.only(bottom: 40),
+                      alignment: Alignment.bottomCenter,
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 5,
+                        child: SingleChildScrollView(
+                          child: Container(
+                            padding: EdgeInsets.all(20),
+                            child: Text(
+                              'Comentarios',
+                              style: Theme.of(context).textTheme.bodyText1,
+                              textAlign: TextAlign.center,
                             ),
-                            onTap: () {
-                              setState(() {
-                                supportBoolean = !supportBoolean;
-                              });
-                            },
                           ),
-                        ],
-                      ),
-                      Column(
-                        children: <Widget>[
-                          Text(
-                            'Discard',
-                            textAlign: TextAlign.center,
-                          ),
-                          GestureDetector(
-                            child: Icon(
-                              reportBoolean ? Icons.report : Icons.report_off,
-                              color: reportBoolean ? Colors.grey : Colors.red,
-                              size: 50,
-                            ),
-                            onTap: () {
-                              setState(() {
-                                reportBoolean = !reportBoolean;
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        Expanded(
-          flex: 1,
-          child: GestureDetector(
-            onVerticalDragStart: (details) => setState(() {
-              showcomments(context, '-M7E1BpiBF0AjxfHQuls', selected.id);
-            }),
-            onTap: () {
-              showcomments(context, '-M7E1BpiBF0AjxfHQuls', selected.id);
-            },
-            child: Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              elevation: 5,
-              margin: EdgeInsets.symmetric(vertical: 10, horizontal: 40),
-              child: Column(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 20),
-                    child: Text(
-                      'Comentarios',
-                      style: Theme.of(context).textTheme.bodyText1,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Align(
-                        alignment: Alignment.bottomLeft,
-                        child: FloatingActionButton(
-                          heroTag: 'ideasPadres',
-                          child: Icon(Icons.navigate_before),
-                          mini: true,
-                          onPressed: () {},
                         ),
                       ),
-                      Align(
-                        alignment: Alignment.bottomRight,
-                        child: FloatingActionButton(
-                            heroTag: 'ideasHijas',
-                            child: Icon(Icons.navigate_next),
-                            mini: true,
-                            onPressed: () {
-                              Navigator.of(context).pushNamed(
-                                  IdeaOverviewScreen.routeName,
-                                  arguments: <Idea, String>{
-                                    selected: idQuest,
-                                    null: 'ideasHijas'
-                                  });
-                            }),
-                      ),
-                    ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.only(top: 20, left: 7, right: 7),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Align(
+                    alignment: Alignment.bottomLeft,
+                    child: FloatingActionButton(
+                      heroTag: 'ideasPadres',
+                      child: Icon(Icons.navigate_before),
+                      mini: true,
+                      onPressed: () {},
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: FloatingActionButton(
+                      heroTag: 'ideasHijas',
+                      child: Icon(Icons.navigate_next),
+                      mini: true,
+                      onPressed: () {
+                        Navigator.of(context).pushNamed(
+                            IdeaOverviewScreen.routeName,
+                            arguments: <Idea, String>{
+                              selected: idQuest,
+                              null: 'ideasHijas'
+                            });
+                      },
+                    ),
                   ),
                 ],
               ),
             ),
-          ),
+          ],
         ),
       ],
     );

@@ -2,24 +2,35 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gingersystem/providers/comment.dart';
 import 'package:provider/provider.dart';
+import 'package:gingersystem/providers/comment_provider.dart';
 
 class CommentOverviewItem extends StatefulWidget {
+  String idQuest;
+  String idIdea;
+  String idComment;
+
+  CommentOverviewItem(this.idQuest, this.idIdea, this.idComment);
+
   @override
-  _CommentOverviewItemState createState() => _CommentOverviewItemState();
+  _CommentOverviewItemState createState() =>
+      _CommentOverviewItemState(this.idQuest, this.idIdea, this.idComment);
 }
 
 class _CommentOverviewItemState extends State<CommentOverviewItem> {
   int votes = -1;
   bool activeVote = false;
   bool challenge = false;
+  String idQuest;
+  String idIdea;
+  String idComment;
+
+  _CommentOverviewItemState(this.idQuest, this.idIdea, this.idComment);
 
   @override
   Widget build(BuildContext context) {
     final Comment comment = Provider.of<Comment>(context);
-    if (votes < 0) {
-      votes = comment.votes;
-    }
-    final deviceSize = MediaQuery.of(context).size;
+    final CommentProvider commentManager =
+        Provider.of<CommentProvider>(context);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
@@ -46,11 +57,15 @@ class _CommentOverviewItemState extends State<CommentOverviewItem> {
                             flex: 1,
                             child: GestureDetector(
                               onTap: () {
-                                challenge = challenge ? false : true;
+                                comment.switchIsChallenge();
+                                commentManager.switchIsChallenge(idQuest,
+                                    idIdea, idComment, comment.isChallenge);
                               },
                               child: Icon(
                                 Icons.gavel,
-                                color: challenge ? Colors.purple : Colors.grey,
+                                color: comment.isChallenge
+                                    ? Colors.purple
+                                    : Colors.grey,
                               ),
                             ),
                           ),
@@ -82,7 +97,7 @@ class _CommentOverviewItemState extends State<CommentOverviewItem> {
                                           MainAxisAlignment.center,
                                       children: <Widget>[
                                         GestureDetector(
-                                          child: activeVote
+                                          child: comment.vote
                                               ? Icon(
                                                   Icons.arrow_drop_up,
                                                   color: Colors.lightBlue,
@@ -93,17 +108,17 @@ class _CommentOverviewItemState extends State<CommentOverviewItem> {
                                                   color: Colors.grey,
                                                 ),
                                           onTap: () {
-                                            if (!activeVote) {
-                                              activeVote = true;
-                                              votes++;
-                                            } else {
-                                              activeVote = false;
-                                              votes--;
-                                            }
+                                            comment.switchVote();
+                                            commentManager.switchVote(
+                                                idQuest,
+                                                idIdea,
+                                                idComment,
+                                                comment.vote,
+                                                comment.votes);
                                           },
                                         ),
                                         Text(
-                                          "$votes",
+                                          "${comment.votes}",
                                           style: Theme.of(context)
                                               .textTheme
                                               .headline1,
