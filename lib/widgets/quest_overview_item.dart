@@ -88,19 +88,21 @@ class _QuestOverviewItemState extends State<QuestOverviewItem> {
                         Icons.star_border,
                         size: 20,
                       ),
-            onPressed: () async {
-              setState(
-                () {
-                  _isLoading = true;
-                },
-              );
-              await quest.toggleFavouriteStatus();
-              setState(
-                () {
-                  _isLoading = false;
-                },
-              );
-            },
+            onPressed: _isLoading
+                ? () {}
+                : () async {
+                    setState(
+                      () {
+                        _isLoading = true;
+                      },
+                    );
+                    await quest.toggleFavouriteStatus();
+                    setState(
+                      () {
+                        _isLoading = false;
+                      },
+                    );
+                  },
           ),
         ),
       ),
