@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gingersystem/widgets/comment_overview_item.dart';
 import 'package:provider/provider.dart';
+import 'package:gingersystem/providers/comment_provider.dart';
 import 'package:gingersystem/providers/comment.dart';
 
 class CommentOverviewList extends StatefulWidget {
@@ -22,13 +23,13 @@ class _CommentOverviewListState extends State<CommentOverviewList> {
 
   @override
   void didChangeDependencies() {
-    Provider.of<Comment>(context, listen: false)
+    Provider.of<CommentProvider>(context, listen: false)
         .fetchAndSetCommentsByQuestAndIdea(idQuest, idIdea);
     super.didChangeDependencies();
   }
 
   void addComment(BuildContext context, bool checkingFlight, bool success,
-      Comment commentManager) {
+      CommentProvider commentManager) {
     final deviceSize = MediaQuery.of(context).size;
     TextEditingController tec1 = new TextEditingController();
     TextEditingController tec2 = new TextEditingController();
@@ -152,7 +153,8 @@ class _CommentOverviewListState extends State<CommentOverviewList> {
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
-    final Comment commentManager = Provider.of<Comment>(context);
+    final CommentProvider commentManager =
+        Provider.of<CommentProvider>(context);
     final List<Comment> comments = commentManager.comments;
     return Expanded(
       child: Container(
@@ -166,7 +168,8 @@ class _CommentOverviewListState extends State<CommentOverviewList> {
                 itemBuilder: (ctx, index) {
                   return ChangeNotifierProvider.value(
                     value: comments[index],
-                    child: CommentOverviewItem(),
+                    child: CommentOverviewItem(
+                        this.idQuest, this.idIdea, comments[index].id),
                   );
                 },
               ),
