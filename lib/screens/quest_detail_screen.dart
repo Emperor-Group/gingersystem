@@ -235,8 +235,8 @@ class _QuestDetailState extends State<QuestDetail> {
                       Navigator.of(context).pushNamed(
                           IdeaDetailScreen.routeName,
                           arguments: <String, String>{
-                            'city': selected.initialIdea.id,
-                            'country': selected.id,
+                            'ideaId': selected.initialIdea.id,
+                            'questId': selected.id,
                           },
                       );
                     },

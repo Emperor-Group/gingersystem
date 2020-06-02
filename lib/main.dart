@@ -3,6 +3,7 @@ import 'package:gingersystem/providers/auth.dart';
 import 'package:gingersystem/providers/comment_provider.dart';
 import 'package:gingersystem/providers/idea_provider.dart';
 import 'package:gingersystem/providers/quests_provider.dart';
+import 'package:gingersystem/screens/add_idea.dart';
 import 'package:gingersystem/screens/add_quest.dart';
 import 'package:gingersystem/screens/auth_screen.dart';
 import 'package:gingersystem/screens/idea_detail_screen.dart';
@@ -140,7 +141,8 @@ class Rhizome extends StatelessWidget {
             QuestDetailScreen.routeName: (ctx) => QuestDetailScreen(),
             AddQuestScreen.routeName: (ctx) => AddQuestScreen(),
             IdeaDetailScreen.routeName: (ctx) => IdeaDetailScreen(),
-            IdeaOverviewScreen.routeName: (ctx) => IdeaOverviewScreen(),
+            IdeaOverviewScreen.routeName : (ctx) => IdeaOverviewScreen(),
+            AddIdeaScreen.routeName : (ctx) => AddIdeaScreen(),
           },
         ),
       ),

@@ -17,6 +17,9 @@ class _IdeaDetailScreenState extends State<IdeaDetailScreen> {
   bool _isInit = false;
   bool _isLoading = false;
   Idea selectedIdea;
+  String ideaId;
+  String questId;
+
   var list;
 
   @override
@@ -24,18 +27,21 @@ class _IdeaDetailScreenState extends State<IdeaDetailScreen> {
     super.didChangeDependencies();
     Map<String, String> obj = ModalRoute.of(context).settings.arguments;
     list = obj.values.toList();
+    ideaId=obj['ideaId'];
+    questId=obj['questId'];
+
     if (!_isInit) {
       setState(
-        () {
+            () {
           _isLoading = true;
         },
       );
 
       final IdeasProvider ideaManager = Provider.of<IdeasProvider>(context);
-      ideaManager.fetchAndSetCommentsByIdea(list[0], list[1]).then((_) {
+      ideaManager.fetchAndSetOneIdeaByQuest(ideaId, questId).then((_) {
         setState(() {
           _isLoading = false;
-          selectedIdea = ideaManager.getByID(list[0]);
+          selectedIdea = ideaManager.getByID(ideaId);
         });
       });
       //print('list ' + list.toString());
@@ -53,9 +59,9 @@ class _IdeaDetailScreenState extends State<IdeaDetailScreen> {
         value: selectedIdea,
         child: _isLoading
             ? Center(
-                child: CircularProgressIndicator(),
-              )
-            : IdeaDetail(list[1]),
+          child: CircularProgressIndicator(),
+        )
+            : IdeaDetail(questId),
       ),
     );
   }
@@ -173,7 +179,7 @@ class _IdeaDetailState extends State<IdeaDetail> {
                                       'Support',
                                       textAlign: TextAlign.center,
                                       style:
-                                          Theme.of(context).textTheme.headline2,
+                                      Theme.of(context).textTheme.headline2,
                                     ),
                                     GestureDetector(
                                       child: Icon(
@@ -202,7 +208,7 @@ class _IdeaDetailState extends State<IdeaDetail> {
                                       'Discard',
                                       textAlign: TextAlign.center,
                                       style:
-                                          Theme.of(context).textTheme.headline2,
+                                      Theme.of(context).textTheme.headline2,
                                     ),
                                     GestureDetector(
                                       child: Icon(

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:gingersystem/providers/comment.dart';
 import 'package:gingersystem/providers/participant.dart';
 import 'package:http/http.dart' as http;
+import 'dart:io';
+
 
 class Idea with ChangeNotifier {
   ///idea.dart
@@ -23,12 +25,12 @@ class Idea with ChangeNotifier {
   ///TODO: Define data. Class? Links?
   /// The data uploaded to support an idea
   ///
-  List<String> supportData = [];
+  List<File> supportData = [];
 
   ///idea.dart
   /// Who published the idea
   ///
-  Participant owner;
+  String owner;
 
   ///idea.dart
   /// The number of support votes the idea has
@@ -43,7 +45,11 @@ class Idea with ChangeNotifier {
   ///idea.dart
   /// Comments made for the given idea
   ///
-  List<Comment> _commentsMade = [];
+  //List<Comment> _commentsMade = [];
+
+  List<String> hijas = [];
+
+  List<String> padres = [];
 
   ///idea.dart
   /// Date it was published
@@ -67,7 +73,7 @@ class Idea with ChangeNotifier {
     @required this.id,
     @required this.title,
     @required this.content,
-    //@required this.owner,
+    @required this.owner,
     @required this.supportData,
     @required this.published,
   });
@@ -75,18 +81,18 @@ class Idea with ChangeNotifier {
   ///idea.dart
   /// Returns the list of comments sorted by the number of votes
   ///
-  List<Comment> get commentsSortedByVotes {
-    this._commentsMade.sort((a, b) => b.votes.compareTo(a.votes));
-    return [...this._commentsMade];
-  }
+//  List<Comment> get commentsSortedByVotes {
+//    this._commentsMade.sort((a, b) => b.votes.compareTo(a.votes));
+//    return [...this._commentsMade];
+//  }
 
   ///idea.dart
   ///
-  ///
-  void addComment(Comment comment) {
-    this._commentsMade.add(comment);
-    notifyListeners();
-  }
+//  ///
+//  void addComment(Comment comment) {
+//    this._commentsMade.add(comment);
+//    notifyListeners();
+//  }
 
   ///idea.dart
   ///

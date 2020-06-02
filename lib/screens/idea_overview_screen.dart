@@ -1,8 +1,12 @@
+import 'dart:io';
+import 'package:flutter/services.dart';
+import 'package:path_provider_ex/path_provider_ex.dart';
 import 'package:flutter/material.dart';
 import 'package:gingersystem/providers/idea.dart';
 import 'package:gingersystem/providers/idea_provider.dart';
 import 'package:gingersystem/widgets/idea_overview_list.dart';
 import 'package:provider/provider.dart';
+import 'add_idea.dart';
 
 enum FilteredOptions {
   DEPTH,
@@ -19,6 +23,7 @@ class IdeaOverviewScreen extends StatefulWidget {
 
 class _IdeaOverviewScreenState extends State<IdeaOverviewScreen> with SingleTickerProviderStateMixin {
   FilteredOptions _showFiltered = FilteredOptions.MIX;
+  List<StorageInfo> _storageInfo = [];
   bool _isInit = false;
   bool _isLoading = false;
   Idea ideaActual;
@@ -31,6 +36,7 @@ class _IdeaOverviewScreenState extends State<IdeaOverviewScreen> with SingleTick
 
   @override
   void initState() {
+    initPlatformState();
     _controller = AnimationController(
         vsync: this,
         duration: Duration(
@@ -64,10 +70,12 @@ class _IdeaOverviewScreenState extends State<IdeaOverviewScreen> with SingleTick
       ),
     );
     super.initState();
+
   }
 
   @override
   void didChangeDependencies() {
+
     if (!_isInit) {
       setState(
             () {
@@ -78,9 +86,7 @@ class _IdeaOverviewScreenState extends State<IdeaOverviewScreen> with SingleTick
       questActual=obj.values.toList()[0];
       ideaActual=obj.keys.toList()[0];
       padresOHijas=obj.values.toList()[1];
-//      print('deaActual.id.toString() '+ideaActual.id.toString());
-//      print('questActual '+questActual);
-//      print('padresOHijas '+padresOHijas);
+
 //      Provider.of<IdeasProvider>(context, listen: false)
 //          .fetchAndSetLaunchedQuests()
 //          .then((_) {
@@ -100,6 +106,18 @@ class _IdeaOverviewScreenState extends State<IdeaOverviewScreen> with SingleTick
     super.dispose();
   }
 
+  Future<void> initPlatformState() async {
+    List<StorageInfo> storageInfo;
+    try {
+      storageInfo = await PathProviderEx.getStorageInfo();
+    } on PlatformException {}
+
+    if (!mounted) return;
+
+    setState(() {
+      _storageInfo = storageInfo;
+    });
+  }
 
 
   @override
@@ -159,7 +177,7 @@ class _IdeaOverviewScreenState extends State<IdeaOverviewScreen> with SingleTick
                    Padding(
                      padding: const EdgeInsets.only(right: 5),
                      child: Icon(
-                       Icons.all_inclusive,
+                       Icons.vertical_align_bottom,
                        color: Colors.black,
                        size: 15,
                      ),
@@ -178,7 +196,7 @@ class _IdeaOverviewScreenState extends State<IdeaOverviewScreen> with SingleTick
                    Padding(
                      padding: const EdgeInsets.only(right: 5),
                      child: Icon(
-                       Icons.all_inclusive,
+                       Icons.merge_type,
                        color: Colors.black,
                        size: 15,
                      ),
@@ -197,32 +215,33 @@ class _IdeaOverviewScreenState extends State<IdeaOverviewScreen> with SingleTick
         title: Text('Ideas Control Screen',
           style: Theme.of(context).textTheme.headline5,),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      body: Stack(
         children: <Widget>[
-
-          Center(
-            child: Padding(
-              padding:
-              const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-              child: Text(
-                ideaActual.title.toUpperCase(),
-                style: Theme.of(context).textTheme.bodyText1,
-                textAlign: TextAlign.center,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Center(
+                child: Padding(
+                  padding:
+                  const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  child: Text(
+                    ideaActual.title.toUpperCase(),
+                    style: Theme.of(context).textTheme.bodyText1,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               ),
-            ),
-          ),
-          Center(
-            child: Padding(
-              padding:
-              const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-              child: Text(
-                padresOHijas == 'ideasHijas' ? 'Ideas Hijas':'Ideas Padre',
-                style: Theme.of(context).textTheme.headline4,
-                textAlign: TextAlign.center,
+              Center(
+                child: Padding(
+                  padding:
+                  const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  child: Text(
+                    padresOHijas == 'ideasHijas' ? 'Ideas Hijas':'Ideas Padre',
+                    style: Theme.of(context).textTheme.headline4,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               ),
-            ),
-          ),
 //          Expanded(
 //            child: RefreshIndicator(
 //              child: SlideTransition(
@@ -230,11 +249,40 @@ class _IdeaOverviewScreenState extends State<IdeaOverviewScreen> with SingleTick
 //                child: IdeaOverviewList(
 //                    ideaActual, questActual ),
 //              ),
-//              onRefresh: () =>
-//                  Provider.of<IdeasProvider>(context, listen: false)
-//                      .fetchAndSetLaunchedQuests(),
+////              onRefresh: () =>
+////                  Provider.of<IdeasProvider>(context, listen: false)
+////                      .fetchAndSetLaunchedIdeas(),
 //            ),
 //          ),
+            ],
+          ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: FloatingActionButton(
+                heroTag: 'newIdea',
+                mini: false,
+                child: Icon(Icons.add),
+                onPressed: (){
+                  Provider.of<IdeasProvider>(context, listen: false).addIdea(
+                      'Titulo de una idea 2',
+                      'Contenido de una idea2',
+                      [File('/data/user/0/com.example.gingersystem/cache/file_picker/The Fountainhead (Centennial Edition Hardcover) by Ayn Rand (z-lib.org).pdf'), File('/data/user/0/com.example.gingersystem/cache/file_picker/Ukulele Exercises For Dummies® by McQueen, Brett (z-lib.org).pdf')],
+                      questActual
+                  );
+                  //File('Internal storage/Download/The Fountainhead (Centennial Edition Hardcover) by Ayn Rand (z-lib.org).pdf'),
+//                  Navigator.of(context).pushNamed(
+//                    AddIdeaScreen.routeName,
+//                    arguments: <String, String>{
+//                      'idIdea': ideaActual.id,
+//                      'idQuest': questActual,
+//                    },
+//                  );
+                },
+              ),
+            ),
+          )
         ],
       ),
     );

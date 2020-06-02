@@ -1,7 +1,12 @@
+import 'dart:ffi';
+import 'dart:typed_data';
+
 import 'package:flutter/cupertino.dart';
 import 'package:gingersystem/providers/idea.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:io';
+
 
 
 class IdeasProvider with ChangeNotifier {
@@ -20,69 +25,45 @@ class IdeasProvider with ChangeNotifier {
     return _launchedIdeas.firstWhere((Idea idea) => idea.id == idIdea);
   }
 
-  Future<void> addIdea(Idea idea) async {
-    final url =
-        'https://the-rhizome.firebaseio.com/ideas.json?auth=$authToken';
-    try {
-      http.Response response = await http.post(
-        url,
-        body: json.encode(
-          {
-            'title': idea.title,
-            'content': idea.content,
-            'supportData':idea.supportData,
-            'supportVotes':0,
-            'discardVotes':0,
-          },
-        ),
-      );
-
-      final questID = json.decode(response.body)['name'];
-
-      final ideaURL =
-          'https://the-rhizome.firebaseio.com/ideas/$questID.json?auth=$authToken';
-      http.Response ideaResponse = await http.post(
-        ideaURL,
-        body: json.encode(
-          {
-            "title": idea.title,
-            "content": idea.content,
-            "published": idea.published.toIso8601String(),
-          },
-        ),
-      );
-
-      final questURL =
-          'https://the-rhizome.firebaseio.com/quests/$questID.json?auth=$authToken';
-      await http.patch(
-        questURL,
-        body: json.encode(
-          {
-            'initialIdea': {'${json.decode(ideaResponse.body)['name']}': true},
-          },
-        ),
-      );
-
-//      _launchedIdeas.insert(
-//        0,
-//        Ideas.initializeIdeas(
-//          this.authToken,
-//          this.userID,
-//          id: questID,
-//          title: quest.title,
-//          launchedDate: quest.launchedDate,
-//          deadline: quest.deadline,
-//          initIdeaID: json.decode(ideaResponse.body)['name'],
+//  Future<void> addIdea(String title, String content, List<File> supportData, String idQuest) async {
+//    final url =
+//        'https://the-rhizome.firebaseio.com/ideas/$idQuest.json?auth=$authToken';
+//    List<Uint8List> x=List<Uint8List>();
+//    supportData.forEach((e) async {
+//      x.add( await e.readAsBytes());
+//    });
+//
+//    try {
+//      http.Response response = await http.post(
+//        url,
+//        body: json.encode(
+//          {
+//            'title': title,
+//            'content': content,
+//            'supportData': x,
+//            'owner': userID,
+//            'published':DateTime.now().toIso8601String(),
+//            'supportVotes':0,
+//            'discardVotes':0,
+//          },
 //        ),
 //      );
-      notifyListeners();
-    } catch (error) {
-      print(error);
-      throw (error);
-    }
+//      print(title);
+//      print(content);
+//      print('idQuest'+idQuest);
+//      print('userID'+userID);
+//
+//      notifyListeners();
+//    } catch (error) {
+//      print(error);
+//      throw (error);
+//    }
+//  }
+  Future<void> addIdea(String title, String content, List<File> supportData, String idQuest) async {
+
   }
 
-  Future<void> fetchAndSetCommentsByIdea(String ideaId, String idQuest) async {
+  Future<void> fetchAndSetOneIdeaByQuest(String ideaId, String idQuest) async {
     final url =
         'https://the-rhizome.firebaseio.com/ideas/$idQuest/$ideaId.json?auth=${this.authToken}';
     try {
@@ -102,6 +83,7 @@ class IdeasProvider with ChangeNotifier {
                   title: value2['title'],
                   content: value2['content'],
                   //supportData: value2['supportData'],
+                  //owner:value2['owner'],
                   published: DateTime.parse (value2['published'])));
       _launchedIdeas = loadedIdeas;
       notifyListeners();

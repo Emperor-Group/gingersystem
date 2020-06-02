@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "827466426404",
+    "firebase_url": "https://the-rhizome.firebaseio.com",
+    "project_id": "the-rhizome",
+    "storage_bucket": "the-rhizome.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:827466426404:android:2e42c9a09670bd4a8190b1",
+        "android_client_info": {
+          "package_name": "com.emperor.gingersystem"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "827466426404-ugc1rfeplq139nkngguv4qqiajmhbcj3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDr6uwQiVuSNG9lNVXR8EtDsYYKypvw92U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "827466426404-ugc1rfeplq139nkngguv4qqiajmhbcj3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
