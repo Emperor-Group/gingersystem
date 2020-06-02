@@ -1,7 +1,12 @@
+import 'dart:ffi';
+import 'dart:typed_data';
+
 import 'package:flutter/cupertino.dart';
 import 'package:gingersystem/providers/idea.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:io';
+
 
 
 class IdeasProvider with ChangeNotifier {
@@ -20,31 +25,42 @@ class IdeasProvider with ChangeNotifier {
     return _launchedIdeas.firstWhere((Idea idea) => idea.id == idIdea);
   }
 
-  Future<void> addIdea(String title, String content, List<String> supportData, String idQuest) async {
-    final url =
-        'https://the-rhizome.firebaseio.com/ideas/$idQuest.json?auth=$authToken';
-    try {
-      http.Response response = await http.post(
-        url,
-        body: json.encode(
-          {
-            'title': title,
-            'content': content,
-            'supportData': supportData,
-            'owner': userID,
-            'published':DateTime.now().toIso8601String(),
-            'supportVotes':0,
-            'discardVotes':0,
-          },
-        ),
-      );
+//  Future<void> addIdea(String title, String content, List<File> supportData, String idQuest) async {
+//    final url =
+//        'https://the-rhizome.firebaseio.com/ideas/$idQuest.json?auth=$authToken';
+//    List<Uint8List> x=List<Uint8List>();
+//    supportData.forEach((e) async {
+//      x.add( await e.readAsBytes());
+//    });
+//
+//    try {
+//      http.Response response = await http.post(
+//        url,
+//        body: json.encode(
+//          {
+//            'title': title,
+//            'content': content,
+//            'supportData': x,
+//            'owner': userID,
+//            'published':DateTime.now().toIso8601String(),
+//            'supportVotes':0,
+//            'discardVotes':0,
+//          },
+//        ),
+//      );
+//      print(title);
+//      print(content);
+//      print('idQuest'+idQuest);
+//      print('userID'+userID);
+//
+//      notifyListeners();
+//    } catch (error) {
+//      print(error);
+//      throw (error);
+//    }
+//  }
+  Future<void> addIdea(String title, String content, List<File> supportData, String idQuest) async {
 
-
-      notifyListeners();
-    } catch (error) {
-      print(error);
-      throw (error);
-    }
   }
 
   Future<void> fetchAndSetOneIdeaByQuest(String ideaId, String idQuest) async {

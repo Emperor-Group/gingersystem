@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:gingersystem/providers/comment.dart';
 import 'package:gingersystem/providers/participant.dart';
 import 'package:http/http.dart' as http;
+import 'dart:io';
+
 
 class Idea with ChangeNotifier {
   ///idea.dart
@@ -23,7 +25,7 @@ class Idea with ChangeNotifier {
   ///TODO: Define data. Class? Links?
   /// The data uploaded to support an idea
   ///
-  List<String> supportData = [];
+  List<File> supportData = [];
 
   ///idea.dart
   /// Who published the idea

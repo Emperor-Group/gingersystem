@@ -27,19 +27,24 @@ class _CommentOverviewListState extends State<CommentOverviewList> {
     super.didChangeDependencies();
   }
 
-  void addComment(BuildContext context, bool checkingFlight, bool success) {
+  void addComment(BuildContext context, bool checkingFlight, bool success,
+      Comment commentManager) {
     final deviceSize = MediaQuery.of(context).size;
+    TextEditingController tec1 = new TextEditingController();
+    TextEditingController tec2 = new TextEditingController();
     showModalBottomSheet(
         context: context,
         builder: (_) {
           return Container(
-            margin: const EdgeInsets.only(top: 5, left: 15, right: 15),
+            height: deviceSize.height,
+            margin: const EdgeInsets.only(left: 15, right: 15),
+            padding: EdgeInsets.only(top: 12),
             child: Column(
                 mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Container(
-                    height: deviceSize.height * 0.2,
+                    height: deviceSize.height * 0.3,
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.all(Radius.circular(15)),
@@ -59,27 +64,60 @@ class _CommentOverviewListState extends State<CommentOverviewList> {
                           ),
                         ),
                         Container(
-                            height: deviceSize.height * 0.06,
-                            alignment: Alignment.center,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 0),
-                            margin: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(
-                                color: Colors.grey[300],
-                                borderRadius: BorderRadius.circular(10)),
-                            child: TextField(
-                              decoration: InputDecoration.collapsed(
-                                hintText: 'Ingresa el comentario...',
+                          height: 50,
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 0),
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 0),
+                          decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              TextField(
+                                decoration: InputDecoration.collapsed(
+                                  hintText: 'Titulo...',
+                                ),
+                                style: Theme.of(context).textTheme.bodyText2,
+                                autofocus: false,
+                                maxLines: null,
+                                keyboardType: TextInputType.text,
+                                controller: tec1,
                               ),
-                              style: Theme.of(context).textTheme.bodyText2,
-                            )),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          height: 60,
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 0),
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(10)),
+                          child: TextField(
+                            decoration: InputDecoration.collapsed(
+                              hintText: 'Comentario...',
+                            ),
+                            style: Theme.of(context).textTheme.bodyText2,
+                            autofocus: false,
+                            maxLines: null,
+                            keyboardType: TextInputType.text,
+                            controller: tec2,
+                          ),
+                        ),
                         !checkingFlight
                             ? MaterialButton(
                                 color: Colors.grey[800],
                                 onPressed: () async {
                                   setState(() {
                                     checkingFlight = true;
+                                    commentManager.addComment(
+                                        idQuest, idIdea, tec1.text, tec2.text);
                                   });
                                   await Future.delayed(Duration(seconds: 1));
                                   setState(() {
@@ -116,43 +154,45 @@ class _CommentOverviewListState extends State<CommentOverviewList> {
     final deviceSize = MediaQuery.of(context).size;
     final Comment commentManager = Provider.of<Comment>(context);
     final List<Comment> comments = commentManager.comments;
-    return Container(
-      height: deviceSize.height,
-      width: deviceSize.width * 0.9,
-      color: Colors.white,
-      child: Stack(
-        children: <Widget>[
-          Container(
-            child: ListView.builder(
-              itemCount: comments.length,
-              itemBuilder: (ctx, index) {
-                return ChangeNotifierProvider.value(
-                  value: comments[index],
-                  child: CommentOverviewItem(),
-                );
-              },
+    return Expanded(
+      child: Container(
+        width: deviceSize.width,
+        color: Colors.white,
+        child: Stack(
+          children: <Widget>[
+            Container(
+              child: ListView.builder(
+                itemCount: comments.length,
+                itemBuilder: (ctx, index) {
+                  return ChangeNotifierProvider.value(
+                    value: comments[index],
+                    child: CommentOverviewItem(),
+                  );
+                },
+              ),
             ),
-          ),
-          Container(
-            width: double.infinity,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: <Widget>[
-                FloatingActionButton(
-                    mini: true,
-                    child: Icon(
-                      Icons.add,
-                      color: Colors.white,
-                    ),
-                    backgroundColor: Colors.deepOrange,
-                    onPressed: () {
-                      addComment(context, checkingFlight, success);
-                    }),
-              ],
+            Container(
+              width: double.infinity,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: <Widget>[
+                  FloatingActionButton(
+                      mini: true,
+                      child: Icon(
+                        Icons.add,
+                        color: Colors.white,
+                      ),
+                      backgroundColor: Colors.deepOrange,
+                      onPressed: () {
+                        addComment(
+                            context, checkingFlight, success, commentManager);
+                      }),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

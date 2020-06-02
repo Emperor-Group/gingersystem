@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:gingersystem/providers/idea.dart';
 import 'package:gingersystem/providers/idea_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:gingersystem/screens/idea_overview_screen.dart';
 import 'package:gingersystem/widgets/comment_overview_list.dart';
+import 'dart:math'as math;
 
 class IdeaDetailScreen extends StatefulWidget {
   static const routeName = '/idea-detail';
@@ -19,27 +19,30 @@ class _IdeaDetailScreenState extends State<IdeaDetailScreen> {
   bool _isLoading = false;
   Idea selectedIdea;
   var list;
+  var ideaId;
+  var questId;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     Map<String, String> obj = ModalRoute.of(context).settings.arguments;
     list = obj.values.toList();
+    ideaId=obj['ideaId'];
+    questId=obj['questId'];
     if (!_isInit) {
       setState(
-        () {
+            () {
           _isLoading = true;
         },
       );
 
       final IdeasProvider ideaManager = Provider.of<IdeasProvider>(context);
-      ideaManager.fetchAndSetOneIdeaByQuest(list[0], list[1]).then((_) {
+      ideaManager.fetchAndSetOneIdeaByQuest(ideaId, questId).then((_) {
         setState(() {
           _isLoading = false;
-          selectedIdea = ideaManager.getByID(list[0]);
+          selectedIdea = ideaManager.getByID(ideaId);
         });
       });
-      //print('list ' + list.toString());
     }
     _isInit = true;
   }
@@ -54,9 +57,9 @@ class _IdeaDetailScreenState extends State<IdeaDetailScreen> {
         value: selectedIdea,
         child: _isLoading
             ? Center(
-                child: CircularProgressIndicator(),
-              )
-            : IdeaDetail(list[1]),
+          child: CircularProgressIndicator(),
+        )
+            : IdeaDetail(questId),
       ),
     );
   }
@@ -90,10 +93,13 @@ class _IdeaDetailState extends State<IdeaDetail> {
             height: deviceSize.height,
             child: Column(
               children: <Widget>[
-                Text(
-                  'Comentarios',
-                  style: Theme.of(context).textTheme.bodyText1,
-                  textAlign: TextAlign.center,
+                Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: Text(
+                    'Comentarios',
+                    style: Theme.of(context).textTheme.bodyText1,
+                    textAlign: TextAlign.center,
+                  ),
                 ),
                 CommentOverviewList(idQuest, idIdea),
               ],
@@ -107,7 +113,6 @@ class _IdeaDetailState extends State<IdeaDetail> {
   @override
   Widget build(BuildContext context) {
     Idea selected = Provider.of<Idea>(context);
-    final deviceSize = MediaQuery.of(context).size;
     return Column(
       children: <Widget>[
         Expanded(
@@ -123,7 +128,7 @@ class _IdeaDetailState extends State<IdeaDetail> {
               children: <Widget>[
                 Padding(
                   padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                   child: Text(
                     selected.title.toUpperCase(),
                     style: Theme.of(context).textTheme.bodyText1,
@@ -132,7 +137,7 @@ class _IdeaDetailState extends State<IdeaDetail> {
                 ),
                 Padding(
                   padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                   child: Text(
                     "Descripcion:",
                     style: Theme.of(context).textTheme.headline4,
@@ -141,7 +146,7 @@ class _IdeaDetailState extends State<IdeaDetail> {
                 ),
                 Padding(
                   padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                   child: Text(
                     selected.content,
                     style: Theme.of(context).textTheme.caption,
@@ -152,63 +157,70 @@ class _IdeaDetailState extends State<IdeaDetail> {
             ),
           ),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+        Column(
           children: <Widget>[
-            Container(
-              margin: EdgeInsets.only(right: 40),
-              decoration: BoxDecoration(
-                  border: Border.all(), borderRadius: BorderRadius.circular(8)),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  Column(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.only(right: 40),
+                  decoration: BoxDecoration(
+                      border: Border.all(),
+                      borderRadius: BorderRadius.circular(8)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
-                      Text(
-                        'Support',
-                        textAlign: TextAlign.center,
-                      ),
-                      GestureDetector(
-                        child: Transform.rotate(
-                          angle: 180 * math.pi / 180,
-                          child: Icon(
-                            supportBoolean
-                                ? Icons.wb_incandescent
-                                : Icons.lightbulb_outline,
-                            color: supportBoolean ? Colors.yellow : Colors.grey,
-                            size: 50,
+                      Column(
+                        children: <Widget>[
+                          Text(
+                            'Support',
+                            textAlign: TextAlign.center,
                           ),
-                        ),
-                        onTap: () {
-                          setState(() {
-                            supportBoolean = !supportBoolean;
-                          });
-                        },
+                          GestureDetector(
+                            child: supportBoolean ? Icon(
+                              Icons.lightbulb_outline,
+                              color: Colors.grey,
+                              size: 50,
+                            ) : Transform.rotate(
+                              angle:180 * math.pi / 180,
+                                  child:Icon(
+                                  Icons.wb_incandescent,
+                                  color: Colors.yellow,
+                                  size: 50,
+                                )
+                            ),
+                            onTap: () {
+                              setState(() {
+                                supportBoolean = !supportBoolean;
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: <Widget>[
+                          Text(
+                            'Discard',
+                            textAlign: TextAlign.center,
+                          ),
+                          GestureDetector(
+                            child: Icon(
+                              reportBoolean ? Icons.report : Icons.report_off,
+                              color: reportBoolean ? Colors.grey : Colors.red,
+                              size: 50,
+                            ),
+                            onTap: () {
+                              setState(() {
+                                reportBoolean = !reportBoolean;
+                              });
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                  Column(
-                    children: <Widget>[
-                      Text(
-                        'Discard',
-                        textAlign: TextAlign.center,
-                      ),
-                      GestureDetector(
-                        child: Icon(
-                          reportBoolean ? Icons.report : Icons.report_off,
-                          color: reportBoolean ? Colors.grey : Colors.red,
-                          size: 50,
-                        ),
-                        onTap: () {
-                          setState(() {
-                            reportBoolean = !reportBoolean;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ],
         ),

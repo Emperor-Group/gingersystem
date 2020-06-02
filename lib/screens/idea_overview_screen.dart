@@ -1,8 +1,12 @@
+import 'dart:io';
+import 'package:flutter/services.dart';
+import 'package:path_provider_ex/path_provider_ex.dart';
 import 'package:flutter/material.dart';
 import 'package:gingersystem/providers/idea.dart';
 import 'package:gingersystem/providers/idea_provider.dart';
 import 'package:gingersystem/widgets/idea_overview_list.dart';
 import 'package:provider/provider.dart';
+import 'add_idea.dart';
 
 enum FilteredOptions {
   DEPTH,
@@ -19,6 +23,7 @@ class IdeaOverviewScreen extends StatefulWidget {
 
 class _IdeaOverviewScreenState extends State<IdeaOverviewScreen> with SingleTickerProviderStateMixin {
   FilteredOptions _showFiltered = FilteredOptions.MIX;
+  List<StorageInfo> _storageInfo = [];
   bool _isInit = false;
   bool _isLoading = false;
   Idea ideaActual;
@@ -31,6 +36,7 @@ class _IdeaOverviewScreenState extends State<IdeaOverviewScreen> with SingleTick
 
   @override
   void initState() {
+    initPlatformState();
     _controller = AnimationController(
         vsync: this,
         duration: Duration(
@@ -64,10 +70,12 @@ class _IdeaOverviewScreenState extends State<IdeaOverviewScreen> with SingleTick
       ),
     );
     super.initState();
+
   }
 
   @override
   void didChangeDependencies() {
+
     if (!_isInit) {
       setState(
             () {
@@ -98,6 +106,18 @@ class _IdeaOverviewScreenState extends State<IdeaOverviewScreen> with SingleTick
     super.dispose();
   }
 
+  Future<void> initPlatformState() async {
+    List<StorageInfo> storageInfo;
+    try {
+      storageInfo = await PathProviderEx.getStorageInfo();
+    } on PlatformException {}
+
+    if (!mounted) return;
+
+    setState(() {
+      _storageInfo = storageInfo;
+    });
+  }
 
 
   @override
@@ -246,13 +266,19 @@ class _IdeaOverviewScreenState extends State<IdeaOverviewScreen> with SingleTick
                 child: Icon(Icons.add),
                 onPressed: (){
                   Provider.of<IdeasProvider>(context, listen: false).addIdea(
-                      'Titulo de una idea',
-                      'Contenido de una idea',
-                      ['https://www.youtube.com/watch?v=pZKuwgcKXwY',
-                        'https://www.youtube.com/watch?v=fbfpnjBCEa4'
-                      ],
+                      'Titulo de una idea 2',
+                      'Contenido de una idea2',
+                      [File('/data/user/0/com.example.gingersystem/cache/file_picker/The Fountainhead (Centennial Edition Hardcover) by Ayn Rand (z-lib.org).pdf'), File('/data/user/0/com.example.gingersystem/cache/file_picker/Ukulele Exercises For Dummies® by McQueen, Brett (z-lib.org).pdf')],
                       questActual
                   );
+                  //File('Internal storage/Download/The Fountainhead (Centennial Edition Hardcover) by Ayn Rand (z-lib.org).pdf'),
+//                  Navigator.of(context).pushNamed(
+//                    AddIdeaScreen.routeName,
+//                    arguments: <String, String>{
+//                      'idIdea': ideaActual.id,
+//                      'idQuest': questActual,
+//                    },
+//                  );
                 },
               ),
             ),
