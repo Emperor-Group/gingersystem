@@ -73,7 +73,16 @@ class QuestsProvider with ChangeNotifier {
           {
             "title": initialIdea.title,
             "content": initialIdea.content,
+            //
+            "supportData": [],
+            "owner": userID,
+
             "published": initialIdea.published.toIso8601String(),
+
+            'supportVotes':initialIdea.supportVotes,
+            'discardVotes':initialIdea.discardVotes,
+            "hijas":initialIdea.hijas,
+            "padres":initialIdea.padres
           },
         ),
       );

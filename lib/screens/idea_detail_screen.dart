@@ -173,6 +173,15 @@ class _IdeaDetailState extends State<IdeaDetail> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: <Widget>[
+                                Text(
+                                  selected.supportVotes.toString(), style: selected.supportVotes==0 ? TextStyle(
+                                  fontSize: 25,
+                                  color: Colors.grey,
+                                ):TextStyle(
+                                  fontSize: 25,
+                                  color: Colors.green,
+                                ),
+                                ),
                                 Column(
                                   children: <Widget>[
                                     Text(
@@ -193,6 +202,14 @@ class _IdeaDetailState extends State<IdeaDetail> {
                                       ),
                                       onTap: () {
                                         setState(() {
+                                          IdeasProvider ideaManager = Provider.of<IdeasProvider>(context,listen: false);
+                                          if(!supportBoolean){
+                                            selected.supportVotes=selected.supportVotes+1;
+                                            ideaManager.switchVotes(idQuest,selected.id,selected.supportVotes+1,selected.discardVotes);
+                                          }else{
+                                            selected.supportVotes=selected.supportVotes-1;
+                                            ideaManager.switchVotes(idQuest,selected.id,selected.supportVotes-1,selected.discardVotes);
+                                          }
                                           supportBoolean = !supportBoolean;
                                         });
                                       },
@@ -201,6 +218,15 @@ class _IdeaDetailState extends State<IdeaDetail> {
                                 ),
                                 SizedBox(
                                   width: 10,
+                                ),
+                                Text(
+                                  selected.discardVotes.toString(), style: selected.discardVotes==0 ? TextStyle(
+                                  fontSize: 25,
+                                  color: Colors.grey,
+                                ):TextStyle(
+                                  fontSize: 25,
+                                  color: Colors.red,
+                                ),
                                 ),
                                 Column(
                                   children: <Widget>[
@@ -222,6 +248,14 @@ class _IdeaDetailState extends State<IdeaDetail> {
                                       ),
                                       onTap: () {
                                         setState(() {
+                                          IdeasProvider ideaManager = Provider.of<IdeasProvider>(context,listen: false);
+                                          if(!reportBoolean){
+                                            selected.discardVotes=selected.discardVotes+1;
+                                            ideaManager.switchVotes(idQuest,selected.id,selected.supportVotes,selected.discardVotes+1);
+                                          }else{
+                                            selected.discardVotes=selected.discardVotes-1;
+                                            ideaManager.switchVotes(idQuest,selected.id,selected.supportVotes,selected.discardVotes-1);
+                                          }
                                           reportBoolean = !reportBoolean;
                                         });
                                       },
