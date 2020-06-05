@@ -242,18 +242,18 @@ class _IdeaOverviewScreenState extends State<IdeaOverviewScreen> with SingleTick
                   ),
                 ),
               ),
-//          Expanded(
-//            child: RefreshIndicator(
-//              child: SlideTransition(
-//                position: _slideAnimation,
-//                child: IdeaOverviewList(
-//                    ideaActual, questActual ),
-//              ),
-////              onRefresh: () =>
-////                  Provider.of<IdeasProvider>(context, listen: false)
-////                      .fetchAndSetLaunchedIdeas(),
-//            ),
-//          ),
+          Expanded(
+            child: RefreshIndicator(
+              child: SlideTransition(
+                position: _slideAnimation,
+                child: IdeaOverviewList(
+                    ideaActual, questActual ),
+              ),
+              onRefresh: () =>
+                  Provider.of<IdeasProvider>(context, listen: false)
+                      .fetchAndSetLaunchedIdeasChildren(questActual, ideaActual.id),
+            ),
+          ),
             ],
           ),
           Align(

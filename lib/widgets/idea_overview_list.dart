@@ -11,7 +11,7 @@ class IdeaOverviewList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final IdeasProvider ideaManager = Provider.of<IdeasProvider>(context);
-    final List<Idea> questToList = ideaManager.launchedIdeas;
+    //final List<Idea> questToList = ideaManager.launchedIdeas;
     return Container();
   }
 }

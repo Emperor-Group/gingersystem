@@ -64,6 +64,7 @@ class Idea with ChangeNotifier {
     @required this.title,
     @required this.content,
     @required this.published,
+
   });
 
   ///idea.dart
