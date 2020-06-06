@@ -39,7 +39,7 @@ class _AddIdeaScreenState extends State<AddIdeaScreen> {
       published: DateTime.now());
 
   Future<List<File>> _presentFilePicker(List<File> files) async {
-    return await FilePicker.getMultiFile();
+    return await FilePicker.getMultiFile(type: FileType.any);
   }
 
   void _saveForm() async {
@@ -61,7 +61,8 @@ class _AddIdeaScreenState extends State<AddIdeaScreen> {
           _savedIdea.title,
           _savedIdea.content,
           allFiles,
-          idQuest
+          idQuest,
+          idIdeaPadre
       );
     } catch (error) {
       await showDialog(
