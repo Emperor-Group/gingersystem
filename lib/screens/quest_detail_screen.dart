@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:gingersystem/providers/idea.dart';
 import 'package:gingersystem/providers/quest.dart';
 import 'package:gingersystem/providers/quests_provider.dart';
 import 'package:gingersystem/providers/stage.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 
 import 'idea_detail_screen.dart';
+
+enum FilteredIdeaOptions {
+  Favourites,
+  Latest,
+}
 
 class QuestDetailScreen extends StatefulWidget {
   static const routeName = '/quest-detail';
@@ -31,22 +38,88 @@ class _QuestDetailScreenState extends State<QuestDetailScreen> {
     _isInit = true;
   }
 
+  FilteredIdeaOptions _showLatestOrFavourites;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Quest Control Screen'),
+        actions: <Widget>[
+          PopupMenuButton(
+            icon: Icon(Icons.more_vert),
+            onSelected: (FilteredIdeaOptions opt) {
+              if (opt == FilteredIdeaOptions.Latest) {
+                setState(
+                  () {
+                    _showLatestOrFavourites = FilteredIdeaOptions.Latest;
+                  },
+                );
+              } else if (opt == FilteredIdeaOptions.Favourites) {
+                setState(
+                  () {
+                    _showLatestOrFavourites = FilteredIdeaOptions.Favourites;
+                  },
+                );
+              }
+            },
+            itemBuilder: (_) => [
+              PopupMenuItem(
+                child: Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(right: 5),
+                      child: Icon(
+                        Icons.all_inclusive,
+                        color: Colors.black,
+                        size: 15,
+                      ),
+                    ),
+                    Text(
+                      'Latest',
+                      style: Theme.of(context).textTheme.headline2,
+                    ),
+                  ],
+                ),
+                value: FilteredIdeaOptions.Latest,
+              ),
+              PopupMenuItem(
+                child: Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(right: 5),
+                      child: Icon(
+                        Icons.stars,
+                        color: Colors.black54,
+                        size: 15,
+                      ),
+                    ),
+                    Text(
+                      'Top 10',
+                      style: Theme.of(context).textTheme.headline2,
+                    ),
+                  ],
+                ),
+                value: FilteredIdeaOptions.Favourites,
+              ),
+            ],
+          ),
+        ],
       ),
       body: ChangeNotifierProvider.value(
         value: selectedQuest,
-        child: QuestDetail(),
+        child: QuestDetail(
+          _showLatestOrFavourites,
+        ),
       ),
     );
   }
 }
 
 class QuestDetail extends StatefulWidget {
-  QuestDetail({Key key}) : super(key: key);
+  final FilteredIdeaOptions showOptions;
+
+  QuestDetail(this.showOptions);
 
   @override
   _QuestDetailState createState() => _QuestDetailState();
@@ -70,9 +143,17 @@ class _QuestDetailState extends State<QuestDetail> {
       });
       Provider.of<Quest>(context, listen: false).setInitialIdea().then(
         (value) {
-          setState(() {
-            _isLoading = false;
-          });
+          Provider.of<Quest>(context, listen: false)
+              .fetchAndSetIdeasToDisplay(option: widget.showOptions)
+              .then(
+            (value) {
+              setState(
+                () {
+                  _isLoading = false;
+                },
+              );
+            },
+          );
         },
       );
     }
@@ -231,15 +312,62 @@ class _QuestDetailState extends State<QuestDetail> {
                         ],
                       ),
                     ),
-                    onTap: (){
+                    onTap: () {
                       Navigator.of(context).pushNamed(
-                          IdeaDetailScreen.routeName,
-                          arguments: <String, String>{
-                            'ideaId': selected.initialIdea.id,
-                            'questId': selected.id,
-                          },
+                        IdeaDetailScreen.routeName,
+                        arguments: <String, String>{
+                          'ideaId': selected.initialIdea.id,
+                          'questId': selected.id,
+                        },
                       );
                     },
+                  ),
+                ),
+                SizedBox(
+                  height: deviceSize.height * 0.05,
+                ),
+                Expanded(
+                  child: ListWheelScrollView(
+                    children: <Widget>[
+                      ...Provider.of<Quest>(context)
+                          .ideasToDisplay
+                          .map(
+                            (e) => Card(
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                  backgroundColor: Colors.grey[100],
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: <Widget>[
+                                      Icon(
+                                          widget.showOptions ==
+                                                  FilteredIdeaOptions.Favourites
+                                              ? Icons.stars
+                                              : Icons.alarm,
+                                          color: Colors.orange),
+                                    ],
+                                  ),
+                                ),
+                                title: Text(
+                                  (Provider.of<Quest>(context, listen: false)
+                                                  .ideasToDisplay
+                                                  .indexOf(e) +
+                                              1)
+                                          .toString() +
+                                      '. ' +
+                                      e.title,
+                                  style: Theme.of(context).textTheme.headline1,
+                                ),
+                                subtitle: Text(
+                                  'published: ${DateFormat('dd/MM/yyyy').format(e.published)}',
+                                  style: Theme.of(context).textTheme.subtitle1,
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList()
+                    ],
+                    itemExtent: deviceSize.height * 0.15,
                   ),
                 ),
               ],

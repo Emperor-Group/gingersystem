@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:gingersystem/models/http_exception.dart';
 import 'package:gingersystem/providers/idea.dart';
 import 'package:gingersystem/providers/stage.dart';
+import 'package:gingersystem/screens/quest_detail_screen.dart';
 import 'package:http/http.dart' as http;
 
 class Quest with ChangeNotifier {
@@ -56,6 +57,11 @@ class Quest with ChangeNotifier {
 
   ///
   bool isFavourite;
+
+  ///
+  ///
+  ///
+  List<Idea> _displayIdeas;
 
   ///quest.dart
   ///
@@ -122,5 +128,39 @@ class Quest with ChangeNotifier {
       notifyListeners();
       throw error;
     }
+  }
+
+  Future<void> fetchAndSetIdeasToDisplay(
+      {FilteredIdeaOptions option = FilteredIdeaOptions.Favourites}) async {
+    final url = option == FilteredIdeaOptions.Favourites
+        ? 'https://the-rhizome.firebaseio.com/ideas/$id.json?auth=${this._token}&orderBy="supportVotes"&limitToLast=10'
+        : 'https://the-rhizome.firebaseio.com/ideas/$id.json?auth=${this._token}&orderBy="published"&limitToLast=10';
+
+    try {
+      final response = await http.get(url);
+      final Map<String, dynamic> extractedIdeas = json.decode(response.body);
+      final List<Idea> toBeSet = [];
+
+      extractedIdeas.forEach((key, value) {
+        toBeSet.insert(
+          0,
+          Idea.createInitialIdea(
+            id: key,
+            title: value['title'],
+            content: value['content'],
+            published: DateTime.parse(value['published']),
+          ),
+        );
+      });
+
+      _displayIdeas = toBeSet;
+      notifyListeners();
+    } catch (error) {
+      print(error);
+    }
+  }
+
+  List<Idea> get ideasToDisplay {
+    return [..._displayIdeas];
   }
 }
