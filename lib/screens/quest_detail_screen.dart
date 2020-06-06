@@ -144,7 +144,7 @@ class _QuestDetailState extends State<QuestDetail> {
       Provider.of<Quest>(context, listen: false).setInitialIdea().then(
         (value) {
           Provider.of<Quest>(context, listen: false)
-              .fetchAndSetIdeasToDisplay()
+              .fetchAndSetIdeasToDisplay(option: widget.showOptions)
               .then(
             (value) {
               setState(
