@@ -64,7 +64,8 @@ class Idea with ChangeNotifier {
     @required this.title,
     @required this.content,
     @required this.published,
-
+    this.supportVotes=0,
+    this.discardVotes=0
   });
 
   ///idea.dart
@@ -77,6 +78,8 @@ class Idea with ChangeNotifier {
     @required this.owner,
     @required this.supportData,
     @required this.published,
+    this.supportVotes=0,
+    this.discardVotes=0
   });
 
   ///idea.dart

@@ -30,7 +30,8 @@ dependencies:
   path_provider_ex: ^1.0.1
   firebase_core: ^0.4.5
   firebase_auth: ^0.16.1
-  cloud_firestore: ^0.13.6
+  firebase_database: ^3.1.6
+  firebase_storage: ^3.1.6
 
 dev_dependencies:
   flutter_test:

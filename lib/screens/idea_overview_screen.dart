@@ -265,20 +265,21 @@ class _IdeaOverviewScreenState extends State<IdeaOverviewScreen> with SingleTick
                 mini: false,
                 child: Icon(Icons.add),
                 onPressed: (){
-                  Provider.of<IdeasProvider>(context, listen: false).addIdea(
-                      'Titulo de una idea 2',
-                      'Contenido de una idea2',
-                      [File('/data/user/0/com.example.gingersystem/cache/file_picker/The Fountainhead (Centennial Edition Hardcover) by Ayn Rand (z-lib.org).pdf'), File('/data/user/0/com.example.gingersystem/cache/file_picker/Ukulele Exercises For Dummies® by McQueen, Brett (z-lib.org).pdf')],
-                      questActual
-                  );
-                  //File('Internal storage/Download/The Fountainhead (Centennial Edition Hardcover) by Ayn Rand (z-lib.org).pdf'),
-//                  Navigator.of(context).pushNamed(
-//                    AddIdeaScreen.routeName,
-//                    arguments: <String, String>{
-//                      'idIdea': ideaActual.id,
-//                      'idQuest': questActual,
-//                    },
+//                  Provider.of<IdeasProvider>(context, listen: false).addIdea(
+//                      'Titulo de una idea 2',
+//                      'Contenido de una idea2',
+//                      [File('/data/user/0/com.example.gingersystem/cache/file_picker/The Fountainhead (Centennial Edition Hardcover) by Ayn Rand (z-lib.org).pdf'), File('/data/user/0/com.example.gingersystem/cache/file_picker/Ukulele Exercises For Dummies® by McQueen, Brett (z-lib.org).pdf')],
+//                      questActual,
+//                    ideaActual.id
 //                  );
+                  //File('Internal storage/Download/The Fountainhead (Centennial Edition Hardcover) by Ayn Rand (z-lib.org).pdf'),
+                  Navigator.of(context).pushNamed(
+                    AddIdeaScreen.routeName,
+                    arguments: <String, String>{
+                      'idIdea': ideaActual.id,
+                      'idQuest': questActual,
+                    },
+                  );
                 },
               ),
             ),
