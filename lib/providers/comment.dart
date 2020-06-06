@@ -39,7 +39,7 @@ class Comment with ChangeNotifier {
   ///comment.dart
   /// Who published the comment
   ///
-  Participant publisher;
+  String publisher;
 
   ///comment.dart
   /// Class constructor for creating a comment
@@ -54,15 +54,8 @@ class Comment with ChangeNotifier {
     this.published = DateTime.now();
   }
 
-  Comment(
-    this.id,
-    this.title,
-    this.content,
-    this.published,
-    this.votes,
-    this.vote,
-    this.isChallenge,
-  );
+  Comment(this.id, this.title, this.content, this.published, this.votes,
+      this.vote, this.isChallenge, this.publisher);
 
   ///comment.dart
   ///
@@ -76,5 +69,9 @@ class Comment with ChangeNotifier {
 
   void switchIsChallenge() {
     this.isChallenge = this.isChallenge ? false : true;
+  }
+
+  bool isOwner(userId) {
+    return this.publisher == userId;
   }
 }

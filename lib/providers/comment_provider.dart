@@ -15,17 +15,14 @@ class CommentProvider with ChangeNotifier {
     return [..._comments];
   }
 
+  String getUserId() {
+    return this.userId;
+  }
+
   Comment createComment(
-      id, title, content, published, votes, vote, isChallenge) {
+      id, title, content, published, votes, vote, isChallenge, pUserId) {
     return Comment(
-      id,
-      title,
-      content,
-      published,
-      votes,
-      vote,
-      isChallenge,
-    );
+        id, title, content, published, votes, vote, isChallenge, pUserId);
   }
 
   Future<void> fetchAndSetCommentsByQuestAndIdea(idQuest, idIdea) async {
@@ -57,14 +54,14 @@ class CommentProvider with ChangeNotifier {
               }
             });
             loadedComments.add(createComment(
-              key2,
-              value2['title'],
-              value2['description'],
-              DateTime.parse(value2['published']),
-              value2['votes'],
-              exist ? valueExist : false,
-              value2['isChallenge'],
-            ));
+                key2,
+                value2['title'],
+                value2['description'],
+                DateTime.parse(value2['published']),
+                value2['votes'],
+                exist ? valueExist : false,
+                value2['isChallenge'],
+                value2['publisher']));
           },
         );
       } else {
@@ -77,7 +74,8 @@ class CommentProvider with ChangeNotifier {
                 DateTime.parse(value2['published']),
                 value2['votes'],
                 false,
-                value2['isChallenge']));
+                value2['isChallenge'],
+                value2['publisher']));
           },
         );
       }
