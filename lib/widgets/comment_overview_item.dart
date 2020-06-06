@@ -57,9 +57,11 @@ class _CommentOverviewItemState extends State<CommentOverviewItem> {
                             flex: 1,
                             child: GestureDetector(
                               onTap: () {
-                                comment.switchIsChallenge();
-                                commentManager.switchIsChallenge(idQuest,
-                                    idIdea, idComment, comment.isChallenge);
+                                if (comment.isOwner(commentManager.userId)) {
+                                  comment.switchIsChallenge();
+                                  commentManager.switchIsChallenge(idQuest,
+                                      idIdea, idComment, comment.isChallenge);
+                                }
                               },
                               child: Icon(
                                 Icons.gavel,

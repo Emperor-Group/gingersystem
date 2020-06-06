@@ -18,13 +18,30 @@ class CommentOverviewList extends StatefulWidget {
 class _CommentOverviewListState extends State<CommentOverviewList> {
   String idQuest;
   String idIdea;
+  bool _isInit = false;
+  bool _isLoading = false;
 
   _CommentOverviewListState(this.idQuest, this.idIdea);
 
   @override
   void didChangeDependencies() {
-    Provider.of<CommentProvider>(context, listen: false)
-        .fetchAndSetCommentsByQuestAndIdea(idQuest, idIdea);
+    if (!_isInit) {
+      setState(() {
+        _isLoading = true;
+      });
+      Provider.of<CommentProvider>(context, listen: false)
+          .fetchAndSetCommentsByQuestAndIdea(idQuest, idIdea)
+          .then(
+        (value) {
+          setState(
+            () {
+              _isLoading = false;
+            },
+          );
+        },
+      );
+    }
+    _isInit = true;
     super.didChangeDependencies();
   }
 
@@ -156,48 +173,52 @@ class _CommentOverviewListState extends State<CommentOverviewList> {
     final CommentProvider commentManager =
         Provider.of<CommentProvider>(context);
     final List<Comment> comments = commentManager.comments;
-    return Expanded(
-      child: Container(
-        width: deviceSize.width,
-        color: Colors.white,
-        child: Stack(
-          children: <Widget>[
-            Container(
-              child: ListView.builder(
-                itemCount: comments.length,
-                itemBuilder: (ctx, index) {
-                  return ChangeNotifierProvider.value(
-                    value: comments[index],
-                    child: CommentOverviewItem(
-                        this.idQuest, this.idIdea, comments[index].id),
-                  );
-                },
-              ),
-            ),
-            Container(
-              width: double.infinity,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.end,
+    return _isLoading
+        ? Center(
+            child: CircularProgressIndicator(),
+          )
+        : Expanded(
+            child: Container(
+              width: deviceSize.width,
+              color: Colors.white,
+              child: Stack(
                 children: <Widget>[
-                  FloatingActionButton(
-                      mini: true,
-                      child: Icon(
-                        Icons.add,
-                        color: Colors.white,
-                      ),
-                      backgroundColor: Colors.deepOrange,
-                      onPressed: () {
-                        addComment(
-                            context, checkingFlight, success, commentManager);
-                      }),
+                  Container(
+                    child: ListView.builder(
+                      itemCount: comments.length,
+                      itemBuilder: (ctx, index) {
+                        return ChangeNotifierProvider.value(
+                          value: comments[index],
+                          child: CommentOverviewItem(
+                              this.idQuest, this.idIdea, comments[index].id),
+                        );
+                      },
+                    ),
+                  ),
+                  Container(
+                    width: double.infinity,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        FloatingActionButton(
+                            mini: true,
+                            child: Icon(
+                              Icons.add,
+                              color: Colors.white,
+                            ),
+                            backgroundColor: Colors.deepOrange,
+                            onPressed: () {
+                              addComment(context, checkingFlight, success,
+                                  commentManager);
+                            }),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
+          );
   }
 }
 
