@@ -104,8 +104,8 @@ class CommentProvider with ChangeNotifier {
           },
         ),
       );
+      notifyListeners();
     } catch (error) {
-      print(error);
       throw (error);
     }
   }
@@ -128,6 +128,46 @@ class CommentProvider with ChangeNotifier {
       notifyListeners();
     } catch (error) {
       notifyListeners();
+      throw error;
+    }
+  }
+
+  Future<void> modifyComment(
+      idQuest, idIdea, idComment, title, description) async {
+    final url =
+        'https://the-rhizome.firebaseio.com/comments/$idQuest/$idIdea/$idComment.json?auth=$authToken';
+
+    final url2 =
+        'https://the-rhizome.firebaseio.com/commentVotes/$idQuest/$idIdea/$userId/$idComment.json?auth=$authToken';
+    try {
+      await http.patch(
+        url,
+        body: json.encode({'title': title, 'description': description}),
+      );
+
+      await http.delete(url2);
+
+      notifyListeners();
+    } catch (error) {
+      notifyListeners();
+      throw error;
+    }
+  }
+
+  Future<void> deleteComment(idQuest, idIdea, idComment) async {
+    final url =
+        'https://the-rhizome.firebaseio.com/comments/$idQuest/$idIdea/$idComment.json?auth=$authToken';
+    final url2 =
+        'https://the-rhizome.firebaseio.com/commentVotes/$idQuest/$idIdea/$userId/$idComment.json?auth=$authToken';
+
+    try {
+      await http.delete(
+        url,
+      );
+
+      await http.delete(url2);
+      notifyListeners();
+    } catch (error) {
       throw error;
     }
   }
