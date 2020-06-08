@@ -15,17 +15,14 @@ class CommentProvider with ChangeNotifier {
     return [..._comments];
   }
 
+  String getUserId() {
+    return this.userId;
+  }
+
   Comment createComment(
-      id, title, content, published, votes, vote, isChallenge) {
+      id, title, content, published, votes, vote, isChallenge, pUserId) {
     return Comment(
-      id,
-      title,
-      content,
-      published,
-      votes,
-      vote,
-      isChallenge,
-    );
+        id, title, content, published, votes, vote, isChallenge, pUserId);
   }
 
   Future<void> fetchAndSetCommentsByQuestAndIdea(idQuest, idIdea) async {
@@ -57,14 +54,14 @@ class CommentProvider with ChangeNotifier {
               }
             });
             loadedComments.add(createComment(
-              key2,
-              value2['title'],
-              value2['description'],
-              DateTime.parse(value2['published']),
-              value2['votes'],
-              exist ? valueExist : false,
-              value2['isChallenge'],
-            ));
+                key2,
+                value2['title'],
+                value2['description'],
+                DateTime.parse(value2['published']),
+                value2['votes'],
+                exist ? valueExist : false,
+                value2['isChallenge'],
+                value2['publisher']));
           },
         );
       } else {
@@ -77,7 +74,8 @@ class CommentProvider with ChangeNotifier {
                 DateTime.parse(value2['published']),
                 value2['votes'],
                 false,
-                value2['isChallenge']));
+                value2['isChallenge'],
+                value2['publisher']));
           },
         );
       }
@@ -106,8 +104,8 @@ class CommentProvider with ChangeNotifier {
           },
         ),
       );
+      notifyListeners();
     } catch (error) {
-      print(error);
       throw (error);
     }
   }
@@ -130,6 +128,46 @@ class CommentProvider with ChangeNotifier {
       notifyListeners();
     } catch (error) {
       notifyListeners();
+      throw error;
+    }
+  }
+
+  Future<void> modifyComment(
+      idQuest, idIdea, idComment, title, description) async {
+    final url =
+        'https://the-rhizome.firebaseio.com/comments/$idQuest/$idIdea/$idComment.json?auth=$authToken';
+
+    final url2 =
+        'https://the-rhizome.firebaseio.com/commentVotes/$idQuest/$idIdea/$userId/$idComment.json?auth=$authToken';
+    try {
+      await http.patch(
+        url,
+        body: json.encode({'title': title, 'description': description}),
+      );
+
+      await http.delete(url2);
+
+      notifyListeners();
+    } catch (error) {
+      notifyListeners();
+      throw error;
+    }
+  }
+
+  Future<void> deleteComment(idQuest, idIdea, idComment) async {
+    final url =
+        'https://the-rhizome.firebaseio.com/comments/$idQuest/$idIdea/$idComment.json?auth=$authToken';
+    final url2 =
+        'https://the-rhizome.firebaseio.com/commentVotes/$idQuest/$idIdea/$userId/$idComment.json?auth=$authToken';
+
+    try {
+      await http.delete(
+        url,
+      );
+
+      await http.delete(url2);
+      notifyListeners();
+    } catch (error) {
       throw error;
     }
   }
