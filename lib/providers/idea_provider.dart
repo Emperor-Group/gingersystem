@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gingersystem/providers/idea.dart';
+import 'package:gingersystem/screens/idea_overview_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
@@ -30,7 +31,7 @@ class IdeasProvider with ChangeNotifier {
   }
 
   Future<void> addIdea(String title, String content, List<File> supportData,
-      String idQuest, String padre) async {
+      String idQuest, String padre, String type) async {
     try {
       String url =
           'https://the-rhizome.firebaseio.com/ideas/$idQuest.json?auth=$authToken';
@@ -46,6 +47,7 @@ class IdeasProvider with ChangeNotifier {
             'supportVotes': 0,
             'discardVotes': 0,
             'parents': {'$padre': true},
+            'type':type
             //no lleva children porque es nueva.
           },
         ),
@@ -59,7 +61,7 @@ class IdeasProvider with ChangeNotifier {
       response = await http.patch(
         url,
         body: json.encode(
-          {'$ideaID':true},
+          {'$ideaID': true},
         ),
       );
       print('response.statusCode2: ' + response.statusCode.toString());
@@ -67,6 +69,7 @@ class IdeasProvider with ChangeNotifier {
       print(content);
       print('idQuest' + idQuest);
       print('userID' + userID);
+
       //Se sube supportData
 //      final StorageReference fsr = FirebaseStorage.instance
 //          .ref()
@@ -294,7 +297,7 @@ se tiene que enviar la cantidad de votos a poner en la base de datos (actual-1 o
     try {
       final response = await http.get(url);
       final Map<String, dynamic> extractedIdea = json.decode(response.body);
-      print('extractedIdeas: '+extractedIdea.toString());
+      print('extractedIdeas: ' + extractedIdea.toString());
       Map<String, dynamic> children = extractedIdea['children'];
       Map<String, dynamic> parents = extractedIdea['parents'];
       if (children == null && padresOHijas == 'ideasHijas') {

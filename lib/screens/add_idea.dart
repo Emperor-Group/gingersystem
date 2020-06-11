@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gingersystem/providers/idea.dart';
 import 'package:gingersystem/providers/idea_provider.dart';
+import 'package:gingersystem/screens/idea_overview_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
@@ -23,6 +24,16 @@ class _AddIdeaScreenState extends State<AddIdeaScreen> {
   bool _isLoading = false;
   String idIdeaPadre;
   String idQuest;
+  String _type;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    Map<String, String> obj = ModalRoute.of(context).settings.arguments;
+    idIdeaPadre = obj['idIdea'];
+    idQuest = obj['idQuest'];
+    _type = obj['type'];
+  }
 
   void dispose() {
     _ideaTitleFocusNode.dispose();
@@ -44,9 +55,6 @@ class _AddIdeaScreenState extends State<AddIdeaScreen> {
   }
 
   void _saveForm() async {
-    Map<String, String> obj = ModalRoute.of(context).settings.arguments;
-    idIdeaPadre = obj['idIdea'];
-    idQuest = obj['idQuest'];
 
     final bool isValid = _form.currentState.validate();
     if (!isValid) {
@@ -57,9 +65,8 @@ class _AddIdeaScreenState extends State<AddIdeaScreen> {
       _isLoading = true;
     });
     try {
-      print(allFiles);
       await Provider.of<IdeasProvider>(context, listen: false).addIdea(
-          _savedIdea.title, _savedIdea.content, allFiles, idQuest, idIdeaPadre);
+          _savedIdea.title, _savedIdea.content, allFiles, idQuest, idIdeaPadre, _type);
     } catch (error) {
       await showDialog(
         context: context,
