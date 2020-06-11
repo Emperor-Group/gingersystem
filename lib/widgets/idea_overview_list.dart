@@ -34,7 +34,6 @@ class _IdeaOverviewListState extends State<IdeaOverviewList> {
     padresOHijasOTodas=widget.padresOHijasOTodas;
   }
 
-
   @override
   void didChangeDependencies() {
     if (!_isInit) {
@@ -70,8 +69,6 @@ class _IdeaOverviewListState extends State<IdeaOverviewList> {
 
   @override
   Widget build(BuildContext context) {
-    print('listas');
-    print(listas);
     return _isLoading
         ? Center(
             child: CircularProgressIndicator(),

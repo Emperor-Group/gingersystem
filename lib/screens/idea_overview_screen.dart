@@ -266,7 +266,8 @@ class _IdeaOverviewScreenState extends State<IdeaOverviewScreen> with SingleTick
                       'Contenido de una idea2',
                       [File('/data/user/0/com.example.gingersystem/cache/file_picker/The Fountainhead (Centennial Edition Hardcover) by Ayn Rand (z-lib.org).pdf'), File('/data/user/0/com.example.gingersystem/cache/file_picker/Ukulele Exercises For Dummies® by McQueen, Brett (z-lib.org).pdf')],
                       questActual,
-                    ideaActual.id
+                    ideaActual.id,
+
                   );
                   //File('Internal storage/Download/The Fountainhead (Centennial Edition Hardcover) by Ayn Rand (z-lib.org).pdf'),
 //                  Navigator.of(context).pushNamed(
