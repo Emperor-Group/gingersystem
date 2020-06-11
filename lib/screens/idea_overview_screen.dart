@@ -87,14 +87,10 @@ class _IdeaOverviewScreenState extends State<IdeaOverviewScreen> with SingleTick
       ideaActual=obj.keys.toList()[0];
       padresOHijas=obj.values.toList()[1];
 
-//      Provider.of<IdeasProvider>(context, listen: false)
-//          .fetchAndSetLaunchedQuests()
-//          .then((_) {
-//        setState(() {
-//          _isLoading = false;
-//        });
-//        _controller.forward();
-//      });
+        setState(() {
+          _isLoading = false;
+        });
+        _controller.forward();
     }
     _isInit = true;
     super.didChangeDependencies();
@@ -247,16 +243,16 @@ class _IdeaOverviewScreenState extends State<IdeaOverviewScreen> with SingleTick
               child: SlideTransition(
                 position: _slideAnimation,
                 child: IdeaOverviewList(
-                    ideaActual, questActual ),
+                    ideaActual, questActual, padresOHijas),
               ),
               onRefresh: () =>
                   Provider.of<IdeasProvider>(context, listen: false)
-                      .fetchAndSetLaunchedIdeasChildren(questActual, ideaActual.id),
+                      .fetchAndSetLaunchedIdeasChildren(questActual, ideaActual.id,padresOHijas),
             ),
           ),
             ],
           ),
-          Align(
+          padresOHijas=='ideasHijas' ? Align(
             alignment: Alignment.bottomRight,
             child: Padding(
               padding: const EdgeInsets.all(20.0),
@@ -265,29 +261,28 @@ class _IdeaOverviewScreenState extends State<IdeaOverviewScreen> with SingleTick
                 mini: false,
                 child: Icon(Icons.add),
                 onPressed: (){
-//                  Provider.of<IdeasProvider>(context, listen: false).addIdea(
-//                      'Titulo de una idea 2',
-//                      'Contenido de una idea2',
-//                      [File('/data/user/0/com.example.gingersystem/cache/file_picker/The Fountainhead (Centennial Edition Hardcover) by Ayn Rand (z-lib.org).pdf'), File('/data/user/0/com.example.gingersystem/cache/file_picker/Ukulele Exercises For Dummies® by McQueen, Brett (z-lib.org).pdf')],
-//                      questActual,
-//                    ideaActual.id
-//                  );
-                  //File('Internal storage/Download/The Fountainhead (Centennial Edition Hardcover) by Ayn Rand (z-lib.org).pdf'),
-                  Navigator.of(context).pushNamed(
-                    AddIdeaScreen.routeName,
-                    arguments: <String, String>{
-                      'idIdea': ideaActual.id,
-                      'idQuest': questActual,
-                    },
+                  Provider.of<IdeasProvider>(context, listen: false).addIdea(
+                      'Titulo de una idea 2',
+                      'Contenido de una idea2',
+                      [File('/data/user/0/com.example.gingersystem/cache/file_picker/The Fountainhead (Centennial Edition Hardcover) by Ayn Rand (z-lib.org).pdf'), File('/data/user/0/com.example.gingersystem/cache/file_picker/Ukulele Exercises For Dummies® by McQueen, Brett (z-lib.org).pdf')],
+                      questActual,
+                    ideaActual.id
                   );
+                  //File('Internal storage/Download/The Fountainhead (Centennial Edition Hardcover) by Ayn Rand (z-lib.org).pdf'),
+//                  Navigator.of(context).pushNamed(
+//                    AddIdeaScreen.routeName,
+//                    arguments: <String, String>{
+//                      'idIdea': ideaActual.id,
+//                      'idQuest': questActual,
+//                    },
+//                  );
                 },
               ),
             ),
-          )
+          ): Container()
         ],
       ),
     );
   }
+
 }
-
-

@@ -3,6 +3,7 @@ import 'package:gingersystem/providers/idea.dart';
 import 'package:gingersystem/providers/quest.dart';
 import 'package:gingersystem/providers/quests_provider.dart';
 import 'package:gingersystem/providers/stage.dart';
+import 'package:gingersystem/widgets/idea_overview_list.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
@@ -327,48 +328,7 @@ class _QuestDetailState extends State<QuestDetail> {
                   height: deviceSize.height * 0.05,
                 ),
                 Expanded(
-                  child: ListWheelScrollView(
-                    children: <Widget>[
-                      ...Provider.of<Quest>(context)
-                          .ideasToDisplay
-                          .map(
-                            (e) => Card(
-                              child: ListTile(
-                                leading: CircleAvatar(
-                                  backgroundColor: Colors.grey[100],
-                                  child: Stack(
-                                    alignment: Alignment.center,
-                                    children: <Widget>[
-                                      Icon(
-                                          widget.showOptions ==
-                                                  FilteredIdeaOptions.Favourites
-                                              ? Icons.stars
-                                              : Icons.alarm,
-                                          color: Colors.orange),
-                                    ],
-                                  ),
-                                ),
-                                title: Text(
-                                  (Provider.of<Quest>(context, listen: false)
-                                                  .ideasToDisplay
-                                                  .indexOf(e) +
-                                              1)
-                                          .toString() +
-                                      '. ' +
-                                      e.title,
-                                  style: Theme.of(context).textTheme.headline1,
-                                ),
-                                subtitle: Text(
-                                  'published: ${DateFormat('dd/MM/yyyy').format(e.published)}',
-                                  style: Theme.of(context).textTheme.subtitle1,
-                                ),
-                              ),
-                            ),
-                          )
-                          .toList()
-                    ],
-                    itemExtent: deviceSize.height * 0.15,
-                  ),
+                  child: IdeaOverviewList(null,selected.id,'todas'),
                 ),
               ],
             ),

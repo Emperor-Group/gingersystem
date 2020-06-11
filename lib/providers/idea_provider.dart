@@ -1,12 +1,14 @@
 import 'dart:ffi';
 import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:gingersystem/providers/idea.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart';
 
 class IdeasProvider with ChangeNotifier {
@@ -27,62 +29,39 @@ class IdeasProvider with ChangeNotifier {
     return _launchedIdea;
   }
 
+  void _addIdeaAux(String ideaNuevaID, dynamic abuelo, String idQuest,
+      String padre, List<Idea> Iparents, String idAbuelo) {
+    print('es un abuelo! '+ idAbuelo);
+    //se añade a la lista de padres cada idea abuela.
+    Iparents.add(Idea.addIdea(
+      id: idAbuelo,
+      title: abuelo['title'],
+      content: abuelo['content'],
+      //supportData: value2['supportData'],
+      owner: abuelo['owner'],
+      published: DateTime.parse(abuelo['published']),
+      supportVotes: abuelo['supportVotes'],
+      discardVotes: abuelo['discardVotes'],
+    ));
+    print('Iparents');
+    print(Iparents);
+
+    Map<dynamic, dynamic> abueloChildren= Map<dynamic, dynamic>();
+    abuelo['children'].forEach((k, v) {
+      abueloChildren[k]=v;
+    });
+    abueloChildren['$ideaNuevaID']='depth';
+//    //Se añade a los abuelos el nuevo hijo
+    print('Se añade a los abuelos el nuevo hijo');
+    DBref.child('ideas/$idQuest/$idAbuelo/children')
+        .set(abueloChildren);
+  }
+
   Future<void> addIdea(String title, String content, List<File> supportData,
       String idQuest, String padre) async {
-    //  print('launchedIdea.id '+padre.id);
+    List<Idea> Iparents = [];
 
-//    List<Uint8List> x=List<Uint8List>();
-//    supportData.forEach((e) async {
-//      x.add( e.readAsBytesSync());
-//    });
-
-    //  List <Idea> Iparents=[];
-
-    DBref.child('ideas/$idQuest/$padre')
-        .orderByKey()
-        .equalTo('$padre')
-        .once()
-        .then((DataSnapshot snapshot) {
-      Map<dynamic, dynamic> values = snapshot.value;
-      values.forEach((key, values) {
-        print(values["name"]);
-      });
-    });
-//    final url2 =
-//        'https://the-rhizome.firebaseio.com/ideas/$idQuest.json?auth=$authToken&orderBy="children/'+json.encode('\$')+'key"&equalTo="${padre.id}"';
-//    print('url2 '+url2);
     try {
-//      final response2 = await http.get(url2);
-//      final Map<String, dynamic> extractedData = json.decode(response2.body);
-//      final List<Idea> loadedparentsDelPapa = [];
-//
-//      if (extractedData == null) {
-//        print('El padre es la idea inicial porque no tiene parents');
-//        Iparents=[padre];
-//      }else{
-//        print('lista is not null');
-//        print(extractedData);
-//        loadedparentsDelPapa.add(padre);
-//        extractedData.forEach(
-//              (key, value) {
-//                loadedparentsDelPapa.add(
-//                Idea.addIdea(
-//                    id: key,
-//                    title: value.title,
-//                    content: value.content,
-//                    owner: value.owner,
-//                    supportData: [],
-//                    published: value.published
-//                )
-//            );
-//          },
-//        );
-//        Iparents = loadedparentsDelPapa;
-//      }
-//      print('response2.statusCode: '+response2.statusCode.toString());
-//
-//      print('Iparents: ');
-//      print(Iparents);
 
       final url =
           'https://the-rhizome.firebaseio.com/ideas/$idQuest.json?auth=$authToken';
@@ -97,23 +76,78 @@ class IdeasProvider with ChangeNotifier {
             'published': DateTime.now().toIso8601String(),
             'supportVotes': 0,
             'discardVotes': 0,
-            'parents': [],
+            //'parents': Iparents,
+            //no lleva children porque es nueva.
           },
         ),
       );
-      final ideaID = json.decode(response.body)['name'];
-      final StorageReference fsr = FirebaseStorage.instance
-          .ref()
-          .child('ideas/$idQuest/$ideaID/supportData');
-      supportData.forEach((element) {
-        // fsr.putFile(element);
+      print('response.statusCode: ' + response.statusCode.toString());
+
+      final String ideaID = json.decode(response.body)['name'];
+      print('ideaID: ' + ideaID);
+
+      DBref.child('ideas/$idQuest').once().then((DataSnapshot snapshot) {
+        Map<dynamic, dynamic> values = snapshot.value;
+
+        print('values');
+        print(values);
+
+        values.forEach((key, value) {                                           //se recorren todas las ideas
+          if (value['children'] != null) {                                      //si las ideas tienen hijos
+            value['children'].forEach((key2, value2) {                       //dentro de los hijos de las ideas
+                  if (key2 == padre){                                           //si es un abuelo de la idea nueva (papa del padre)
+                      //se tiene que meter la nueva idea a la lista de children de los padres.
+                      //Se crea la lista de parents de la idea nueva con los abuelos.
+                      _addIdeaAux(ideaID, value, idQuest, padre, Iparents, key);
+                    }
+                  else
+                    {
+                      print('esta idea no es padre del padre');
+                    }
+                });
+
+            print('Se añade al padre nuevo hijo');
+            DBref.child('ideas/$idQuest/$padre/children/$ideaID')
+                .set('depth');
+          } else {
+            print('esta idea no tiene children');
+          }
+        });
+      });
+      //Añade el padre a la lista de todos los padres y se sube parents a la nueva
+      print('Iparents');
+      print(Iparents);
+      fetchAndSetOneIdeaByQuest(padre, idQuest).then((value) {
+        Iparents.add(Idea.addIdea(
+          id: _launchedIdea.id,
+          title: _launchedIdea.title,
+          content: _launchedIdea.content,
+          //supportData: value2['supportData'],
+          owner: _launchedIdea.owner,
+          published: _launchedIdea.published,
+          supportVotes: _launchedIdea.supportVotes,
+          discardVotes: _launchedIdea.discardVotes,
+        ));
+        DBref.child('ideas/$idQuest/$ideaID/parents').set(
+          Map.fromIterable(Iparents,
+              key: (e) => e.id, value: (e) => 'depth'),
+        );
       });
 
-      print('response.statusCode: ' + response.statusCode.toString());
-      print(title);
-      print(content);
-      print('idQuest' + idQuest);
-      print('userID' + userID);
+
+      //Se sube supportData
+//      final StorageReference fsr = FirebaseStorage.instance
+//          .ref()
+//          .child('ideas/$idQuest/$ideaID/supportData');
+//      supportData.forEach((element) {
+//        // fsr.putFile(element);
+//      });
+//
+//      print('response.statusCode: ' + response.statusCode.toString());
+//      print(title);
+//      print(content);
+//      print('idQuest' + idQuest);
+//      print('userID' + userID);
 
       notifyListeners();
     } catch (error) {
@@ -121,35 +155,6 @@ class IdeasProvider with ChangeNotifier {
       throw (error);
     }
   }
-//  Future<void> addIdea(String title, String content, List<File> supportData, String idQuest) async {
-//    final url =
-//        'https://the-rhizome.firebaseio.com/ideas/$idQuest.json?auth=$authToken';
-//
-//    try {
-//      var request = http.MultipartRequest('POST', Uri.parse(url));
-//      request.files.add(
-//          await http.MultipartFile.fromPath(
-//              'supportData',
-//              supportData[0].path
-//          )
-//      );
-//      request.fields['title'] = title;
-//      request.fields['content'] = content;
-//      request.fields['owner'] = userID;
-//      request.fields['published'] = DateTime.now().toIso8601String();
-//      request.fields['supportVotes'] = 0.toString();
-//      request.fields['discardVotes'] = 0.toString();
-//      print(title);
-//      print(content);
-//      print('idQuest'+idQuest);
-//      print('userID'+userID);
-//      var res = await request.send();
-//      notifyListeners();
-//    } catch (error) {
-//      print(error);
-//      throw (error);
-//    }
-//  }
 
 /*
 Solo mete los parametros que se le pasen a la base de datos,
@@ -157,11 +162,42 @@ se tiene que enviar la cantidad de votos a poner en la base de datos (actual-1 o
  */
   Future<void> switchVotes(
       String idQuest, String idIdea, int PSupportVote, int PDiscardVote) async {
-    final url2 =
-        'https://the-rhizome.firebaseio.com/ideas/$idQuest/$idIdea.json?auth=$authToken';
-    String jsonS =
-        '{"supportVotes": $PSupportVote, "discardVotes": $PDiscardVote}';
+    Idea ideaC = await getOneIdeaByQuest(idIdea, idQuest);
+    String url2='https://the-rhizome.firebaseio.com/ideas/$idQuest/$idIdea.json?auth=$authToken';
+    String jsonS;
 
+    if(ideaC.discardVotes!=PDiscardVote){//se quiere cambiar discard
+      if(ideaC.discardVotes > PDiscardVote){//quiere bajar en 1
+        int x=await getVotosDeUsuarioEnIdeaSupportOrDiscard(idQuest, idIdea, 'discard');
+        if(x > 0){//debe tener un voto para poder bajarlo
+          print('debe tener un voto para poder bajarlo, \$PDiscardVote: '+ PDiscardVote.toString());
+          jsonS ='{"discardVotes": $PDiscardVote}';
+          await setVotosDeUsuarioEnIdeaSupportOrDiscard(idQuest, ideaC, 'discard', -1);
+        }
+      }else{//se quiere subir
+        int x=await getVotosDeUsuarioEnIdeaSupportOrDiscard(idQuest, idIdea, 'discard');
+        if(x == 0){//debe 0 votos para poder subirlo
+          print('debe 0 votos para poder subirlo, \$PDiscardVote: '+ PDiscardVote.toString());
+
+          jsonS ='{"discardVotes": $PDiscardVote}';
+        }
+        await setVotosDeUsuarioEnIdeaSupportOrDiscard(idQuest, ideaC, 'discard', 1);
+      }
+    }else if(ideaC.supportVotes!=PSupportVote){//se quiere cambiar support
+      if(ideaC.supportVotes > PSupportVote){//quiere bajar en 1
+        int x=await getVotosDeUsuarioEnIdeaSupportOrDiscard(idQuest, idIdea, 'support');
+        if(x > 0){//debe tener un voto para poder bajarlo
+          jsonS ='{"supportVotes": $PSupportVote}';
+          await setVotosDeUsuarioEnIdeaSupportOrDiscard(idQuest, ideaC, 'support', -1);
+        }
+      }else{//se quiere subir en 1
+        int x=await getVotosDeUsuarioEnIdeaSupportOrDiscard(idQuest, idIdea, 'support');
+        if(x == 0){//debe 0 votos para poder subirlo
+          jsonS ='{"supportVotes": $PSupportVote}';
+        }
+        await setVotosDeUsuarioEnIdeaSupportOrDiscard(idQuest, ideaC, 'support', 1);
+      }
+    }
     try {
       Response response = await http.patch(url2, body: jsonS);
       print(response.statusCode);
@@ -172,7 +208,64 @@ se tiene que enviar la cantidad de votos a poner en la base de datos (actual-1 o
     }
   }
 
+  Future<int> getVotosDeUsuarioEnIdeaSupportOrDiscard(String idQuest, String ideaId, String supportOrDiscard) async {
+    Future <int> respuesta;
+    final url3 =
+        'https://the-rhizome.firebaseio.com/userVotesIdeas/$userID/$ideaId/$supportOrDiscard.json?auth=$authToken';
+    try {
+      Response response = await http.get(url3);
+      print('getVotosDeUsuarioEnIdeaSupportOrDiscard '+response.statusCode.toString());
+      final Map<String, dynamic> extractedMap = json.decode(response.body);
+
+      notifyListeners();
+
+    if(extractedMap==null ||extractedMap.length==0){
+      print('este usuario no tiene votos en esta idea');
+      respuesta=Future.value(0);
+    }else if (supportOrDiscard=='support' || supportOrDiscard=='discard'){
+      respuesta=Future.value(extractedMap['$ideaId']);
+    }else{
+    print('argumento supportOrDiscard está mal');
+    }
+    return respuesta;
+  } catch (error) {
+      notifyListeners();
+      throw error;
+    }
+    }
+//el delta solo puede ser 1 o -1
+  Future<void> setVotosDeUsuarioEnIdeaSupportOrDiscard(String idQuest, Idea pIdea, String supportOrDiscard, int delta) async {
+    String jsonS;
+    final url3 =
+        'https://the-rhizome.firebaseio.com/userVotesIdeas/$userID/${pIdea.id}/$supportOrDiscard.json?auth=$authToken';
+    try {
+
+        if(delta>0){
+          print('setVotosDeUsuarioEnIdeaSupportOrDiscard '+delta.toString());
+          jsonS =
+          '{"${pIdea.id}": $delta}';
+        }else{
+          print('setVotosDeUsuarioEnIdeaSupportOrDiscard '+delta.toString());
+          jsonS =
+          '{"${pIdea.id}": ${1+delta}}';
+        }
+
+      Response response = await http.patch(url3, body: jsonS);
+      print('setVotosDeUsuarioEnIdeaSupportOrDiscard '+response.statusCode.toString());
+
+      notifyListeners();
+    } catch (error) {
+      notifyListeners();
+      throw error;
+    }
+  }
+
+
   Future<void> fetchAndSetOneIdeaByQuest(String ideaId, String idQuest) async {
+    print('ideaId');
+    print(ideaId);
+    print('idQuest');
+    print(idQuest);
     final url =
         'https://the-rhizome.firebaseio.com/ideas/$idQuest/$ideaId.json?auth=${this.authToken}';
     try {
@@ -186,6 +279,8 @@ se tiene que enviar la cantidad de votos a poner en la base de datos (actual-1 o
       } else {
         //print('extractedIdeas: '+extractedIdeas.toString());
       }
+      print('extractedIdeas');
+      print(extractedIdeas);
       var value2 = extractedIdeas;
       loadedIdeas.add(Idea.addIdea(
         id: ideaId,
@@ -198,6 +293,8 @@ se tiene que enviar la cantidad de votos a poner en la base de datos (actual-1 o
         discardVotes: value2['discardVotes'],
       ));
       _launchedIdea = loadedIdeas[0];
+      print('_launchedIdea');
+      print(_launchedIdea);
       notifyListeners();
     } catch (error) {
       print(error);
@@ -205,32 +302,76 @@ se tiene que enviar la cantidad de votos a poner en la base de datos (actual-1 o
     }
   }
 
+  Future<Idea> getOneIdeaByQuest(String ideaId, String idQuest) async {
+    final url =
+        'https://the-rhizome.firebaseio.com/ideas/$idQuest/$ideaId.json?auth=${this.authToken}';
+    try {
+      final response = await http.get(url);
+      final Map<String, dynamic> extractedIdeas = json.decode(response.body);
+
+      Idea loadedIdea;
+      if (extractedIdeas == null) {
+        print('no hay idea ocn ese idques y ididea');
+      } else {
+        //print('extractedIdeas: '+extractedIdeas.toString());
+      }
+      var value2 = extractedIdeas;
+      loadedIdea = Idea.addIdea(
+        id: ideaId,
+        title: value2['title'],
+        content: value2['content'],
+        //supportData: value2['supportData'],
+        owner: value2['owner'],
+        published: DateTime.parse(value2['published']),
+        supportVotes: value2['supportVotes'],
+        discardVotes: value2['discardVotes'],
+      );
+      return loadedIdea;
+    } catch (error) {
+      print(error);
+      throw error;
+    }
+  }
+
   Future<void> fetchAndSetLaunchedIdeasChildren(
-      String pQuestId, String pIdeaId) async {
+      String pQuestId, String pIdeaId, String padresOHijas) async {
     final url =
         'https://the-rhizome.firebaseio.com/ideas/$pQuestId/$pIdeaId.json?auth=${this.authToken}';
     try {
       final response = await http.get(url);
-      final Map<String, dynamic> extractedIdeas = json.decode(response.body);
-      List<String> children = extractedIdeas['children'];
-      List<String> parents = extractedIdeas['parents'];
+      final Map<String, dynamic> extractedIdea = json.decode(response.body);
+
+      Map<String, dynamic> children = extractedIdea['children'];
+      Map<String, dynamic> parents = extractedIdea['parents'];
+      if(children==null && padresOHijas=='ideasHijas'){
+        ideasparentsOchildren=[];
+        return;
+      }
+      if(parents==null && padresOHijas!='ideasHijas'){
+        ideasparentsOchildren=[];
+        return;
+      }
 
       final List<Idea> loadedIdeas = [];
-      if (extractedIdeas == null) {
+      if (extractedIdea == null) {
         print('no hay ideas');
         return;
       } else {
         //print('extractedIdeas: '+extractedIdeas.toString());
       }
-      var value2 = extractedIdeas;
-      loadedIdeas.add(Idea.addIdea(
-          id: pIdeaId,
-          title: value2['title'],
-          content: value2['content'],
-          //supportData: value2['supportData'],
-          owner: value2['owner'],
-          published: DateTime.parse(value2['published'])));
-      _launchedIdea = loadedIdeas[0];
+      if (padresOHijas == 'ideasHijas') {
+        for (var key in children.keys) {
+          Idea x = await getOneIdeaByQuest(key, pQuestId);
+          loadedIdeas.add(x);
+          ideasparentsOchildren = loadedIdeas;
+        }
+      } else {
+        for (var key in parents.keys) {
+          Idea x = await getOneIdeaByQuest(key, pQuestId);
+          loadedIdeas.add(x);
+          ideasparentsOchildren = loadedIdeas;
+        }
+      }
       notifyListeners();
     } catch (error) {
       print(error);

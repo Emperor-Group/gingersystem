@@ -8,7 +8,6 @@ import 'package:gingersystem/widgets/comment_overview_list.dart';
 
 class IdeaDetailScreen extends StatefulWidget {
   static const routeName = '/idea-detail';
-
   @override
   _IdeaDetailScreenState createState() => _IdeaDetailScreenState();
 }
@@ -19,7 +18,6 @@ class _IdeaDetailScreenState extends State<IdeaDetailScreen> {
   Idea selectedIdea;
   String ideaId;
   String questId;
-
   var list;
 
   @override
@@ -44,46 +42,77 @@ class _IdeaDetailScreenState extends State<IdeaDetailScreen> {
           selectedIdea = ideaManager.getByID(ideaId);
         });
       });
-      //print('list ' + list.toString());
     }
     _isInit = true;
   }
 
   @override
   Widget build(BuildContext context) {
+//    print('initialSupport '+initialSupport.toString());
+//    print('initialDiscard '+initialDiscard.toString());
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Idea Control Screen'),
       ),
       body: ChangeNotifierProvider.value(
         value: selectedIdea,
-        child: _isLoading
+        child: (_isLoading)
             ? Center(
           child: CircularProgressIndicator(),
         )
-            : IdeaDetail(questId),
+            : IdeaDetail(questId, ideaId),
       ),
     );
   }
 }
 
+// ignore: must_be_immutable
 class IdeaDetail extends StatefulWidget {
-  final String idQ;
+   String idQ;
+   String idIdea;
 
-  IdeaDetail(this.idQ);
+   IdeaDetail(this.idQ,this.idIdea);
 
   @override
-  _IdeaDetailState createState() => _IdeaDetailState(idQ);
+  _IdeaDetailState createState()=> _IdeaDetailState(idQ,idIdea);
 }
 
 class _IdeaDetailState extends State<IdeaDetail> {
-  bool supportBoolean = false;
-  bool reportBoolean = false;
+  bool supportBoolean=false;
+  bool reportBoolean=false;
   String idQuest;
+  String idIdea1;
+  bool _isInit=false;
+  bool _isLoading=false;
+  bool _isLoading2=false;
 
-  _IdeaDetailState(this.idQuest);
+  _IdeaDetailState(this.idQuest, this.idIdea1);
 
   bool showComments = false;
+  @override
+  void didChangeDependencies() {
+
+    if (!_isInit) {
+      setState(
+            () {
+          _isLoading = true;
+          _isLoading2 = true;
+        },
+      );
+      final IdeasProvider ideaManager = Provider.of<IdeasProvider>(context);
+        ideaManager.getVotosDeUsuarioEnIdeaSupportOrDiscard(idQuest, idIdea1, 'support').then((value) => setState(() {
+          supportBoolean=(value!=0);
+          _isLoading = false;
+        }));
+        ideaManager.getVotosDeUsuarioEnIdeaSupportOrDiscard(idQuest, idIdea1, 'discard').then((value) => setState(() {
+          reportBoolean=(value!=0);
+          _isLoading2 = false;
+        }));
+    }
+    _isInit = true;
+    super.didChangeDependencies();
+  }
 
   void showcomments(BuildContext context, String idQuest, String idIdea) {
     final deviceSize = MediaQuery.of(context).size;
@@ -112,10 +141,15 @@ class _IdeaDetailState extends State<IdeaDetail> {
         });
   }
 
+
   @override
   Widget build(BuildContext context) {
     Idea selected = Provider.of<Idea>(context);
-    return Column(
+    return (_isLoading && _isLoading2)
+        ? Center(
+      child: CircularProgressIndicator(),
+    )
+        : Column(
       children: <Widget>[
         Expanded(
           flex: 5,
@@ -185,19 +219,19 @@ class _IdeaDetailState extends State<IdeaDetail> {
                                 Column(
                                   children: <Widget>[
                                     Text(
-                                      'Support',
+                                      !supportBoolean?'Support':'Supported',
                                       textAlign: TextAlign.center,
                                       style:
                                       Theme.of(context).textTheme.headline2,
                                     ),
                                     GestureDetector(
                                       child: Icon(
-                                        supportBoolean
+                                        !supportBoolean
                                             ? Icons.wb_incandescent
                                             : Icons.lightbulb_outline,
                                         color: supportBoolean
-                                            ? Colors.yellow
-                                            : Colors.grey,
+                                            ? Colors.grey
+                                            : Colors.yellow,
                                         size: 50,
                                       ),
                                       onTap: () {
@@ -205,10 +239,10 @@ class _IdeaDetailState extends State<IdeaDetail> {
                                           IdeasProvider ideaManager = Provider.of<IdeasProvider>(context,listen: false);
                                           if(!supportBoolean){
                                             selected.supportVotes=selected.supportVotes+1;
-                                            ideaManager.switchVotes(idQuest,selected.id,selected.supportVotes+1,selected.discardVotes);
+                                            ideaManager.switchVotes(idQuest,selected.id,selected.supportVotes,selected.discardVotes);
                                           }else{
                                             selected.supportVotes=selected.supportVotes-1;
-                                            ideaManager.switchVotes(idQuest,selected.id,selected.supportVotes-1,selected.discardVotes);
+                                            ideaManager.switchVotes(idQuest,selected.id,selected.supportVotes,selected.discardVotes);
                                           }
                                           supportBoolean = !supportBoolean;
                                         });
@@ -220,7 +254,9 @@ class _IdeaDetailState extends State<IdeaDetail> {
                                   width: 10,
                                 ),
                                 Text(
-                                  selected.discardVotes.toString(), style: selected.discardVotes==0 ? TextStyle(
+                                  selected.discardVotes.toString(),
+                                  style: selected.discardVotes==0 ?
+                                  TextStyle(
                                   fontSize: 25,
                                   color: Colors.grey,
                                 ):TextStyle(
@@ -231,14 +267,15 @@ class _IdeaDetailState extends State<IdeaDetail> {
                                 Column(
                                   children: <Widget>[
                                     Text(
-                                      'Discard',
+                                      !reportBoolean ?
+                                      'Discard':'Discarded',
                                       textAlign: TextAlign.center,
                                       style:
                                       Theme.of(context).textTheme.headline2,
                                     ),
                                     GestureDetector(
                                       child: Icon(
-                                        reportBoolean
+                                        !reportBoolean
                                             ? Icons.report
                                             : Icons.report_off,
                                         color: reportBoolean
@@ -251,10 +288,10 @@ class _IdeaDetailState extends State<IdeaDetail> {
                                           IdeasProvider ideaManager = Provider.of<IdeasProvider>(context,listen: false);
                                           if(!reportBoolean){
                                             selected.discardVotes=selected.discardVotes+1;
-                                            ideaManager.switchVotes(idQuest,selected.id,selected.supportVotes,selected.discardVotes+1);
+                                            ideaManager.switchVotes(idQuest,selected.id,selected.supportVotes,selected.discardVotes);
                                           }else{
                                             selected.discardVotes=selected.discardVotes-1;
-                                            ideaManager.switchVotes(idQuest,selected.id,selected.supportVotes,selected.discardVotes-1);
+                                            ideaManager.switchVotes(idQuest,selected.id,selected.supportVotes,selected.discardVotes);
                                           }
                                           reportBoolean = !reportBoolean;
                                         });
@@ -321,7 +358,14 @@ class _IdeaDetailState extends State<IdeaDetail> {
                       heroTag: 'ideasPadres',
                       child: Icon(Icons.navigate_before),
                       mini: true,
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context).pushNamed(
+                            IdeaOverviewScreen.routeName,
+                            arguments: <Idea, String>{
+                              selected: idQuest,
+                              null: 'ideasPadres'
+                            });
+                      },
                     ),
                   ),
                   Align(
