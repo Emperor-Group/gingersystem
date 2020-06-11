@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gingersystem/providers/idea.dart';
+import 'package:gingersystem/screens/idea_overview_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
@@ -29,39 +30,10 @@ class IdeasProvider with ChangeNotifier {
     return _launchedIdea;
   }
 
-  void _addIdeaAux(String ideaNuevaID, dynamic abuelo, String idQuest,
-      String padre, List<Idea> Iparents, String idAbuelo) {
-    print('es un abuelo! ' + idAbuelo);
-    //se añade a la lista de padres cada idea abuela.
-    Iparents.add(Idea.addIdea(
-      id: idAbuelo,
-      title: abuelo['title'],
-      content: abuelo['content'],
-      //supportData: value2['supportData'],
-      owner: abuelo['owner'],
-      published: DateTime.parse(abuelo['published']),
-      supportVotes: abuelo['supportVotes'],
-      discardVotes: abuelo['discardVotes'],
-    ));
-    print('Iparents');
-    print(Iparents);
-
-    Map<dynamic, dynamic> abueloChildren = Map<dynamic, dynamic>();
-    abuelo['children'].forEach((k, v) {
-      abueloChildren[k] = v;
-    });
-    abueloChildren['$ideaNuevaID'] = 'depth';
-//    //Se añade a los abuelos el nuevo hijo
-    print('Se añade a los abuelos el nuevo hijo');
-    DBref.child('ideas/$idQuest/$idAbuelo/children').set(abueloChildren);
-  }
-
   Future<void> addIdea(String title, String content, List<File> supportData,
-      String idQuest, String padre) async {
-    List<Idea> Iparents = [];
-
+      String idQuest, String padre, String type) async {
     try {
-      final url =
+      String url =
           'https://the-rhizome.firebaseio.com/ideas/$idQuest.json?auth=$authToken';
       http.Response response = await http.post(
         url,
@@ -74,63 +46,29 @@ class IdeasProvider with ChangeNotifier {
             'published': DateTime.now().toIso8601String(),
             'supportVotes': 0,
             'discardVotes': 0,
-            //'parents': Iparents,
+            'parents': {'$padre': true},
+            'type':type
             //no lleva children porque es nueva.
           },
         ),
       );
-      print('response.statusCode: ' + response.statusCode.toString());
+      print('response.statusCode1: ' + response.statusCode.toString());
 
       final String ideaID = json.decode(response.body)['name'];
       print('ideaID: ' + ideaID);
-
-      DBref.child('ideas/$idQuest').once().then((DataSnapshot snapshot) {
-        Map<dynamic, dynamic> values = snapshot.value;
-
-        print('values');
-        print(values);
-
-        values.forEach((key, value) {
-          //se recorren todas las ideas
-          if (value['children'] != null) {
-            //si las ideas tienen hijos
-            value['children'].forEach((key2, value2) {
-              //dentro de los hijos de las ideas
-              if (key2 == padre) {
-                //si es un abuelo de la idea nueva (papa del padre)
-                //se tiene que meter la nueva idea a la lista de children de los padres.
-                //Se crea la lista de parents de la idea nueva con los abuelos.
-                _addIdeaAux(ideaID, value, idQuest, padre, Iparents, key);
-              } else {
-                print('esta idea no es padre del padre');
-              }
-            });
-
-            print('Se añade al padre nuevo hijo');
-            DBref.child('ideas/$idQuest/$padre/children/$ideaID').set('depth');
-          } else {
-            print('esta idea no tiene children');
-          }
-        });
-      });
-      //Añade el padre a la lista de todos los padres y se sube parents a la nueva
-      print('Iparents');
-      print(Iparents);
-      fetchAndSetOneIdeaByQuest(padre, idQuest).then((value) {
-        Iparents.add(Idea.addIdea(
-          id: _launchedIdea.id,
-          title: _launchedIdea.title,
-          content: _launchedIdea.content,
-          //supportData: value2['supportData'],
-          owner: _launchedIdea.owner,
-          published: _launchedIdea.published,
-          supportVotes: _launchedIdea.supportVotes,
-          discardVotes: _launchedIdea.discardVotes,
-        ));
-        DBref.child('ideas/$idQuest/$ideaID/parents').set(
-          Map.fromIterable(Iparents, key: (e) => e.id, value: (e) => 'depth'),
-        );
-      });
+      url =
+          'https://the-rhizome.firebaseio.com/ideas/$idQuest/$padre/children.json?auth=$authToken';
+      response = await http.patch(
+        url,
+        body: json.encode(
+          {'$ideaID': true},
+        ),
+      );
+      print('response.statusCode2: ' + response.statusCode.toString());
+      print(title);
+      print(content);
+      print('idQuest' + idQuest);
+      print('userID' + userID);
 
       //Se sube supportData
 //      final StorageReference fsr = FirebaseStorage.instance
@@ -139,7 +77,6 @@ class IdeasProvider with ChangeNotifier {
 //      supportData.forEach((element) {
 //        // fsr.putFile(element);
 //      });
-//
 //      print('response.statusCode: ' + response.statusCode.toString());
 //      print(title);
 //      print(content);
@@ -360,7 +297,7 @@ se tiene que enviar la cantidad de votos a poner en la base de datos (actual-1 o
     try {
       final response = await http.get(url);
       final Map<String, dynamic> extractedIdea = json.decode(response.body);
-
+      print('extractedIdeas: ' + extractedIdea.toString());
       Map<String, dynamic> children = extractedIdea['children'];
       Map<String, dynamic> parents = extractedIdea['parents'];
       if (children == null && padresOHijas == 'ideasHijas') {
@@ -392,6 +329,8 @@ se tiene que enviar la cantidad de votos a poner en la base de datos (actual-1 o
           ideasparentsOchildren = loadedIdeas;
         }
       }
+      print('ideasparentsOchildren');
+      print(ideasparentsOchildren);
       notifyListeners();
     } catch (error) {
       print(error);
@@ -399,3 +338,129 @@ se tiene que enviar la cantidad de votos a poner en la base de datos (actual-1 o
     }
   }
 }
+/*
+* Este metodo añade padres de la idea padre, y actualiza las hijas en la base de datos.
+* asumiendo que las hijas y los padres son los nodos superiores y los inferiores.
+* */
+//Future<void> addIdea(String title, String content, List<File> supportData,
+//    String idQuest, String padre) async {
+//  List<Idea> Iparents = [];
+//
+//  try {
+//    final url =
+//        'https://the-rhizome.firebaseio.com/ideas/$idQuest.json?auth=$authToken';
+//    http.Response response = await http.post(
+//      url,
+//      body: json.encode(
+//        {
+//          'title': title,
+//          'content': content,
+//          'supportData': [],
+//          'owner': userID,
+//          'published': DateTime.now().toIso8601String(),
+//          'supportVotes': 0,
+//          'discardVotes': 0,
+//          //'parents': Iparents,
+//          //no lleva children porque es nueva.
+//        },
+//      ),
+//    );
+//    print('response.statusCode: ' + response.statusCode.toString());
+//
+//    final String ideaID = json.decode(response.body)['name'];
+//    print('ideaID: ' + ideaID);
+//
+//    DBref.child('ideas/$idQuest').once().then((DataSnapshot snapshot) {
+//      Map<dynamic, dynamic> values = snapshot.value;
+//
+//      print('values');
+//      print(values);
+//
+//      values.forEach((key, value) {
+//        //se recorren todas las ideas
+//        if (value['children'] != null) {
+//          //si las ideas tienen hijos
+//          value['children'].forEach((key2, value2) {
+//            //dentro de los hijos de las ideas
+//            if (key2 == padre) {
+//              //si es un abuelo de la idea nueva (papa del padre)
+//              //se tiene que meter la nueva idea a la lista de children de los padres.
+//              //Se crea la lista de parents de la idea nueva con los abuelos.
+//              _addIdeaAux(ideaID, value, idQuest, padre, Iparents, key);
+//            } else {
+//              print('esta idea no es padre del padre');
+//            }
+//          });
+//
+//          print('Se añade al padre nuevo hijo');
+//          DBref.child('ideas/$idQuest/$padre/children/$ideaID').set('depth');
+//        } else {
+//          print('esta idea no tiene children');
+//        }
+//      });
+//    });
+//    //Añade el padre a la lista de todos los padres y se sube parents a la nueva
+//    print('Iparents');
+//    print(Iparents);
+//    fetchAndSetOneIdeaByQuest(padre, idQuest).then((value) {
+//      Iparents.add(Idea.addIdea(
+//        id: _launchedIdea.id,
+//        title: _launchedIdea.title,
+//        content: _launchedIdea.content,
+//        //supportData: value2['supportData'],
+//        owner: _launchedIdea.owner,
+//        published: _launchedIdea.published,
+//        supportVotes: _launchedIdea.supportVotes,
+//        discardVotes: _launchedIdea.discardVotes,
+//      ));
+//      DBref.child('ideas/$idQuest/$ideaID/parents').set(
+//        Map.fromIterable(Iparents, key: (e) => e.id, value: (e) => 'depth'),
+//      );
+//    });
+//
+//    //Se sube supportData
+////      final StorageReference fsr = FirebaseStorage.instance
+////          .ref()
+////          .child('ideas/$idQuest/$ideaID/supportData');
+////      supportData.forEach((element) {
+////        // fsr.putFile(element);
+////      });
+////
+////      print('response.statusCode: ' + response.statusCode.toString());
+////      print(title);
+////      print(content);
+////      print('idQuest' + idQuest);
+////      print('userID' + userID);
+//
+//    notifyListeners();
+//  } catch (error) {
+//    print(error);
+//    throw (error);
+//  }
+//}
+//void _addIdeaAux(String ideaNuevaID, dynamic abuelo, String idQuest,
+//    String padre, List<Idea> Iparents, String idAbuelo) {
+//  print('es un abuelo! ' + idAbuelo);
+//  //se añade a la lista de padres cada idea abuela.
+//  Iparents.add(Idea.addIdea(
+//    id: idAbuelo,
+//    title: abuelo['title'],
+//    content: abuelo['content'],
+//    //supportData: value2['supportData'],
+//    owner: abuelo['owner'],
+//    published: DateTime.parse(abuelo['published']),
+//    supportVotes: abuelo['supportVotes'],
+//    discardVotes: abuelo['discardVotes'],
+//  ));
+//  print('Iparents');
+//  print(Iparents);
+//
+//  Map<dynamic, dynamic> abueloChildren = Map<dynamic, dynamic>();
+//  abuelo['children'].forEach((k, v) {
+//    abueloChildren[k] = v;
+//  });
+//  abueloChildren['$ideaNuevaID'] = 'depth';
+////    //Se añade a los abuelos el nuevo hijo
+//  print('Se añade a los abuelos el nuevo hijo');
+//  DBref.child('ideas/$idQuest/$idAbuelo/children').set(abueloChildren);
+//}

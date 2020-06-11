@@ -285,8 +285,14 @@ class _IdeaOverviewScreenState extends State<IdeaOverviewScreen>
               label: 'Depth',
               labelStyle: TextStyle(fontSize: 18.0),
               onTap: () {
-                Navigator.pushNamed(context, AddIdeaScreen.routeName,
-                    arguments: FilteredOptions.DEPTH);
+                Navigator.of(context).pushNamed(
+                  AddIdeaScreen.routeName,
+                  arguments: <String, String>{
+                    'idIdea': ideaActual.id,
+                    'idQuest': questActual,
+                    'type': 'DEPTH',
+                  },
+                );
               }),
           SpeedDialChild(
             child: Icon(Icons.call_merge),
@@ -295,21 +301,32 @@ class _IdeaOverviewScreenState extends State<IdeaOverviewScreen>
             label: 'Mix',
             labelStyle: TextStyle(fontSize: 18.0),
             onTap: () {
-              Navigator.pushNamed(context, AddIdeaScreen.routeName,
-                  arguments: FilteredOptions.MIX);
+              Navigator.of(context).pushNamed(
+                AddIdeaScreen.routeName,
+                arguments: <String, String>{
+                  'idIdea': ideaActual.id,
+                  'idQuest': questActual,
+                  'type': 'MIX',
+                },
+              );
             },
           ),
           SpeedDialChild(
-            child: Icon(Icons.call_split),
-            backgroundColor: Colors.purple,
-            foregroundColor: Colors.white,
-            label: 'Alternate',
-            labelStyle: TextStyle(fontSize: 18.0),
-            onTap: () {
-              Navigator.pushNamed(context, AddIdeaScreen.routeName,
-                  arguments: FilteredOptions.ALTERNATE);
-            },
-          ),
+              child: Icon(Icons.call_split),
+              backgroundColor: Colors.purple,
+              foregroundColor: Colors.white,
+              label: 'Alternate',
+              labelStyle: TextStyle(fontSize: 18.0),
+              onTap: () {
+                Navigator.of(context).pushNamed(
+                  AddIdeaScreen.routeName,
+                  arguments: <String, String>{
+                    'idIdea': ideaActual.id,
+                    'idQuest': questActual,
+                    'type': 'ALTERNATE',
+                  },
+                );
+              }),
         ],
       ),
     );

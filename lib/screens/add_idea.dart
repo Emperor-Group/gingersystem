@@ -24,12 +24,15 @@ class _AddIdeaScreenState extends State<AddIdeaScreen> {
   bool _isLoading = false;
   String idIdeaPadre;
   String idQuest;
-  FilteredOptions _type;
+  String _type;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _type = ModalRoute.of(context).settings.arguments;
+    Map<String, String> obj = ModalRoute.of(context).settings.arguments;
+    idIdeaPadre = obj['idIdea'];
+    idQuest = obj['idQuest'];
+    _type = obj['type'];
   }
 
   void dispose() {
@@ -52,9 +55,6 @@ class _AddIdeaScreenState extends State<AddIdeaScreen> {
   }
 
   void _saveForm() async {
-    Map<String, String> obj = ModalRoute.of(context).settings.arguments;
-    idIdeaPadre = obj['idIdea'];
-    idQuest = obj['idQuest'];
 
     final bool isValid = _form.currentState.validate();
     if (!isValid) {
@@ -66,7 +66,7 @@ class _AddIdeaScreenState extends State<AddIdeaScreen> {
     });
     try {
       await Provider.of<IdeasProvider>(context, listen: false).addIdea(
-          _savedIdea.title, _savedIdea.content, allFiles, idQuest, idIdeaPadre);
+          _savedIdea.title, _savedIdea.content, allFiles, idQuest, idIdeaPadre, _type);
     } catch (error) {
       await showDialog(
         context: context,
