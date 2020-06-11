@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
+import 'dart:math';
 
 class AddIdeaScreen extends StatefulWidget {
   static const routeName = '/add-idea';
@@ -58,12 +59,7 @@ class _AddIdeaScreenState extends State<AddIdeaScreen> {
     try {
       print(allFiles);
       await Provider.of<IdeasProvider>(context, listen: false).addIdea(
-          _savedIdea.title,
-          _savedIdea.content,
-          allFiles,
-          idQuest,
-          idIdeaPadre
-      );
+          _savedIdea.title, _savedIdea.content, allFiles, idQuest, idIdeaPadre);
     } catch (error) {
       await showDialog(
         context: context,
@@ -164,21 +160,36 @@ class _AddIdeaScreenState extends State<AddIdeaScreen> {
                     SizedBox(
                       height: 50,
                     ),
-                    RaisedButton(onPressed: () async {
-                      List<File> files;
-                      files = await _presentFilePicker(files);
-                      setState(() {
-                        allFiles = [...?files];
-                      });
-                      _savedIdea = Idea.addIdea(
-                        id: '',
-                        title: _savedIdea.title,
-                        content: _savedIdea.content,
-                        owner: '',
-                        // supportData: files,
-                        published: DateTime.now(),
-                      );
-                    }),
+                    RaisedButton(
+                        child: Row(
+                          children: <Widget>[
+                            Icon(
+                              Icons.attach_file,
+                              color: Colors.grey,
+                            ),
+                            Text(
+                              'Attach files',
+                              style: TextStyle(
+                                color: Colors.grey,
+                              ),
+                            )
+                          ],
+                        ),
+                        onPressed: () async {
+                          List<File> files;
+                          files = await _presentFilePicker(files);
+                          setState(() {
+                            allFiles = [...?files];
+                          });
+                          _savedIdea = Idea.addIdea(
+                            id: '',
+                            title: _savedIdea.title,
+                            content: _savedIdea.content,
+                            owner: '',
+                            // supportData: files,
+                            published: DateTime.now(),
+                          );
+                        }),
                     SizedBox(
                       height: 50,
                     ),
