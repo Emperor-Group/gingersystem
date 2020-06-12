@@ -18,6 +18,7 @@ class IdeasProvider with ChangeNotifier {
   String authToken;
   String userID;
   List<Idea> ideasparentsOchildren;
+  List<String> parents = [];
 
   IdeasProvider(this.authToken, this.userID);
 
@@ -26,15 +27,14 @@ class IdeasProvider with ChangeNotifier {
   }
 
   Idea getByID(String idIdea) {
-    //print('_launchedIdeas[0].id: '+_launchedIdeas.toString());
     return _launchedIdea;
   }
 
   Future<void> addIdea(String title, String content, List<File> supportData,
-      String idQuest, List<String> padres, String type) async {
+      String idQuest, String type) async {
 
     Map<String, dynamic> x={};
-    for(String padre in padres){
+    for(String padre in parents){
       x['$padre']=true;
     }
 
@@ -64,7 +64,7 @@ class IdeasProvider with ChangeNotifier {
       final String ideaID = json.decode(response.body)['name'];
 
       //Se mete el hijo nuevo a todos los papás.
-      for(String padre in padres){
+      for(String padre in parents){
         url =
         'https://the-rhizome.firebaseio.com/ideas/$idQuest/$padre/children.json?auth=$authToken';
         response = await http.patch(
@@ -75,20 +75,6 @@ class IdeasProvider with ChangeNotifier {
         );
       }
       print('response.statusCode2: ' + response.statusCode.toString());
-
-      //Se sube supportData
-//      final StorageReference fsr = FirebaseStorage.instance
-//          .ref()
-//          .child('ideas/$idQuest/$ideaID/supportData');
-//      supportData.forEach((element) {
-//        // fsr.putFile(element);
-//      });
-//      print('response.statusCode: ' + response.statusCode.toString());
-//      print(title);
-//      print(content);
-//      print('idQuest' + idQuest);
-//      print('userID' + userID);
-
       notifyListeners();
     } catch (error) {
       print(error);
@@ -343,7 +329,15 @@ se tiene que enviar la cantidad de votos a poner en la base de datos (actual-1 o
       throw error;
     }
   }
+
+  void addParent(String idParent) {
+    if (parents.contains(idParent))
+      parents.remove(idParent);
+    else
+      parents.add(idParent);
+  }
 }
+
 /*
 * Este metodo añade padres de la idea padre, y actualiza las hijas en la base de datos.
 * asumiendo que las hijas y los padres son los nodos superiores y los inferiores.

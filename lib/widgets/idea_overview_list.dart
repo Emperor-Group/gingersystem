@@ -10,11 +10,12 @@ class IdeaOverviewList extends StatefulWidget {
   Idea ideaActual;
   String idQuest;
   String padresOHijasOTodas;
-  IdeaOverviewList(this.ideaActual, this.idQuest, this.padresOHijasOTodas);
+  bool onlyShow;
+  IdeaOverviewList(
+      this.ideaActual, this.idQuest, this.padresOHijasOTodas, this.onlyShow);
 
   @override
-  _IdeaOverviewListState createState() =>
-      _IdeaOverviewListState();
+  _IdeaOverviewListState createState() => _IdeaOverviewListState(onlyShow);
 }
 
 class _IdeaOverviewListState extends State<IdeaOverviewList> {
@@ -25,13 +26,16 @@ class _IdeaOverviewListState extends State<IdeaOverviewList> {
   bool _isLoading = false;
   List<Idea> listas;
   Quest selectedQuest;
+  bool onlyShow;
+
+  _IdeaOverviewListState(this.onlyShow);
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    idQuest=widget.idQuest;
-    ideaActual=widget.ideaActual;
-    padresOHijasOTodas=widget.padresOHijasOTodas;
+    idQuest = widget.idQuest;
+    ideaActual = widget.ideaActual;
+    padresOHijasOTodas = widget.padresOHijasOTodas;
   }
 
   @override
@@ -42,19 +46,19 @@ class _IdeaOverviewListState extends State<IdeaOverviewList> {
           _isLoading = true;
         },
       );
-      if(padresOHijasOTodas=='todas'){
+      if (padresOHijasOTodas == 'todas') {
         selectedQuest = Provider.of<QuestsProvider>(context).getByID(idQuest);
-        selectedQuest.setInitialIdea().then((_){
+        selectedQuest.setInitialIdea().then((_) {
           setState(() {
             _isLoading = false;
-            listas=Provider.of<Quest>(context, listen: false).ideasToDisplay;
+            listas = selectedQuest.ideasToDisplay;
           });
         });
-      }else{
-        IdeasProvider ideaManager = Provider.of<IdeasProvider>(context);
+      } else {
+        IdeasProvider ideaManager = Provider.of<IdeasProvider>(context, listen: true);
         ideaManager
             .fetchAndSetLaunchedIdeasChildren(
-            idQuest, ideaActual.id, padresOHijasOTodas)
+                idQuest, ideaActual.id, padresOHijasOTodas)
             .then((_) {
           setState(() {
             _isLoading = false;
@@ -79,7 +83,10 @@ class _IdeaOverviewListState extends State<IdeaOverviewList> {
                 itemBuilder: (ctx, index) {
                   return ChangeNotifierProvider.value(
                     value: listas[index],
-                    child: IdeaOverviewItem(idQuest),
+                    child: IdeaOverviewItem(
+                      idQuest,
+                      onlyShow,
+                    ),
                   );
                 },
               )
