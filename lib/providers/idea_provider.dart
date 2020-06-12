@@ -18,6 +18,7 @@ class IdeasProvider with ChangeNotifier {
   String authToken;
   String userID;
   List<Idea> ideasparentsOchildren;
+  List<String> parents = [];
 
   IdeasProvider(this.authToken, this.userID);
 
@@ -47,7 +48,7 @@ class IdeasProvider with ChangeNotifier {
             'supportVotes': 0,
             'discardVotes': 0,
             'parents': {'$padre': true},
-            'type':type
+            'type': type
             //no lleva children porque es nueva.
           },
         ),
@@ -337,7 +338,13 @@ se tiene que enviar la cantidad de votos a poner en la base de datos (actual-1 o
       throw error;
     }
   }
+
+  void addParent(String idParent) {
+    if (parents.contains(idParent)) parents.remove(idParent);
+    parents.add(idParent);
+  }
 }
+
 /*
 * Este metodo añade padres de la idea padre, y actualiza las hijas en la base de datos.
 * asumiendo que las hijas y los padres son los nodos superiores y los inferiores.
