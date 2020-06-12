@@ -340,8 +340,10 @@ se tiene que enviar la cantidad de votos a poner en la base de datos (actual-1 o
   }
 
   void addParent(String idParent) {
-    if (parents.contains(idParent)) parents.remove(idParent);
-    parents.add(idParent);
+    if (parents.contains(idParent))
+      parents.remove(idParent);
+    else
+      parents.add(idParent);
   }
 }
 

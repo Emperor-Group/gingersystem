@@ -36,6 +36,10 @@ class _AddIdeaScreenState extends State<AddIdeaScreen> {
     idIdeaPadre = obj['idIdea'];
     idQuest = obj['idQuest'];
     _type = obj['type'];
+
+    if (_type!="MIX")
+      Provider.of<IdeasProvider>(context, listen: false)
+        .addParent(idIdeaPadre);
   }
 
   void dispose() {
