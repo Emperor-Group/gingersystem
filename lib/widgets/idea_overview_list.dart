@@ -55,7 +55,7 @@ class _IdeaOverviewListState extends State<IdeaOverviewList> {
           });
         });
       } else {
-        IdeasProvider ideaManager = Provider.of<IdeasProvider>(context);
+        IdeasProvider ideaManager = Provider.of<IdeasProvider>(context, listen: true);
         ideaManager
             .fetchAndSetLaunchedIdeasChildren(
                 idQuest, ideaActual.id, padresOHijasOTodas)

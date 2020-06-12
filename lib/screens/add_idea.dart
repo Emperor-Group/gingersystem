@@ -76,7 +76,6 @@ class _AddIdeaScreenState extends State<AddIdeaScreen> {
           _savedIdea.content,
           allFiles,
           idQuest,
-          idIdeaPadre,
           _type);
     } catch (error) {
       await showDialog(

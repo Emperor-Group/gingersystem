@@ -27,13 +27,19 @@ class IdeasProvider with ChangeNotifier {
   }
 
   Idea getByID(String idIdea) {
-    //print('_launchedIdeas[0].id: '+_launchedIdeas.toString());
     return _launchedIdea;
   }
 
   Future<void> addIdea(String title, String content, List<File> supportData,
-      String idQuest, String padre, String type) async {
+      String idQuest, String type) async {
+
+    Map<String, dynamic> x={};
+    for(String padre in parents){
+      x['$padre']=true;
+    }
+
     try {
+      //Se sube la idea nueva con papás.
       String url =
           'https://the-rhizome.firebaseio.com/ideas/$idQuest.json?auth=$authToken';
       http.Response response = await http.post(
@@ -47,8 +53,8 @@ class IdeasProvider with ChangeNotifier {
             'published': DateTime.now().toIso8601String(),
             'supportVotes': 0,
             'discardVotes': 0,
-            'parents': {'$padre': true},
-            'type': type
+            'parents': x,
+            'type':type
             //no lleva children porque es nueva.
           },
         ),
@@ -56,34 +62,19 @@ class IdeasProvider with ChangeNotifier {
       print('response.statusCode1: ' + response.statusCode.toString());
 
       final String ideaID = json.decode(response.body)['name'];
-      print('ideaID: ' + ideaID);
-      url =
-          'https://the-rhizome.firebaseio.com/ideas/$idQuest/$padre/children.json?auth=$authToken';
-      response = await http.patch(
-        url,
-        body: json.encode(
-          {'$ideaID': true},
-        ),
-      );
+
+      //Se mete el hijo nuevo a todos los papás.
+      for(String padre in parents){
+        url =
+        'https://the-rhizome.firebaseio.com/ideas/$idQuest/$padre/children.json?auth=$authToken';
+        response = await http.patch(
+          url,
+          body: json.encode(
+            {'$ideaID': true},
+          ),
+        );
+      }
       print('response.statusCode2: ' + response.statusCode.toString());
-      print(title);
-      print(content);
-      print('idQuest' + idQuest);
-      print('userID' + userID);
-
-      //Se sube supportData
-//      final StorageReference fsr = FirebaseStorage.instance
-//          .ref()
-//          .child('ideas/$idQuest/$ideaID/supportData');
-//      supportData.forEach((element) {
-//        // fsr.putFile(element);
-//      });
-//      print('response.statusCode: ' + response.statusCode.toString());
-//      print(title);
-//      print(content);
-//      print('idQuest' + idQuest);
-//      print('userID' + userID);
-
       notifyListeners();
     } catch (error) {
       print(error);
