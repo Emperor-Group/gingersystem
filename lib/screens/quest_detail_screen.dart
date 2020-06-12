@@ -328,7 +328,7 @@ class _QuestDetailState extends State<QuestDetail> {
                   height: deviceSize.height * 0.05,
                 ),
                 Expanded(
-                  child: IdeaOverviewList(null,selected.id,'todas'),
+                  child: IdeaOverviewList(null, selected.id, 'todas', false),
                 ),
               ],
             ),

@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 import 'dart:math';
+import 'package:gingersystem/widgets/idea_overview_list.dart';
+import 'package:gingersystem/providers/idea.dart';
 
 class AddIdeaScreen extends StatefulWidget {
   static const routeName = '/add-idea';
@@ -25,6 +27,7 @@ class _AddIdeaScreenState extends State<AddIdeaScreen> {
   String idIdeaPadre;
   String idQuest;
   String _type;
+  List<String> padresId = [];
 
   @override
   void didChangeDependencies() {
@@ -33,6 +36,10 @@ class _AddIdeaScreenState extends State<AddIdeaScreen> {
     idIdeaPadre = obj['idIdea'];
     idQuest = obj['idQuest'];
     _type = obj['type'];
+
+    if (_type!="MIX")
+      Provider.of<IdeasProvider>(context, listen: false)
+        .addParent(idIdeaPadre);
   }
 
   void dispose() {
@@ -55,7 +62,6 @@ class _AddIdeaScreenState extends State<AddIdeaScreen> {
   }
 
   void _saveForm() async {
-
     final bool isValid = _form.currentState.validate();
     if (!isValid) {
       return;
@@ -66,7 +72,12 @@ class _AddIdeaScreenState extends State<AddIdeaScreen> {
     });
     try {
       await Provider.of<IdeasProvider>(context, listen: false).addIdea(
-          _savedIdea.title, _savedIdea.content, allFiles, idQuest, idIdeaPadre, _type);
+          _savedIdea.title,
+          _savedIdea.content,
+          allFiles,
+          idQuest,
+          idIdeaPadre,
+          _type);
     } catch (error) {
       await showDialog(
         context: context,
@@ -99,6 +110,7 @@ class _AddIdeaScreenState extends State<AddIdeaScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final deviceSize = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         title: Text('Add a new Idea'),
@@ -119,6 +131,33 @@ class _AddIdeaScreenState extends State<AddIdeaScreen> {
                 key: _form,
                 child: ListView(
                   children: <Widget>[
+                    _type == "MIX"
+                        ? Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 100),
+                            child: RaisedButton(
+                              elevation: 8.0,
+                              child: Text(
+                                'Add Parents!',
+                                style: Theme.of(context).textTheme.button,
+                              ),
+                              color: Theme.of(context).primaryColor,
+                              onPressed: () {
+                                showModalBottomSheet(
+                                    context: context,
+                                    builder: (_) {
+                                      return Container(
+                                        margin: const EdgeInsets.only(
+                                            top: 5, left: 15, right: 15),
+                                        height: deviceSize.height,
+                                        child: IdeaOverviewList(
+                                            null, idQuest, "todas", true),
+                                      );
+                                    });
+                              },
+                            ),
+                          )
+                        : Container(),
                     TextFormField(
                       decoration: InputDecoration(labelText: 'Idea Title'),
                       style: Theme.of(context).textTheme.headline6,
@@ -208,9 +247,11 @@ class _AddIdeaScreenState extends State<AddIdeaScreen> {
                           style: Theme.of(context).textTheme.button,
                         ),
                         color: Theme.of(context).primaryColor,
-                        onPressed: () => _saveForm(),
+                        onPressed: () {
+                          _saveForm();
+                        },
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),

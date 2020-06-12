@@ -242,8 +242,8 @@ class _IdeaOverviewScreenState extends State<IdeaOverviewScreen>
                 child: RefreshIndicator(
                   child: SlideTransition(
                     position: _slideAnimation,
-                    child:
-                        IdeaOverviewList(ideaActual, questActual, padresOHijas),
+                    child: IdeaOverviewList(
+                        ideaActual, questActual, padresOHijas, false),
                   ),
                   onRefresh: () =>
                       Provider.of<IdeasProvider>(context, listen: false)

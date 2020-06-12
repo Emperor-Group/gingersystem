@@ -5,7 +5,6 @@ import 'package:gingersystem/providers/participant.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 
-
 class Idea with ChangeNotifier {
   ///idea.dart
   /// Unique identifier given by firebase
@@ -51,6 +50,8 @@ class Idea with ChangeNotifier {
 
   List<String> padres = [];
 
+  bool isPressed = false;
+
   ///idea.dart
   /// Date it was published
   ///
@@ -59,28 +60,26 @@ class Idea with ChangeNotifier {
   ///idea.dart
   /// Class constructor for the idea that begins with a quest
   ///
-  Idea.createInitialIdea({
-    @required this.id,
-    @required this.title,
-    @required this.content,
-    @required this.published,
-    this.supportVotes=0,
-    this.discardVotes=0
-  });
+  Idea.createInitialIdea(
+      {@required this.id,
+      @required this.title,
+      @required this.content,
+      @required this.published,
+      this.supportVotes = 0,
+      this.discardVotes = 0});
 
   ///idea.dart
   /// Class constructor for an idea
   ///
-  Idea.addIdea({
-    @required this.id,
-    @required this.title,
-    @required this.content,
-    @required this.owner,
-    @required this.supportData,
-    @required this.published,
-    this.supportVotes=0,
-    this.discardVotes=0
-  });
+  Idea.addIdea(
+      {@required this.id,
+      @required this.title,
+      @required this.content,
+      @required this.owner,
+      @required this.supportData,
+      @required this.published,
+      this.supportVotes = 0,
+      this.discardVotes = 0});
 
   ///idea.dart
   /// Returns the list of comments sorted by the number of votes
@@ -114,5 +113,9 @@ class Idea with ChangeNotifier {
     int value = isToAdd ? 1 : -1;
     this.discardVotes += value;
     notifyListeners();
+  }
+
+  void isPressedIdea() {
+    isPressed = isPressed ? false : true;
   }
 }
