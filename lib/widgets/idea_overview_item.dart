@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gingersystem/providers/idea.dart';
-import 'package:gingersystem/providers/quest.dart';
-import 'package:gingersystem/providers/stage.dart';
 import 'package:gingersystem/screens/idea_detail_screen.dart';
-import 'package:gingersystem/screens/quest_detail_screen.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:gingersystem/providers/idea_provider.dart';
 
@@ -24,6 +20,7 @@ class _IdeaOverviewItemState extends State<IdeaOverviewItem> {
   bool supportBoolean = false;
   bool reportBoolean = false;
   Idea idea;
+  bool isBlock = false;
 
   @override
   void initState() {
@@ -33,7 +30,8 @@ class _IdeaOverviewItemState extends State<IdeaOverviewItem> {
   }
 
   void getBooleanos(Idea pIdea) {
-    final IdeasProvider ideaManager = Provider.of<IdeasProvider>(context, listen: false);
+    final IdeasProvider ideaManager =
+        Provider.of<IdeasProvider>(context, listen: false);
     ideaManager
         .getVotosDeUsuarioEnIdeaSupportOrDiscard(idQuest, pIdea.id, 'support')
         .then((value) => setState(() {
@@ -50,6 +48,12 @@ class _IdeaOverviewItemState extends State<IdeaOverviewItem> {
   void didChangeDependencies() {
     idea = Provider.of<Idea>(context);
     getBooleanos(idea);
+
+    if (Provider.of<IdeasProvider>(context, listen: false)
+        .isIdeaContent(idea.id)) {
+      isBlock = true;
+    }
+
     super.didChangeDependencies();
   }
 
@@ -72,7 +76,7 @@ class _IdeaOverviewItemState extends State<IdeaOverviewItem> {
               });
       },
       child: Card(
-        color: idea.isPressed ? Colors.grey[300] : null,
+        color: isBlock || idea.isPressed ? Colors.grey[300] : null,
         elevation: 10,
         child: ListTile(
             leading: FittedBox(

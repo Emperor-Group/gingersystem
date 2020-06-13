@@ -15,7 +15,7 @@ class IdeasProvider with ChangeNotifier {
   String userID;
   List<Idea> ideasparentsOchildren;
   List<String> parents = [];
-  String link='';
+  String link = '';
 
   IdeasProvider(this.authToken, this.userID);
 
@@ -214,10 +214,10 @@ se tiene que enviar la cantidad de votos a poner en la base de datos (actual-1 o
       } else {
         //print('extractedIdeas: '+extractedIdeas.toString());
       }
-      String supportD='';
-      bool spl=false;
+      String supportD = '';
+      bool spl = false;
       var value2 = extractedIdeas;
-      if(value2['supportDataLink']!=null) {
+      if (value2['supportDataLink'] != null) {
         if (value2['supportDataLink']) {
           spl = true;
           StorageReference fsr = FirebaseStorage.instance
@@ -230,7 +230,7 @@ se tiene que enviar la cantidad de votos a poner en la base de datos (actual-1 o
           supportD = url34 == false ? '' : url34;
         }
       }
-      link=supportD;
+      link = supportD;
       loadedIdeas.add(Idea.addIdea(
         id: ideaId,
         title: value2['title'],
@@ -330,6 +330,10 @@ se tiene que enviar la cantidad de votos a poner en la base de datos (actual-1 o
       parents.remove(idParent);
     else
       parents.add(idParent);
+  }
+
+  bool isIdeaContent(String idIdea) {
+    return parents.contains(idIdea);
   }
 }
 
