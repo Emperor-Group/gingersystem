@@ -37,9 +37,7 @@ class _AddIdeaScreenState extends State<AddIdeaScreen> {
     idQuest = obj['idQuest'];
     _type = obj['type'];
 
-    if (_type!="MIX")
-      Provider.of<IdeasProvider>(context, listen: false)
-        .addParent(idIdeaPadre);
+    Provider.of<IdeasProvider>(context, listen: false).addParent(idIdeaPadre);
   }
 
   void dispose() {
@@ -72,11 +70,7 @@ class _AddIdeaScreenState extends State<AddIdeaScreen> {
     });
     try {
       await Provider.of<IdeasProvider>(context, listen: false).addIdea(
-          _savedIdea.title,
-          _savedIdea.content,
-          allFiles,
-          idQuest,
-          _type);
+          _savedIdea.title, _savedIdea.content, allFiles, idQuest, _type);
     } catch (error) {
       await showDialog(
         context: context,
@@ -147,7 +141,7 @@ class _AddIdeaScreenState extends State<AddIdeaScreen> {
                                     builder: (_) {
                                       return Container(
                                         margin: const EdgeInsets.only(
-                                            top: 5, left: 15, right: 15),
+                                            top: 10, left: 15, right: 15),
                                         height: deviceSize.height,
                                         child: IdeaOverviewList(
                                             null, idQuest, "todas", true),
