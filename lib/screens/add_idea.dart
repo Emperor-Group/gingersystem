@@ -54,7 +54,7 @@ class _AddIdeaScreenState extends State<AddIdeaScreen> {
       title: '',
       content: '',
       owner: '',
-      supportData: [],
+      supportDataLink: false,
       published: DateTime.now());
 
   Future<List<File>> _presentFilePicker(List<File> files) async {
@@ -173,7 +173,7 @@ class _AddIdeaScreenState extends State<AddIdeaScreen> {
                           title: value,
                           content: '',
                           owner: '',
-                          supportData: [],
+                          supportDataLink: false,
                           published: DateTime.now(),
                         );
                       },
@@ -197,7 +197,7 @@ class _AddIdeaScreenState extends State<AddIdeaScreen> {
                           title: _savedIdea.title,
                           content: value,
                           owner: '',
-                          supportData: [],
+                          supportDataLink: false,
                           published: DateTime.now(),
                         );
                       },

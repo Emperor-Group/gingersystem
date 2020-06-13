@@ -11,19 +11,50 @@ import 'package:gingersystem/providers/idea_provider.dart';
 class IdeaOverviewItem extends StatefulWidget {
   String idQuest;
   bool onlyShow;
+
   IdeaOverviewItem(this.idQuest, this.onlyShow);
+
   @override
-  _IdeaOverviewItemState createState() =>
-      _IdeaOverviewItemState(idQuest, onlyShow);
+  _IdeaOverviewItemState createState() => _IdeaOverviewItemState();
 }
 
 class _IdeaOverviewItemState extends State<IdeaOverviewItem> {
-  _IdeaOverviewItemState(this.idQuest, this.onlyShow);
   String idQuest;
   bool onlyShow;
+  bool supportBoolean = false;
+  bool reportBoolean = false;
+  Idea idea;
+
+  @override
+  void initState() {
+    super.initState();
+    idQuest = widget.idQuest;
+    onlyShow = widget.onlyShow;
+  }
+
+  void getBooleanos(Idea pIdea) {
+    final IdeasProvider ideaManager = Provider.of<IdeasProvider>(context, listen: false);
+    ideaManager
+        .getVotosDeUsuarioEnIdeaSupportOrDiscard(idQuest, pIdea.id, 'support')
+        .then((value) => setState(() {
+              supportBoolean = (value != 0);
+            }));
+    ideaManager
+        .getVotosDeUsuarioEnIdeaSupportOrDiscard(idQuest, pIdea.id, 'discard')
+        .then((value) => setState(() {
+              reportBoolean = (value != 0);
+            }));
+  }
+
+  @override
+  void didChangeDependencies() {
+    idea = Provider.of<Idea>(context);
+    getBooleanos(idea);
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final Idea idea = Provider.of<Idea>(context);
     return GestureDetector(
       onTap: () {
         !onlyShow
@@ -44,28 +75,43 @@ class _IdeaOverviewItemState extends State<IdeaOverviewItem> {
         color: idea.isPressed ? Colors.grey[300] : null,
         elevation: 10,
         child: ListTile(
-          leading: FittedBox(
-            child: Column(
-              children: <Widget>[
-                CircleAvatar(
-                  backgroundColor: Colors.amber,
-                  child: Icon(
-                    Icons.all_out,
-                    color: Colors.white,
+            leading: FittedBox(
+              child: Column(
+                children: <Widget>[
+                  CircleAvatar(
+                    backgroundColor: Colors.amber,
+                    child: Icon(
+                      Icons.all_out,
+                      color: Colors.white,
+                    ),
                   ),
+                ],
+              ),
+            ),
+            title: Text(
+              idea.title,
+              style: Theme.of(context).textTheme.headline1,
+            ),
+            subtitle: Text(
+              idea.content,
+              style: Theme.of(context).textTheme.subtitle1,
+            ),
+            trailing: Column(
+              children: <Widget>[
+                Icon(
+                  !supportBoolean
+                      ? Icons.wb_incandescent
+                      : Icons.lightbulb_outline,
+                  color: supportBoolean ? Colors.grey : Colors.yellow,
+                  size: 27,
+                ),
+                Icon(
+                  !reportBoolean ? Icons.report : Icons.report_off,
+                  color: reportBoolean ? Colors.grey : Colors.red,
+                  size: 27,
                 ),
               ],
-            ),
-          ),
-          title: Text(
-            idea.title,
-            style: Theme.of(context).textTheme.headline1,
-          ),
-          subtitle: Text(
-            idea.content,
-            style: Theme.of(context).textTheme.subtitle1,
-          ),
-        ),
+            )),
       ),
     );
   }

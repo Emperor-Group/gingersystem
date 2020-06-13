@@ -24,7 +24,7 @@ class Idea with ChangeNotifier {
   ///TODO: Define data. Class? Links?
   /// The data uploaded to support an idea
   ///
-  List<File> supportData = [];
+  bool supportDataLink = false;
 
   ///idea.dart
   /// Who published the idea
@@ -76,7 +76,7 @@ class Idea with ChangeNotifier {
       @required this.title,
       @required this.content,
       @required this.owner,
-      @required this.supportData,
+      @required this.supportDataLink,
       @required this.published,
       this.supportVotes = 0,
       this.discardVotes = 0});

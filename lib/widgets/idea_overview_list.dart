@@ -11,6 +11,7 @@ class IdeaOverviewList extends StatefulWidget {
   String idQuest;
   String padresOHijasOTodas;
   bool onlyShow;
+
   IdeaOverviewList(
       this.ideaActual, this.idQuest, this.padresOHijasOTodas, this.onlyShow);
 
@@ -55,7 +56,8 @@ class _IdeaOverviewListState extends State<IdeaOverviewList> {
           });
         });
       } else {
-        IdeasProvider ideaManager = Provider.of<IdeasProvider>(context, listen: true);
+        IdeasProvider ideaManager =
+            Provider.of<IdeasProvider>(context, listen: true);
         ideaManager
             .fetchAndSetLaunchedIdeasChildren(
                 idQuest, ideaActual.id, padresOHijasOTodas)
@@ -73,6 +75,7 @@ class _IdeaOverviewListState extends State<IdeaOverviewList> {
 
   @override
   Widget build(BuildContext context) {
+
     return _isLoading
         ? Center(
             child: CircularProgressIndicator(),
@@ -95,3 +98,27 @@ class _IdeaOverviewListState extends State<IdeaOverviewList> {
               );
   }
 }
+//Widget vistaLista(){
+//  if(selectedQuest!=null && ideaActual!=null && padresOHijasOTodas!=null){
+//    ideaManager
+//        .fetchAndSetLaunchedIdeasChildren(
+//        idQuest, ideaActual.id, padresOHijasOTodas)
+//        .then((_) {
+//      setState(() {
+//        listas = ideaManager.ideasparentsOchildren;
+//      });
+//    });
+//  }
+//  return ListView.builder(
+//    itemCount: listas.length,
+//    itemBuilder: (ctx, index) {
+//      return ChangeNotifierProvider.value(
+//        value: listas[index],
+//        child: IdeaOverviewItem(
+//          idQuest,
+//          onlyShow,
+//        ),
+//      );
+//    },
+//  );
+//}
