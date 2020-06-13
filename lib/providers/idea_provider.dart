@@ -1,15 +1,11 @@
-import 'dart:ffi';
-import 'dart:typed_data';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gingersystem/providers/idea.dart';
-import 'package:gingersystem/screens/idea_overview_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart';
 
 class IdeasProvider with ChangeNotifier {
@@ -19,6 +15,7 @@ class IdeasProvider with ChangeNotifier {
   String userID;
   List<Idea> ideasparentsOchildren;
   List<String> parents = [];
+  String link='';
 
   IdeasProvider(this.authToken, this.userID);
 
@@ -32,10 +29,9 @@ class IdeasProvider with ChangeNotifier {
 
   Future<void> addIdea(String title, String content, List<File> supportData,
       String idQuest, String type) async {
-
-    Map<String, dynamic> x={};
-    for(String padre in parents){
-      x['$padre']=true;
+    Map<String, dynamic> x = {};
+    for (String padre in parents) {
+      x['$padre'] = true;
     }
 
     try {
@@ -48,25 +44,34 @@ class IdeasProvider with ChangeNotifier {
           {
             'title': title,
             'content': content,
-            'supportData': [],
+            'supportDataLink': supportData.isNotEmpty ? true : false,
             'owner': userID,
             'published': DateTime.now().toIso8601String(),
             'supportVotes': 0,
             'discardVotes': 0,
             'parents': x,
-            'type':type
+            'type': type
             //no lleva children porque es nueva.
           },
         ),
       );
-      print('response.statusCode1: ' + response.statusCode.toString());
 
       final String ideaID = json.decode(response.body)['name'];
 
+      //  Se sube supportData
+      if (supportData != null && supportData.isNotEmpty) {
+        final StorageReference fsr = FirebaseStorage.instance
+            .ref()
+            .child('ideas/$idQuest/$ideaID/supportData');
+        supportData.forEach((element) {
+          fsr.putFile(element);
+        });
+      }
+
       //Se mete el hijo nuevo a todos los papás.
-      for(String padre in parents){
+      for (String padre in parents) {
         url =
-        'https://the-rhizome.firebaseio.com/ideas/$idQuest/$padre/children.json?auth=$authToken';
+            'https://the-rhizome.firebaseio.com/ideas/$idQuest/$padre/children.json?auth=$authToken';
         response = await http.patch(
           url,
           body: json.encode(
@@ -74,7 +79,6 @@ class IdeasProvider with ChangeNotifier {
           ),
         );
       }
-      print('response.statusCode2: ' + response.statusCode.toString());
       notifyListeners();
     } catch (error) {
       print(error);
@@ -101,8 +105,6 @@ se tiene que enviar la cantidad de votos a poner en la base de datos (actual-1 o
             idQuest, idIdea, 'discard');
         if (x > 0) {
           //debe tener un voto para poder bajarlo
-          print('debe tener un voto para poder bajarlo, \$PDiscardVote: ' +
-              PDiscardVote.toString());
           jsonS = '{"discardVotes": $PDiscardVote}';
           await setVotosDeUsuarioEnIdeaSupportOrDiscard(
               idQuest, ideaC, 'discard', -1);
@@ -112,10 +114,6 @@ se tiene que enviar la cantidad de votos a poner en la base de datos (actual-1 o
         int x = await getVotosDeUsuarioEnIdeaSupportOrDiscard(
             idQuest, idIdea, 'discard');
         if (x == 0) {
-          //debe 0 votos para poder subirlo
-          print('debe 0 votos para poder subirlo, \$PDiscardVote: ' +
-              PDiscardVote.toString());
-
           jsonS = '{"discardVotes": $PDiscardVote}';
         }
         await setVotosDeUsuarioEnIdeaSupportOrDiscard(
@@ -147,7 +145,6 @@ se tiene que enviar la cantidad de votos a poner en la base de datos (actual-1 o
     }
     try {
       Response response = await http.patch(url2, body: jsonS);
-      print(response.statusCode);
       notifyListeners();
     } catch (error) {
       notifyListeners();
@@ -162,14 +159,11 @@ se tiene que enviar la cantidad de votos a poner en la base de datos (actual-1 o
         'https://the-rhizome.firebaseio.com/userVotesIdeas/$userID/$ideaId/$supportOrDiscard.json?auth=$authToken';
     try {
       Response response = await http.get(url3);
-      print('getVotosDeUsuarioEnIdeaSupportOrDiscard ' +
-          response.statusCode.toString());
       final Map<String, dynamic> extractedMap = json.decode(response.body);
 
       notifyListeners();
 
       if (extractedMap == null || extractedMap.length == 0) {
-        print('este usuario no tiene votos en esta idea');
         respuesta = Future.value(0);
       } else if (supportOrDiscard == 'support' ||
           supportOrDiscard == 'discard') {
@@ -192,16 +186,12 @@ se tiene que enviar la cantidad de votos a poner en la base de datos (actual-1 o
         'https://the-rhizome.firebaseio.com/userVotesIdeas/$userID/${pIdea.id}/$supportOrDiscard.json?auth=$authToken';
     try {
       if (delta > 0) {
-        print('setVotosDeUsuarioEnIdeaSupportOrDiscard ' + delta.toString());
         jsonS = '{"${pIdea.id}": $delta}';
       } else {
-        print('setVotosDeUsuarioEnIdeaSupportOrDiscard ' + delta.toString());
         jsonS = '{"${pIdea.id}": ${1 + delta}}';
       }
 
       Response response = await http.patch(url3, body: jsonS);
-      print('setVotosDeUsuarioEnIdeaSupportOrDiscard ' +
-          response.statusCode.toString());
 
       notifyListeners();
     } catch (error) {
@@ -211,10 +201,6 @@ se tiene que enviar la cantidad de votos a poner en la base de datos (actual-1 o
   }
 
   Future<void> fetchAndSetOneIdeaByQuest(String ideaId, String idQuest) async {
-    print('ideaId');
-    print(ideaId);
-    print('idQuest');
-    print(idQuest);
     final url =
         'https://the-rhizome.firebaseio.com/ideas/$idQuest/$ideaId.json?auth=${this.authToken}';
     try {
@@ -228,22 +214,34 @@ se tiene que enviar la cantidad de votos a poner en la base de datos (actual-1 o
       } else {
         //print('extractedIdeas: '+extractedIdeas.toString());
       }
-      print('extractedIdeas');
-      print(extractedIdeas);
+      String supportD='';
+      bool spl=false;
       var value2 = extractedIdeas;
+      if(value2['supportDataLink']!=null) {
+        if (value2['supportDataLink']) {
+          spl = true;
+          StorageReference fsr = FirebaseStorage.instance
+              .ref()
+              .child('ideas/$idQuest/$ideaId/supportData');
+          var url34 = await fsr.getDownloadURL().catchError((e) {
+            spl = false;
+            return false;
+          });
+          supportD = url34 == false ? '' : url34;
+        }
+      }
+      link=supportD;
       loadedIdeas.add(Idea.addIdea(
         id: ideaId,
         title: value2['title'],
         content: value2['content'],
-        //supportData: value2['supportData'],
+        supportDataLink: spl,
         owner: value2['owner'],
         published: DateTime.parse(value2['published']),
         supportVotes: value2['supportVotes'],
         discardVotes: value2['discardVotes'],
       ));
       _launchedIdea = loadedIdeas[0];
-      print('_launchedIdea');
-      print(_launchedIdea);
       notifyListeners();
     } catch (error) {
       print(error);
@@ -289,7 +287,6 @@ se tiene que enviar la cantidad de votos a poner en la base de datos (actual-1 o
     try {
       final response = await http.get(url);
       final Map<String, dynamic> extractedIdea = json.decode(response.body);
-      print('extractedIdeas: ' + extractedIdea.toString());
       Map<String, dynamic> children = extractedIdea['children'];
       Map<String, dynamic> parents = extractedIdea['parents'];
       if (children == null && padresOHijas == 'ideasHijas') {
@@ -321,8 +318,6 @@ se tiene que enviar la cantidad de votos a poner en la base de datos (actual-1 o
           ideasparentsOchildren = loadedIdeas;
         }
       }
-      print('ideasparentsOchildren');
-      print(ideasparentsOchildren);
       notifyListeners();
     } catch (error) {
       print(error);
