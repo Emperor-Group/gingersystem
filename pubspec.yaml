@@ -40,6 +40,15 @@ dev_dependencies:
     sdk: flutter
   provider: ^4.0.5+1
   liquid_progress_indicator: ^0.3.2
+  flutter_launcher_icons: ^0.7.5
+
+flutter_icons:
+
+  android: true
+  ios: true
+  image_path: 'assets/images/logorhizome.png'
+  adaptive_icon_background: '#ffffff'
+  adaptive_icon_foreground: 'assets/images/logorhizome.png'
 
 
 # For information on the generic Dart part of this file, see the
@@ -58,7 +67,7 @@ flutter:
    - assets/images/rhizome.png
    - assets/images/Simbolo.jpg
    - assets/images/LogoRhizome.png
-   - assets/images/loading_page.jpg
+   - assets/images/loadingpage.png
    - assets/images/ImagotipoEmperorgroup.png
   #  - images/a_dot_ham.jpeg
 
