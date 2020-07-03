@@ -11,20 +11,28 @@ class CommentOverviewList extends StatefulWidget {
   CommentOverviewList(this.idQuest, this.idIdea);
 
   @override
-  _CommentOverviewListState createState() =>
-      _CommentOverviewListState(this.idQuest, this.idIdea);
+  _CommentOverviewListState createState() => _CommentOverviewListState();
 }
 
 class _CommentOverviewListState extends State<CommentOverviewList> {
   String idQuest;
   String idIdea;
-  bool _isInit = false;
-  bool _isLoading = false;
-  var deviceSize;
+  Size deviceSize;
+  bool checkingFlight = false;
+  bool success = false;
+  bool _isInit;
+  bool _isLoading;
   CommentProvider commentManager;
   List<Comment> comments;
 
-  _CommentOverviewListState(this.idQuest, this.idIdea);
+  @override
+  void initState() {
+    idQuest = widget.idQuest;
+    idIdea = widget.idIdea;
+    _isInit = false;
+    _isLoading = false;
+    super.initState();
+  }
 
   @override
   void didChangeDependencies() {
@@ -45,15 +53,14 @@ class _CommentOverviewListState extends State<CommentOverviewList> {
       );
     }
     _isInit = true;
-    deviceSize = MediaQuery.of(context).size;
     commentManager = Provider.of<CommentProvider>(context);
     comments = commentManager.comments;
+    deviceSize = MediaQuery.of(context).size;
     super.didChangeDependencies();
   }
 
   void addComment(BuildContext context, bool checkingFlight, bool success,
       CommentProvider commentManager) {
-    final deviceSize = MediaQuery.of(context).size;
     TextEditingController tec1 = new TextEditingController();
     TextEditingController tec2 = new TextEditingController();
     showModalBottomSheet(
@@ -170,9 +177,6 @@ class _CommentOverviewListState extends State<CommentOverviewList> {
           );
         });
   }
-
-  bool checkingFlight = false;
-  bool success = false;
 
   @override
   Widget build(BuildContext context) {

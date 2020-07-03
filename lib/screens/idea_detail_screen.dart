@@ -259,7 +259,9 @@ class _IdeaDetailState extends State<IdeaDetail> {
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: <Widget>[
                                       Text(
-                                        selected.supportVotes.toString(),
+                                        selected.supportVotes != null
+                                            ? selected.supportVotes.toString()
+                                            : '0',
                                         style: selected.supportVotes == 0
                                             ? TextStyle(
                                                 fontSize: 25,
@@ -325,7 +327,9 @@ class _IdeaDetailState extends State<IdeaDetail> {
                                         width: 10,
                                       ),
                                       Text(
-                                        selected.discardVotes.toString(),
+                                        selected.discardVotes != null
+                                            ? selected.discardVotes.toString()
+                                            : '0',
                                         style: selected.discardVotes == 0
                                             ? TextStyle(
                                                 fontSize: 25,

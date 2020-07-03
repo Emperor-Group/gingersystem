@@ -22,7 +22,7 @@ class _AddIdeaScreenState extends State<AddIdeaScreen> {
   final _ideaContentNode = FocusNode();
   final _ideaSDFocusNode = FocusNode();
   final _form = GlobalKey<FormState>();
-  List<File> allFiles;
+  List<File> allFiles = [];
   bool _isLoading = false;
   String idIdeaPadre;
   String idQuest;
@@ -69,7 +69,8 @@ class _AddIdeaScreenState extends State<AddIdeaScreen> {
       _isLoading = true;
     });
     try {
-      await Provider.of<IdeasProvider>(context, listen: false).addIdea(
+      var aux = Provider.of<IdeasProvider>(context, listen: false);
+      await aux.addIdea(
           _savedIdea.title, _savedIdea.content, allFiles, idQuest, _type);
     } catch (error) {
       await showDialog(
