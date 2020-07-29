@@ -70,6 +70,8 @@ class _AuthScreenState extends State<AuthScreen>
             ),
           ),
           SingleChildScrollView(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
             child: Container(
               height: deviceSize.height,
               width: deviceSize.width,
