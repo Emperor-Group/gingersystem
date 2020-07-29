@@ -181,12 +181,12 @@ class _QuestDetailState extends State<QuestDetail> {
                   padding: EdgeInsets.all(20),
                   child: Text(
                     selected.title.toUpperCase(),
-                    style: Theme.of(context).textTheme.bodyText1,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline1
+                        .copyWith(fontSize: 25),
                     textAlign: TextAlign.center,
                   ),
-                ),
-                SizedBox(
-                  height: deviceSize.height * 0.025,
                 ),
                 Container(
                   height: deviceSize.height * 0.1,
@@ -259,7 +259,11 @@ class _QuestDetailState extends State<QuestDetail> {
                 ),
                 Container(
                   height: deviceSize.height * 0.3,
-                  width: deviceSize.width * 0.85,
+                  width: deviceSize.width,
+                  padding: EdgeInsets.only(
+                    right: 8,
+                    left: 8,
+                  ),
                   child: GestureDetector(
                     child: Card(
                       shape: RoundedRectangleBorder(
@@ -274,7 +278,10 @@ class _QuestDetailState extends State<QuestDetail> {
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
                               'Idea Pionera',
-                              style: Theme.of(context).textTheme.caption,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .caption
+                                  .copyWith(fontSize: 17.0),
                             ),
                           ),
                           Expanded(
@@ -291,7 +298,10 @@ class _QuestDetailState extends State<QuestDetail> {
                             padding: const EdgeInsets.all(5),
                             child: Text(
                               'Descripción',
-                              style: Theme.of(context).textTheme.caption,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .caption
+                                  .copyWith(fontSize: 15.0),
                             ),
                           ),
                           Expanded(
@@ -305,7 +315,10 @@ class _QuestDetailState extends State<QuestDetail> {
                               child: SingleChildScrollView(
                                 child: Text(
                                   selected.initialIdea.content,
-                                  style: Theme.of(context).textTheme.headline2,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headline1
+                                      .copyWith(fontSize: 13.0),
                                 ),
                               ),
                             ),
@@ -325,10 +338,39 @@ class _QuestDetailState extends State<QuestDetail> {
                   ),
                 ),
                 SizedBox(
-                  height: deviceSize.height * 0.05,
+                  height: deviceSize.height * 0.03,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                    right: 12,
+                    left: 12,
+                  ),
+                  child: Container(
+                    width: double.infinity,
+                    height: 1,
+                    color: Colors.grey,
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(top: 10.0, bottom: 5.0),
+                  child: Center(
+                    child: Text(
+                      'Ideas',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyText2
+                          .copyWith(fontSize: 17.0),
+                    ),
+                  ),
                 ),
                 Expanded(
-                  child: IdeaOverviewList(null, selected.id, 'todas', false),
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      right: 8,
+                      left: 8,
+                    ),
+                    child: IdeaOverviewList(null, selected.id, 'todas', false),
+                  ),
                 ),
               ],
             ),

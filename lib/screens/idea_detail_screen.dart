@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gingersystem/providers/idea.dart';
 import 'package:gingersystem/providers/idea_provider.dart';
@@ -51,9 +50,6 @@ class _IdeaDetailScreenState extends State<IdeaDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-//    print('initialSupport '+initialSupport.toString());
-//    print('initialDiscard '+initialDiscard.toString());
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Idea Control Screen'),
@@ -146,8 +142,6 @@ class _IdeaDetailState extends State<IdeaDetail> {
                 CommentOverviewList(idQuest, idIdea),
               ],
             ),
-            /*child: CommentOverviewList(
-                '-M7E1BpiBF0AjxfHQuls', '-M7E1BvVdL9pPvmgKaeF'),*/
           );
         });
   }
@@ -179,69 +173,85 @@ class _IdeaDetailState extends State<IdeaDetail> {
                                 vertical: 10, horizontal: 20),
                             child: Text(
                               selected.title.toUpperCase(),
-                              style: Theme.of(context).textTheme.bodyText1,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline1
+                                  .copyWith(fontSize: 20),
                               textAlign: TextAlign.center,
                             ),
                           ),
                           Padding(
                             padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 20),
+                                vertical: 5, horizontal: 20),
                             child: Text(
                               "Descripción:",
-                              style: Theme.of(context).textTheme.headline4,
-                              textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .caption
+                                  .copyWith(fontSize: 18.0),
+                              textAlign: TextAlign.start,
                             ),
                           ),
                           Padding(
                             padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 20),
+                                vertical: 5, horizontal: 20),
                             child: Text(
                               selected.content,
-                              style: Theme.of(context).textTheme.caption,
-                              textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline1
+                                  .copyWith(fontSize: 13),
+                              textAlign: TextAlign.start,
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 20),
-                            child: (selected.supportDataLink)
-                                ? RichText(
-                                    text: TextSpan(
-                                      children: [
-                                        TextSpan(
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headline4,
-                                          text:
-                                              'Descargar los documentos de soporte: ',
-                                        ),
-                                        TextSpan(
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headline2,
-                                          text: 'Dando click aquí',
-                                          recognizer: TapGestureRecognizer()
-                                            ..onTap = () async {
-                                              final url =
-                                                  Provider.of<IdeasProvider>(
-                                                          context,
-                                                          listen: false)
-                                                      .link;
-                                              if (await canLaunch(url)) {
-                                                await launch(
-                                                  url,
-                                                  forceSafariVC: false,
-                                                );
-                                              }
-                                            },
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                : Container(
-                                    child: Text('no hay files en esta idea'),
-                                  ),
+                            padding: const EdgeInsets.only(
+                                top: 20, bottom: 0, left: 20, right: 20),
+                            child: Text(
+                              "Archivos de Soporte:",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .caption
+                                  .copyWith(fontSize: 18.0),
+                              textAlign: TextAlign.start,
+                            ),
                           ),
+                          selected.supportDataLink
+                              ? Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 20.0, right: 20.0),
+                                  child: Row(
+                                    children: <Widget>[
+                                      Text('Haz click en el siguiente icono: '),
+                                      IconButton(
+                                        iconSize: 25.0,
+                                        alignment: Alignment.center,
+                                        icon: Icon(Icons.archive),
+                                        onPressed: () async {
+                                          final url =
+                                              Provider.of<IdeasProvider>(
+                                                      context,
+                                                      listen: false)
+                                                  .link;
+                                          if (await canLaunch(url)) {
+                                            await launch(
+                                              url,
+                                              forceSafariVC: false,
+                                            );
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 20, bottom: 0, left: 20, right: 20),
+                                  child: Text(
+                                    "No contiene archivos de soporte.",
+                                    textAlign: TextAlign.start,
+                                  ),
+                                ),
                         ],
                       ),
                       Container(

@@ -219,8 +219,11 @@ class _QuestOverviewScreenState extends State<QuestOverviewScreen>
                   child: RefreshIndicator(
                     child: SlideTransition(
                       position: _slideAnimation,
-                      child: QuestOverviewList(
-                          _showFilteredByUpcomingDeadlinesSorted),
+                      child: Padding(
+                        padding: EdgeInsets.only(bottom: 50.0),
+                        child: QuestOverviewList(
+                            _showFilteredByUpcomingDeadlinesSorted),
+                      ),
                     ),
                     onRefresh: () =>
                         Provider.of<QuestsProvider>(context, listen: false)

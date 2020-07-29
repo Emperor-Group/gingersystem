@@ -217,10 +217,13 @@ class _IdeaOverviewScreenState extends State<IdeaOverviewScreen>
               Center(
                 child: Padding(
                   padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                      const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                   child: Text(
                     ideaActual.title.toUpperCase(),
-                    style: Theme.of(context).textTheme.bodyText1,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline1
+                        .copyWith(fontSize: 20),
                     textAlign: TextAlign.center,
                   ),
                 ),
