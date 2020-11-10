@@ -82,8 +82,7 @@ class CommentProvider with ChangeNotifier {
       _comments = loadedComments;
       notifyListeners();
     } catch (error) {
-      print(error);
-      throw error;
+      print("ERROR: $error");
     }
   }
 
@@ -106,7 +105,7 @@ class CommentProvider with ChangeNotifier {
       );
       notifyListeners();
     } catch (error) {
-      throw (error);
+      print("ERRORR: $error");
     }
   }
 
@@ -128,7 +127,7 @@ class CommentProvider with ChangeNotifier {
       notifyListeners();
     } catch (error) {
       notifyListeners();
-      throw error;
+      print("ERROR: $error");
     }
   }
 
@@ -150,7 +149,7 @@ class CommentProvider with ChangeNotifier {
       notifyListeners();
     } catch (error) {
       notifyListeners();
-      throw error;
+      print("ERROR: $error");
     }
   }
 
@@ -168,7 +167,7 @@ class CommentProvider with ChangeNotifier {
       await http.delete(url2);
       notifyListeners();
     } catch (error) {
-      throw error;
+      print("ERROR: $error");
     }
   }
 
@@ -184,7 +183,7 @@ class CommentProvider with ChangeNotifier {
       notifyListeners();
     } catch (error) {
       notifyListeners();
-      throw error;
+      print("ERROR: $error");
     }
   }
 }
